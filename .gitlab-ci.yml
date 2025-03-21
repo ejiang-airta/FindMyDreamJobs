@@ -1,0 +1,7 @@
+stages:
+  - test
+
+test:
+  stage: test
+  script:
+    - echo "Tests will run here soon."
