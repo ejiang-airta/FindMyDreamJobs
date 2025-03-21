@@ -16,7 +16,7 @@ alembic.ini
 .DS_Store
 
 # development file/folders:
-"dev tracking/"
+dev tracking/
 results/
 job_*.*
 testing*.*
