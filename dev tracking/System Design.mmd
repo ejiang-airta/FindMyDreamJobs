@@ -1,0 +1,15 @@
+graph TD;
+  A[User] -->|Login/Register| B[Next.js Frontend];
+  B -->|API Request| C[FastAPI Backend];
+  C -->|Auth Request| D[NextAuth.js Authentication];
+  D -->|User Data| E[PostgreSQL Database];
+  C -->|Resume Upload & Job Matching| F[AI Services];
+  F -->|Resume Matcher API| G[Resume Matching Engine];
+  F -->|ATS Compliance Scoring| H[ATS Score Checker API];
+  C -->|Store Data| E;
+  B -->|Fetch Dashboard Data| C;
+  C -->|Retrieve Job Applications| E;
+  B -->|Show Results| A;
+  E -->|Data Storage| I[Render Hosting];
+  C -->|Deploy Backend| I;
+  B -->|Deploy Frontend| I;

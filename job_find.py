@@ -1,59 +1,79 @@
 import requests
 from bs4 import BeautifulSoup
 import schedule
+import datetime
+import json
 import time
-
-# Job site APIs
-job_sites = {
-    'indeed': 'https://www.indeed.com/jobs/api/1.0/ads',
-    'glassdoor': 'https://www.glassdoor.com/api/APIv2/ads.htm?format=json&api_key=YOUR_API_KEY&querydirector%20of%20engineering%20jobs%20in%20Vancouver&page=1&num_pages=5&country=CA',
-    'linkedin': 'https://api.linkedin.com/v2/search',
-}
+import os
 
 # RapidAPI instance
 rapid_api_host = 'jsearch.p.rapidapi.com'
-rapid_api_key = 'YOUR_RAPID_API_KEY'
+rapid_api_key = os.getenv("RAPIDAPI_KEY")
+API_URL = f"https://{rapid_api_host}/search?query=director%20quality%20engineering%20in%20Vancouver%20Canada&page=1&num_pages=1&country=ca&date_posted=all"
 
 def fetch_jobs():
     job_postings = []
+    
+    # jsearch API
+    headers = {
+        'x-rapidapi-host': rapid_api_host.encode("ascii", "ignore").decode(),
+        'x-rapidapi-key': rapid_api_key.encode("ascii", "ignore").decode()
+        }
+    # params = {'query': 
+    #     'director%20quality%20engineering%20jobs%20in%20Vancouver&page=1&num_pages=9&country=CA'}
 
-    # Indeed Jobs API
-    headers = {'x-rapidapi-host': rapid_api_host, 'x-rapidapi-key': rapid_api_key}
-    params = {'query': 'director%20of%20engineering%20jobs%20in%20Vancouver&page=1&num_pages=5&country=CA'}
-    response = requests.get(job_sites['indeed'], headers=headers, params=params)
-    data = response.json()
-    job_postings.extend(data['results'])
+    params = {
+        'query': 'director quality engineering in Vancouver Canada',
+        'page': 1,
+        'num_pages': 4,
+        'job_country': 'ca',
+        'date_posted': 'all'
+    }
+    response = requests.get(API_URL, headers=headers,params=params)
 
-    # Glassdoor Jobs API
-    headers = {'x-rapidapi-host': rapid_api_host, 'x-rapidapi-key': rapid_api_key}
-    params = {'query': 'director%20of%20engineering%20jobs%20in%20Vancouver&page=1&num_pages=5&country=CA'}
-    response = requests.get(job_sites['glassdoor'], headers=headers, params=params)
     data = response.json()
-    job_postings.extend(data['adLists']['jobs'])
+    #job_postings.extend(data['results'])
+    job_postings = data.get("data")
 
-    # LinkedIn Jobs API
-    headers = {'Authorization': 'Bearer YOUR_LINKEDIN_API_KEY'}
-    params = {'query': 'director%20of%20engineering%20jobs%20in%20Vancouver', 'format': 'json'}
-    response = requests.get(job_sites['linkedin'], headers=headers, params=params)
-    data = response.json()
-    job_postings.extend(data['elements'])
+    with open('job_output.json', 'w') as file1:
+        json.dump(data, file1, indent=4)  # Pretty-print
+        print("✅ Job information have been written to job_output.json")
 
     return job_postings
 
 def display_jobs(jobs):
     # Display jobs in a user-friendly format
-    print("job_postings:")
-    for job in jobs:
-        print(f"Title: {job['title']}")
-        print(f"Location: {job.get('location', 'N/A')}")
-        print(f"Company: {job.get('company', 'N/A')}")
-        print("-"*50)
+    print("*****Printing Job posting*****")
+    iStart = 1
 
-def main():
-    schedule.every(1).day.at("08:00").do(fetch_jobs)  # Run daily at 8 AM
-    while True:
-        schedule.run_pending()
-        time.sleep(60)
+    for job in jobs:        
+        print(f"***Fond job Number: {iStart}***")
+        print(f"**Title: {job['job_title']}**")
+        print(f"**Location: {job.get('job_location', 'N/A')}**")
+        print(f"**Company: {job.get('employer_name', 'N/A')}**")
+        print("-"*30)
+        print(f"***Job Description: {job.get('job_description', 'N/A')}***")
+        print("-"*30)
+        print(f"**Posted at: {job.get('job_posted_at_datetime_utc', 'N/A')}**")
+        print(f"**Salary: {job.get('job_salary', 'N/A')}**")
+        print(f"**Min Salary: {job.get('job_min_salary', 'N/A')}**")
+        print(f"**Max Salary: {job.get('job_max_salary', 'N/A')}**")
+        print(f"**Apply at: <a href='{job.get('job_google_link', '#')}' target='_blank'>Click here to apply</a>**")
+        print("-"*60)
 
-if __name__ == "__main__":
-    main()
+        iStart += 1    
+    
+
+# Fetch and display jobs
+jobs = fetch_jobs()
+
+display_jobs(jobs)
+
+# def main():
+#     schedule.every(1).day.at("11:36").do(fetch_jobs)  # Run daily at 8 AM
+#     while True:
+#         schedule.run_pending()
+#         time.sleep(60)
+
+# if __name__ == "__main__":
+#     main()

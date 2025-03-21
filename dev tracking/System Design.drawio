@@ -1,0 +1,138 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" version="26.1.1">
+  <diagram name="Page-1" id="OvlpH92mxrNecWfxuvlS">
+    <mxGraphModel dx="1193" dy="665" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-1" value="User" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="473" y="20" width="92" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-2" value="Next.js Frontend" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="429" y="147" width="181" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-3" value="FastAPI Backend" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="358" y="274" width="177" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-4" value="NextAuth.js Authentication" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="419" width="255" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-5" value="PostgreSQL Database" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="245" y="546" width="209" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-6" value="AI Services" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="730" y="419" width="137" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-7" value="Resume Matching Engine" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="563" y="546" width="236" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-8" value="ATS Score Checker API" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="849" y="546" width="218" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-9" value="Render Hosting" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1019" y="673" width="168" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-10" value="Login/Register" style="curved=1;startArrow=none;endArrow=block;exitX=0.22;exitY=1;entryX=0.36;entryY=0;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-1" target="B3aBeOsUxSR8_ZUYfY_P-2">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="458" y="111" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-11" value="API Request" style="curved=1;startArrow=none;endArrow=block;exitX=0.16;exitY=1;entryX=0.33;entryY=0;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-2" target="B3aBeOsUxSR8_ZUYfY_P-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="375" y="238" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-12" value="Auth Request" style="curved=1;startArrow=none;endArrow=block;exitX=0;exitY=0.9;entryX=0.5;entryY=-0.01;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-3" target="B3aBeOsUxSR8_ZUYfY_P-4">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="147" y="373" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-13" value="User Data" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=0.99;entryX=0.09;entryY=-0.01;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-4" target="B3aBeOsUxSR8_ZUYfY_P-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="147" y="509" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-14" value="Resume Upload &amp; Job Matching" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.84;entryX=0.5;entryY=-0.01;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-3" target="B3aBeOsUxSR8_ZUYfY_P-6">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="799" y="373" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-15" value="Resume Matcher API" style="curved=1;startArrow=none;endArrow=block;exitX=0.14;exitY=0.99;entryX=0.5;entryY=-0.01;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-6" target="B3aBeOsUxSR8_ZUYfY_P-7">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="681" y="509" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-16" value="ATS Compliance Scoring" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.99;entryX=0.5;entryY=-0.01;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-6" target="B3aBeOsUxSR8_ZUYfY_P-8">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="958" y="509" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-17" value="Store Data" style="curved=1;startArrow=none;endArrow=block;exitX=0.3;exitY=1;entryX=0.5;entryY=-0.01;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-3" target="B3aBeOsUxSR8_ZUYfY_P-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="373" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-18" value="Fetch Dashboard Data" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.82;entryX=1;entryY=0.25;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-2" target="B3aBeOsUxSR8_ZUYfY_P-3">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="856" y="238" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-19" value="Retrieve Job Applications" style="curved=1;startArrow=none;endArrow=block;exitX=0.62;exitY=1;entryX=0.81;entryY=-0.01;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-3" target="B3aBeOsUxSR8_ZUYfY_P-5">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="502" y="373" />
+              <mxPoint x="502" y="509" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-20" value="Show Results" style="curved=1;startArrow=none;endArrow=block;exitX=0.64;exitY=0;entryX=0.79;entryY=1;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-2" target="B3aBeOsUxSR8_ZUYfY_P-1">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="580" y="111" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-21" value="Data Storage" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=0.99;entryX=0;entryY=0.36;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-5" target="B3aBeOsUxSR8_ZUYfY_P-9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="350" y="636" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-22" value="Deploy Backend" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.68;entryX=0.55;entryY=-0.01;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-3" target="B3aBeOsUxSR8_ZUYfY_P-9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1124" y="373" />
+              <mxPoint x="1124" y="636" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="B3aBeOsUxSR8_ZUYfY_P-23" value="Deploy Frontend" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.66;entryX=0.76;entryY=-0.01;rounded=0;" edge="1" parent="1" source="B3aBeOsUxSR8_ZUYfY_P-2" target="B3aBeOsUxSR8_ZUYfY_P-9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1205" y="238" />
+              <mxPoint x="1205" y="636" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

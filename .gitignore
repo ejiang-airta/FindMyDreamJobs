@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.pyc
+.env
+.env.*
+
+# VSCode
+.vscode/
+
+# Alembic / DB
+*.sqlite3
+*.log
+alembic.ini
+
+# macOS
+.DS_Store
+
+# development file/folders:
+"dev tracking/"
+results/
+job_*.*
+testing*.*

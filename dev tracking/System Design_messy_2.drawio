@@ -1,0 +1,338 @@
+<mxfile host="app.diagrams.net" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36" version="26.1.1">
+  <diagram id="BD6nbm-nD6XES8jzmXHn" name="Page-1">
+    <mxGraphModel dx="4191" dy="1744" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-51" value="Hosting &amp; Security" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="4012" y="1433" width="612" height="104" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-52" value="Job Applications" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1424" y="52" width="149" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-53" value="AI &amp; Job Matching" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="20" y="613" width="476" height="256" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-54" value="Resume Processing" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="516" y="765" width="1072" height="426" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-55" value="Backend Services" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="2301" y="461" width="2283" height="899" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-56" value="User Interaction" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1608" y="20" width="673" height="1019" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-57" value="User" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1818" y="45" width="92" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-58" value="Next.js Frontend" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1774" y="172" width="181" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-59" value="NextAuth.js Authentication" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1924" y="317" width="255" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-60" value="Dashboard UI" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1643" y="960" width="154" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-61" value="FastAPI Backend" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="3360" y="486" width="177" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-62" value="PostgreSQL Database" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="3948" y="1281" width="209" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-63" value="Security Layer" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="4187" y="638" width="162" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-64" value="Resume Upload Service" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="589" y="1112" width="226" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-65" value="ATS Score Checker API" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="1109" y="790" width="218" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-66" value="AI Resume Enhancer" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="868" y="960" width="204" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-67" value="Resume Matching Engine" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="939" y="1112" width="236" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-68" value="AI Services" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="210" y="638" width="137" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-69" value="Job Parsing Engine" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="55" y="790" width="193" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-70" value="Render Hosting" style="whiteSpace=wrap;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="4373" y="1458" width="168" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-71" value="Login/Register" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-57" target="JdKzo7E8qvSN7ClAdiSu-58">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-72" value="Call Authentication" style="curved=1;startArrow=none;endArrow=block;exitX=0.69;exitY=1;entryX=0.36;entryY=-0.01;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-58" target="JdKzo7E8qvSN7ClAdiSu-59">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1959" y="271" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-73" value="Return Auth Token &amp; User Data" style="curved=1;startArrow=none;endArrow=block;exitX=0.63;exitY=-0.01;entryX=1;entryY=0.93;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-59" target="JdKzo7E8qvSN7ClAdiSu-58">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2143" y="271" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-74" value="Load Dashboard UI" style="curved=1;startArrow=none;endArrow=block;exitX=0.18;exitY=1;entryX=0.47;entryY=0;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-58" target="JdKzo7E8qvSN7ClAdiSu-60">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1708" y="271" />
+              <mxPoint x="1708" y="914" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-75" value="Handle User Requests" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.43;entryX=0;entryY=0.91;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-60" target="JdKzo7E8qvSN7ClAdiSu-61">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="3192" y="914" />
+              <mxPoint x="3192" y="577" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-76" value="Auth Request" style="curved=1;startArrow=none;endArrow=block;exitX=0;exitY=0.44;entryX=0.67;entryY=0.99;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-61" target="JdKzo7E8qvSN7ClAdiSu-59">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2165" y="461" />
+              <mxPoint x="2165" y="416" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-77" value="Verify &amp; Return Session" style="curved=1;startArrow=none;endArrow=block;exitX=0.37;exitY=0.99;entryX=0;entryY=0.45;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-59" target="JdKzo7E8qvSN7ClAdiSu-61">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1961" y="416" />
+              <mxPoint x="1961" y="461" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-78" value="Store/Retrieve Data" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.77;entryX=0.12;entryY=0.01;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-61" target="JdKzo7E8qvSN7ClAdiSu-62">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="3842" y="577" />
+              <mxPoint x="3842" y="1236" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-79" value="Security &amp; Encryption" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.65;entryX=0.21;entryY=0;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-61" target="JdKzo7E8qvSN7ClAdiSu-63">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="4178" y="577" />
+              <mxPoint x="4178" y="613" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-80" value="Upload Resume" style="curved=1;startArrow=none;endArrow=block;exitX=0.38;exitY=1;entryX=0.36;entryY=0;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-60" target="JdKzo7E8qvSN7ClAdiSu-64">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1684" y="1039" />
+              <mxPoint x="629" y="1075" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-81" value="Validate &amp; Store Resume" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.3;entryY=0.01;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-64" target="JdKzo7E8qvSN7ClAdiSu-62">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="702" y="1191" />
+              <mxPoint x="3941" y="1236" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-82" value="Return Upload Status" style="curved=1;startArrow=none;endArrow=block;exitX=0.65;exitY=0;entryX=0.66;entryY=1;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-64" target="JdKzo7E8qvSN7ClAdiSu-60">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="783" y="1075" />
+              <mxPoint x="1766" y="1039" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-83" value="Request Resume Update" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.43;entryX=0.33;entryY=1;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-60" target="JdKzo7E8qvSN7ClAdiSu-61">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="3379" y="914" />
+              <mxPoint x="3379" y="577" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-84" value="Call Resume Optimization" style="curved=1;startArrow=none;endArrow=block;exitX=0;exitY=0.64;entryX=1;entryY=0.43;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-61" target="JdKzo7E8qvSN7ClAdiSu-65">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2692" y="577" />
+              <mxPoint x="2692" y="765" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-85" value="Enhance Resume" style="curved=1;startArrow=none;endArrow=block;exitX=0;exitY=0.76;entryX=0.19;entryY=0;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-65" target="JdKzo7E8qvSN7ClAdiSu-66">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="802" y="869" />
+              <mxPoint x="802" y="914" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-86" value="Validate ATS Compliance" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.34;entryY=0;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-66" target="JdKzo7E8qvSN7ClAdiSu-67">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="970" y="1075" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-87" value="Return Updated Resume" style="curved=1;startArrow=none;endArrow=block;exitX=0.66;exitY=0;entryX=0.11;entryY=1;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-66" target="JdKzo7E8qvSN7ClAdiSu-65">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1055" y="914" />
+              <mxPoint x="1055" y="869" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-88" value="Store Optimized Resume" style="curved=1;startArrow=none;endArrow=block;exitX=0.86;exitY=1;entryX=0.48;entryY=0.01;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-65" target="JdKzo7E8qvSN7ClAdiSu-62">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1368" y="869" />
+              <mxPoint x="1368" y="1191" />
+              <mxPoint x="4040" y="1236" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-89" value="Return Update Status" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.93;entryX=0;entryY=0.09;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-65" target="JdKzo7E8qvSN7ClAdiSu-60">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1467" y="869" />
+              <mxPoint x="1467" y="914" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-90" value="Submit Job Description" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.44;entryX=0.8;entryY=1;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-60" target="JdKzo7E8qvSN7ClAdiSu-61">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="3572" y="914" />
+              <mxPoint x="3572" y="577" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-91" value="Process Job Matching" style="curved=1;startArrow=none;endArrow=block;exitX=0;exitY=0.6;entryX=1;entryY=0.47;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-61" target="JdKzo7E8qvSN7ClAdiSu-68">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2399" y="577" />
+              <mxPoint x="2399" y="613" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-92" value="Extract Key Requirements" style="curved=1;startArrow=none;endArrow=block;exitX=0.11;exitY=1;entryX=0.5;entryY=0;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-68" target="JdKzo7E8qvSN7ClAdiSu-69">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="151" y="729" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-93" value="Resume Matcher API" style="curved=1;startArrow=none;endArrow=block;exitX=0.51;exitY=1;entryX=0.82;entryY=0;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-68" target="JdKzo7E8qvSN7ClAdiSu-67">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="283" y="729" />
+              <mxPoint x="283" y="869" />
+              <mxPoint x="1237" y="914" />
+              <mxPoint x="1237" y="1075" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-94" value="ATS Compliance Scoring" style="curved=1;startArrow=none;endArrow=block;exitX=0.85;exitY=1;entryX=0;entryY=0.38;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-68" target="JdKzo7E8qvSN7ClAdiSu-65">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="390" y="729" />
+              <mxPoint x="390" y="765" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-95" value="Return Matching Results" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.48;entryX=0;entryY=0.62;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-68" target="JdKzo7E8qvSN7ClAdiSu-61">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2584" y="613" />
+              <mxPoint x="2584" y="577" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-96" value="Send Matching Results" style="curved=1;startArrow=none;endArrow=block;exitX=0;exitY=0.67;entryX=1;entryY=0.4;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-61" target="JdKzo7E8qvSN7ClAdiSu-60">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="2806" y="577" />
+              <mxPoint x="2806" y="914" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-97" value="Log Job Application" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.45;entryX=1;entryY=0.85;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-60" target="JdKzo7E8qvSN7ClAdiSu-61">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="3749" y="914" />
+              <mxPoint x="3749" y="577" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-98" value="Validate &amp; Store Application" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.67;entryX=0.51;entryY=0.01;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-61" target="JdKzo7E8qvSN7ClAdiSu-62">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="4060" y="577" />
+              <mxPoint x="4060" y="1236" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-99" value="Return Application Status" style="curved=1;startArrow=none;endArrow=block;exitX=0;exitY=0.74;entryX=1;entryY=0.42;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-61" target="JdKzo7E8qvSN7ClAdiSu-60">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="3000" y="577" />
+              <mxPoint x="3000" y="914" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-100" value="Data Storage" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1.01;entryX=0;entryY=0.31;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-62" target="JdKzo7E8qvSN7ClAdiSu-70">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="4052" y="1433" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-101" value="Deploy Backend" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.6;entryX=0.58;entryY=0.01;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-61" target="JdKzo7E8qvSN7ClAdiSu-70">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="4483" y="577" />
+              <mxPoint x="4483" y="1433" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-102" value="Deploy Frontend" style="curved=1;startArrow=none;endArrow=block;exitX=0.43;exitY=1;entryX=0.96;entryY=0.01;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-58" target="JdKzo7E8qvSN7ClAdiSu-70">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="1832" y="271" />
+              <mxPoint x="1832" y="1039" />
+              <mxPoint x="4604" y="1075" />
+              <mxPoint x="4604" y="1433" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-103" value="Secure Data Flow" style="curved=1;startArrow=none;endArrow=block;exitX=1;exitY=0.62;entryX=0.8;entryY=0;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-61" target="JdKzo7E8qvSN7ClAdiSu-63">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="4360" y="577" />
+              <mxPoint x="4360" y="613" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="JdKzo7E8qvSN7ClAdiSu-104" value="Encrypt &amp; Protect User Data" style="curved=1;startArrow=none;endArrow=block;exitX=0.5;exitY=1;entryX=0.89;entryY=0.01;rounded=0;" edge="1" parent="1" source="JdKzo7E8qvSN7ClAdiSu-63" target="JdKzo7E8qvSN7ClAdiSu-62">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="4269" y="1236" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

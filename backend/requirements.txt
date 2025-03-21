@@ -1,0 +1,6 @@
+python-multipart
+fastapi
+uvicorn
+python-dotenv
+psycopg2-binary # PostgreSQL
+psycopg2
