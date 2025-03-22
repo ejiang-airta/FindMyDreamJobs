@@ -18,5 +18,9 @@ alembic.ini
 # development file/folders:
 dev tracking/
 results/
-job_*.*
-testing*.*
+job_Listing*.json
+job_outputs.txt
+testing*.py
+
+# skip the resume upload folder:
+uploads/
