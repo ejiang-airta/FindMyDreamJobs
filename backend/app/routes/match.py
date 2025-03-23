@@ -6,6 +6,7 @@ from app.models.job import Job
 from app.models.match import JobMatch
 from datetime import datetime
 import re
+from app.ai.ats_scoring import calculate_ats_score
 
 router = APIRouter()
 
@@ -15,6 +16,23 @@ def get_db():
         yield db
     finally:
         db.close()
+
+# The calculate_ats_score function based on resume_text and returns: before_score and after_score.
+@router.post("/ats-score", tags=["ATS Optimization"]) 
+def ats_score(resume_id: int, db: Session = Depends(get_db)):
+    resume = db.query(Resume).filter(Resume.id == resume_id).first()
+
+    if not resume:
+        return {"error": "Resume not found."}
+
+    before_score, after_score = calculate_ats_score(resume.parsed_text)
+
+    return {
+        "resume_id": resume.id,
+        "ats_score_before": before_score,
+        "ats_score_after": after_score,
+        "message": "This is a simulated ATS score from ai/ats_scoring.py"
+    }        
 
 @router.post("/match-score", tags=["Job Matches"])
 def calculate_match(resume_id: int, job_id: int, db: Session = Depends(get_db)):
