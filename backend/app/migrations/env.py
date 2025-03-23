@@ -7,6 +7,8 @@ import os
 # Ensure Python can find the app modules
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
+print
+
 # Import app settings and DB connection
 from app.config.settings import DATABASE_URL
 from app.database.connection import Base  # ✅ Ensure Base is imported

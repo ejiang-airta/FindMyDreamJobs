@@ -27,3 +27,7 @@ def get_applications(db: Session = Depends(get_db)):
         }
         for app in apps
     ]
+# application tracking
+@router.post("/log")
+def log_application(job_id: int, user_id: int):
+    return {"application_id": 301, "message": "Application logged"}
