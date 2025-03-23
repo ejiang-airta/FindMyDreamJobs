@@ -24,3 +24,4 @@ testing*.py
 
 # skip the resume upload folder:
 uploads/
+node_modules
