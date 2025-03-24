@@ -24,4 +24,12 @@ testing*.py
 
 # skip the resume upload folder:
 uploads/
+
+# skip the node_modules folder for the frontend:
 node_modules
+dist/
+*.log
+
+# exclude the temp files for "npm run dev"
+.next/
+
