@@ -1,12 +1,9 @@
-//✅ Page for uploading resume
-
-import ResumeUploadForm from "@/components/ResumeUploadForm"
+import UploadResume from '@/components/UploadResume'
 
 export default function UploadPage() {
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6">
-      <h1 className="text-2xl font-bold mb-4">Upload Your Resume</h1>
-      <ResumeUploadForm />
-    </div>
+    <main className="flex justify-center items-center h-screen">
+      <UploadResume />
+    </main>
   )
 }

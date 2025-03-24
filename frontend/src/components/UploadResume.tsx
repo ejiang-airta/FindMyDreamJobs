@@ -1,68 +1,72 @@
- //✅ Resume Upload UI
+//✅ Resume Upload UI
 'use client'
 
 import React, { useState } from 'react'
-import { Card, CardContent } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Alert, AlertDescription } from "@/components/ui/alert"
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { Label } from '@/components/ui/label'
+import { Alert, AlertDescription } from '@/components/ui/alert'
 
-export default function ResumeUploadForm() {
+const UploadResume: React.FC = () => {
   const [file, setFile] = useState<File | null>(null)
-  const [uploadStatus, setUploadStatus] = useState<"idle" | "uploading" | "success" | "error">("idle")
+  const [status, setStatus] = useState<string | null>(null)
 
   const handleUpload = async () => {
-    if (!file) return
-
-    setUploadStatus("uploading")
+    if (!file) {
+      setStatus('Please select a file to upload.')
+      return
+    }
 
     const formData = new FormData()
-    formData.append("resume", file)
+    formData.append("file", file) // ✅ MUST use "file"
+    formData.append("user_id", "1")  // 👈 Add this line!
+
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/upload-resume", {
-        method: "POST",
+      const response = await fetch('http://localhost:8000/upload-resume', {
+        method: 'POST',
         body: formData,
       })
 
-      if (res.ok) {
-        setUploadStatus("success")
+      const result = await response.json()
+
+      if (response.ok) {
+        setStatus(`✅ Upload successful! Resume ID: ${result.resume_id}`)
       } else {
-        setUploadStatus("error")
+        setStatus(`❌ Upload failed: ${result.detail || 'Unknown error.'}`)
       }
-    } catch (error) {
-      console.error("Upload failed:", error)
-      setUploadStatus("error")
+    } catch (err: any) {
+      const message = err?.response?.data?.error || err.message || "Unexpected error occurred."
+      console.error("Upload error:", err)
+      setError(message)
     }
   }
 
   return (
-    <Card className="p-6">
-      <CardContent className="space-y-4">
-        <Label htmlFor="resume">Upload Resume</Label>
+    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md space-y-4">
+      <h2 className="text-2xl font-semibold">Upload Resume</h2>
+
+      <div className="space-y-2">
+        <Label htmlFor="resumeFile">Select Resume File</Label>
         <Input
+          id="resumeFile"
           type="file"
-          id="resume"
           accept=".pdf,.doc,.docx,.txt"
           onChange={(e) => setFile(e.target.files?.[0] || null)}
         />
+      </div>
 
-        <Button onClick={handleUpload} disabled={!file || uploadStatus === "uploading"}>
-          {uploadStatus === "uploading" ? "Uploading..." : "Upload"}
-        </Button>
+      <Button className="w-full mt-4" onClick={handleUpload}>
+        Upload Resume
+      </Button>
 
-        {uploadStatus === "success" && (
-          <Alert variant="default">
-            <AlertDescription>✅ Resume uploaded successfully!</AlertDescription>
-          </Alert>
-        )}
-        {uploadStatus === "error" && (
-          <Alert variant="destructive">
-            <AlertDescription>❌ Upload failed. Please try again.</AlertDescription>
-          </Alert>
-        )}
-      </CardContent>
-    </Card>
+      {status && (
+        <Alert variant="destructive">
+          <AlertDescription>{status}</AlertDescription>
+        </Alert>
+      )}
+    </div>
   )
 }
+
+export default UploadResume
