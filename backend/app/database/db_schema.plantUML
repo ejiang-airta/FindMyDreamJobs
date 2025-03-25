@@ -1,0 +1,75 @@
+@startuml
+
+entity USERS {
+    * id : int (PK)
+    --
+    full_name : string
+    email : string (UNIQUE)
+    hashed_password : string
+    created_at : datetime (UTC)
+    updated_at : datetime (UTC)
+}
+
+entity RESUMES {
+    * id : int (PK)
+    --
+    user_id : int (FK)
+    file_path : string
+    parsed_text : string
+    optimized_text : text
+    is_ai_generated : boolean
+    is_user_approved : boolean
+    ats_score_before : float
+    ats_score_after : float
+    created_at : datetime (UTC)
+}
+
+entity JOBS {
+    * id : int (PK)
+    --
+    job_title : string
+    company_name : string
+    location : string
+    job_description : text
+    job_url : string
+    extracted_skills : text
+    posted_at : datetime (nullable)
+    added_at : datetime (UTC)
+}
+
+entity JOB_MATCHES {
+    * id : int (PK)
+    --
+    user_id : int (FK)
+    job_id : int (FK)
+    resume_id : int (FK)
+    match_score : float
+    matched_skills : text
+    missing_skills : text
+    ats_score_before : float
+    ats_score_after : float
+    created_at : datetime (UTC)
+    calculated_at : datetime (UTC)
+}
+
+entity APPLICATIONS {
+    * id : int (PK)
+    --
+    user_id : int (FK)
+    job_id : int (FK)
+    resume_id : int (FK)
+    application_url : string
+    application_status : string
+    applied_date : datetime
+}
+
+USERS ||--|{ RESUMES : owns
+USERS ||--|{ JOBS : adds
+USERS ||--|{ JOB_MATCHES : generates
+USERS ||--|{ APPLICATIONS : submits
+JOBS ||--|{ JOB_MATCHES : relates
+RESUMES ||--|{ JOB_MATCHES : used_for
+JOBS ||--|{ APPLICATIONS : tracks
+RESUMES ||--|{ APPLICATIONS : used_in
+
+@enduml
