@@ -4,3 +4,5 @@ uvicorn
 python-dotenv
 psycopg2-binary # PostgreSQL
 psycopg2
+pdfplumber
+python-docx

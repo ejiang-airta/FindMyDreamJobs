@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database.connection import SessionLocal
 from app.models.resume import Resume
@@ -6,10 +6,11 @@ from app.models.job import Job
 from app.models.match import JobMatch
 from datetime import datetime
 import re
-from app.ai.ats_scoring import calculate_ats_score
+from pydantic import BaseModel
 
 router = APIRouter()
 
+# Database Dependency
 def get_db():
     db = SessionLocal()
     try:
@@ -17,43 +18,36 @@ def get_db():
     finally:
         db.close()
 
-# The calculate_ats_score function based on resume_text and returns: before_score and after_score.
-@router.post("/ats-score", tags=["ATS Optimization"]) 
-def ats_score(resume_id: int, db: Session = Depends(get_db)):
-    resume = db.query(Resume).filter(Resume.id == resume_id).first()
+# ✅ Request Model for `/match-score`
+class MatchRequest(BaseModel):
+    resume_id: int
+    job_id: int
 
-    if not resume:
-        return {"error": "Resume not found."}
-
-    before_score, after_score = calculate_ats_score(resume.parsed_text)
-
-    return {
-        "resume_id": resume.id,
-        "ats_score_before": before_score,
-        "ats_score_after": after_score,
-        "message": "This is a simulated ATS score from ai/ats_scoring.py"
-    }        
-
+# 🔹 API: Calculate Resume-JD Match Score
 @router.post("/match-score", tags=["Job Matches"])
-def calculate_match(resume_id: int, job_id: int, db: Session = Depends(get_db)):
-    resume = db.query(Resume).filter(Resume.id == resume_id).first()
-    job = db.query(Job).filter(Job.id == job_id).first()
+def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
+    resume = db.query(Resume).filter(Resume.id == request.resume_id).first()
+    job = db.query(Job).filter(Job.id == request.job_id).first()
 
     if not resume or not job:
-        return {"error": "Resume or Job not found."}
+        raise HTTPException(status_code=404, detail="Resume or Job not found.")
 
     resume_text = resume.parsed_text.lower()
     jd_text = job.job_description.lower()
 
     # Extract keywords from JD
-    jd_keywords = re.findall(r"\b(python|fastapi|sql|aws|docker|react|node|postgre|git)\b", jd_text)
+    jd_keywords = set(re.findall(r"\b(python|fastapi|sql|aws|docker|react|node|postgre|git)\b", jd_text))
     jd_keywords_set = set(jd_keywords)
+    print("🔍 Extracted JD Keywords:", jd_keywords_set)  # 👈 Debugging Print
+
 
     # Count matches in resume
     resume_matches = [kw for kw in jd_keywords_set if kw in resume_text]
-    score = round((len(resume_matches) / len(jd_keywords_set)) * 100, 2) if jd_keywords_set else 0
+    print("✅ Matched Resume Keywords:", resume_matches)  # 👈 Debugging Print
 
-    # Optional: save match record
+    score = round((len(resume_matches) / max(len(jd_keywords), 1)) * 100, 2)  # Avoid zero division
+
+    # ✅ Save match record
     match = JobMatch(
         user_id=resume.user_id,
         job_id=job.id,
@@ -73,6 +67,7 @@ def calculate_match(resume_id: int, job_id: int, db: Session = Depends(get_db)):
         "match_id": match.id
     }
 
+# 🔹 API: Get All Matches
 @router.get("/matches", tags=["Job Matches"])
 def get_matches(db: Session = Depends(get_db)):
     matches = db.query(JobMatch).all()
