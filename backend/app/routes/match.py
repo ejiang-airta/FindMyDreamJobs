@@ -4,9 +4,10 @@ from app.database.connection import SessionLocal
 from app.models.resume import Resume
 from app.models.job import Job
 from app.models.match import JobMatch
-from datetime import datetime
+from datetime import datetime, timezone
 import re
 from pydantic import BaseModel
+import random
 
 router = APIRouter()
 
@@ -43,18 +44,23 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
 
     # Count matches in resume
     resume_matches = [kw for kw in jd_keywords_set if kw in resume_text]
+    missing_skills = list(jd_keywords_set - set(resume_matches))
     print("✅ Matched Resume Keywords:", resume_matches)  # 👈 Debugging Print
 
     score = round((len(resume_matches) / max(len(jd_keywords), 1)) * 100, 2)  # Avoid zero division
 
-    # ✅ Save match record
+    # ✅ Save match record 
     match = JobMatch(
         user_id=resume.user_id,
         job_id=job.id,
         resume_id=resume.id,
         match_score=score,
-        created_at=datetime.now()
+        matched_skills=",".join(resume_matches),  # ✅ Store matched skills
+        missing_skills=",".join(missing_skills),  # ✅ Store missing skills
+        created_at=datetime.now(timezone.utc),  # ✅ Use timezone-aware datetime
+        calculated_at=datetime.now(timezone.utc)  # ✅ Ensure timestamp is stored
     )
+
     db.add(match)
     db.commit()
     db.refresh(match)
@@ -64,8 +70,10 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
         "job_id": job.id,
         "match_score": score,
         "keywords_matched": resume_matches,
+        "missing_skills": missing_skills,
         "match_id": match.id
     }
+
 
 # 🔹 API: Get All Matches
 @router.get("/matches", tags=["Job Matches"])
