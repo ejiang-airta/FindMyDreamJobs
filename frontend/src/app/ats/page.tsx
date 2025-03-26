@@ -20,18 +20,15 @@ export default function ATSPage() {
     setError("")
     setScoreData(null)
 
-    if (!resumeId) {
-      setError("Please enter a valid Resume ID.")
+    if (!resumeId || isNaN(Number(resumeId)) || Number(resumeId) < 1) {
+      setError("⚠️ Please enter a valid Resume ID (positive number).")
       return
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:8000/ats-score", {
+      const response = await fetch(`http://127.0.0.1:8000/ats-score?resume_id=${resumeId}`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ resume_id: parseInt(resumeId) })
+        headers: { "Content-Type": "application/json" }
       })
       
       if (parseInt(resumeId) < 1) {
@@ -39,18 +36,19 @@ export default function ATSPage() {
         return;
       }
       
-      if (!res.ok) {
-        setError("Failed to fetch ATS score.")
+      if (!response.ok) {
+        const errorData = await response.json()
+        setError(`❌ Error: ${errorData.detail || 'Failed to fetch ATS score.'}`)
         return
       }
 
-      const data = await res.json()
+      const data = await response.json()
       setScoreData(data)
     } catch (err: any) {
         if (err.response && err.response.data && err.response.data.error) {
           setError(err.response.data.error)
         } else {
-          setError("Unexpected error occurred.")
+          setError("❌ Network error. Please try again.")
         }
         console.error("API error:", err)
       }
@@ -58,7 +56,7 @@ export default function ATSPage() {
 
   return (
     <div className="max-w-xl mx-auto mt-10 space-y-6">
-      <h1 className="text-2xl font-bold">ATS Compliance Checker</h1>
+      <h1 className="text-2xl font-bold"> ATS Compliance Checker</h1>
       <p className="text-muted-foreground text-sm">
         Enter your resume ID to check its ATS optimization score before and after enhancement.
       </p>
