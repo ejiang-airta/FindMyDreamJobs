@@ -13,8 +13,8 @@ class Resume(Base):
     optimized_text = Column(Text, nullable=True)  # AI-enhanced resume
     is_ai_generated = Column(Boolean, default=False)
     is_user_approved = Column(Boolean, default=False)   
-    ats_score_before = Column(Float, nullable=True)  # ✅ New ATS Score Before
-    ats_score_after = Column(Float, nullable=True)   # ✅ New ATS Score After
+    ats_score_initial = Column(Float, nullable=True)  # ✅ New ATS Score Before
+    ats_score_final = Column(Float, nullable=True)   # ✅ New ATS Score After
 
 
     #The lambda function is called each time a new row is inserted, ensuring that each row gets the current date and time at the moment of insertion. 

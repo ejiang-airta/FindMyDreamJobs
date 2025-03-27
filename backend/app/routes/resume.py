@@ -105,6 +105,8 @@ def get_resumes(db: Session = Depends(get_db)):
             "file_path": resume.file_path,
             "parsed_text": resume.parsed_text,
             "created_at": resume.created_at,
+            "ats_score_initial": resume.ats_score_initial,  # ✅ Must be included
+            "ats_score_final": resume.ats_score_final,      # ✅ Must be included
         }
         for resume in resumes
     ]

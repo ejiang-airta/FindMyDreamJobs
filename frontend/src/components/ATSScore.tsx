@@ -32,8 +32,8 @@ export default function ATSScore() {
       const result = await response.json()
 
       if (response.ok) {
-        setAtsBefore(result.ats_score_before)
-        setAtsAfter(result.ats_score_after)
+        setAtsBefore(result.ats_score_initial)
+        setAtsAfter(result.ats_score_final)
       } else {
         setError(`❌ Error: ${result.detail || 'Failed to fetch ATS score'}`)
       }

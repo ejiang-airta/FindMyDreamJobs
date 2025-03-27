@@ -54,7 +54,7 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
         user_id=resume.user_id,
         job_id=job.id,
         resume_id=resume.id,
-        match_score=score,
+        match_score_initial=score,  # ✅ Updated field name
         matched_skills=",".join(resume_matches),  # ✅ Store matched skills
         missing_skills=",".join(missing_skills),  # ✅ Store missing skills
         created_at=datetime.now(timezone.utc),  # ✅ Use timezone-aware datetime
@@ -68,7 +68,7 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
     return {
         "resume_id": resume.id,
         "job_id": job.id,
-        "match_score": score,
+        "match_score_initial": score,
         "keywords_matched": resume_matches,
         "missing_skills": missing_skills,
         "match_id": match.id

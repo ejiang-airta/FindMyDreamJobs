@@ -1,15 +1,14 @@
-from fastapi import APIRouter, UploadFile, File, Depends, Form
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database.connection import SessionLocal
 from app.models.resume import Resume
-from datetime import datetime
-import os
-import uuid
-from app.config.settings import UPLOAD_DIR
+from app.models.match import JobMatch
+from app.services.resume_optimizer import optimize_resume
+from datetime import datetime, timezone
 
 router = APIRouter()
 
-UPLOAD_DIR = "uploads/resumes"
+# Database Dependency
 def get_db():
     db = SessionLocal()
     try:
@@ -17,23 +16,29 @@ def get_db():
     finally:
         db.close()
 
-@router.post("/optimize-resume", tags=["AI Resume Optimization"])
-def optimize_resume(resume_id: int, db: Session = Depends(get_db)):
+# 🔹 API: Optimize Resume & Update Final ATS & Match Score
+@router.post("/optimize-resume", tags=["AI Optimization"])
+def optimize_resume(resume_id: int, job_id: int, db: Session = Depends(get_db)):
+
     resume = db.query(Resume).filter(Resume.id == resume_id).first()
+    job_match = db.query(JobMatch).filter(
+        JobMatch.resume_id == resume_id, JobMatch.job_id == job_id
+    ).first()
 
-    if not resume:
-        return {"error": "Resume not found."}
+    if not resume or not job_match:
+        raise HTTPException(status_code=404, detail="Resume or Job Match not found.")
 
-    # Very simple "optimized" version (placeholder)
-    optimized = resume.parsed_text + "\n\n[Optimized by AI ✅]"
+    # ✅ AI Enhancement
+    optimized_text = optimize_resume(resume.parsed_text, job_match.missing_skills)
 
-    resume.optimized_text = optimized
+    # ✅ Update Resume
+    resume.optimized_text = optimized_text
     resume.is_ai_generated = True
+    resume.ats_score_final = job_match.ats_score_final    # Sync scores
     db.commit()
-    db.refresh(resume)
 
     return {
         "resume_id": resume.id,
-        "optimized_text": optimized,
-        "message": "Resume optimized with placeholder AI logic."
+        "optimized": True,
+        "message": "Resume optimized successfully."
     }

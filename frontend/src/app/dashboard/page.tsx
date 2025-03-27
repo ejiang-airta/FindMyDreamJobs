@@ -63,7 +63,10 @@ export default function DashboardPage() {
               <div key={resume.id} className="border p-3 rounded-md">
                 <p><strong>ID:</strong> {resume.id}</p>
                 <p><strong>Uploaded:</strong> {new Date(resume.created_at).toLocaleString()}</p>
-                <p><strong>ATS Score:</strong> {resume.ats_score_before}% → {resume.ats_score_after}%</p>
+                <p><strong>ATS Score:</strong> 
+                {resume.ats_score_initial !== null ? `${resume.ats_score_initial}%` : '—'} → 
+                {resume.ats_score_final !== null ? `${resume.ats_score_final}%` : '—'}
+                </p>
               </div>
             ))
           ) : (

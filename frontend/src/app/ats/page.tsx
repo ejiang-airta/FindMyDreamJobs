@@ -10,8 +10,8 @@ import { Label } from '@/components/ui/label'
 export default function ATSPage() {
   const [resumeId, setResumeId] = useState("")
   const [scoreData, setScoreData] = useState<null | {
-    ats_score_before: number
-    ats_score_after: number
+    ats_score_initial: number
+    ats_score_final: number
     message: string
   }>(null)
   const [error, setError] = useState("")
@@ -43,6 +43,7 @@ export default function ATSPage() {
       }
 
       const data = await response.json()
+      console.log("✅ ATS Score API Response:", data)
       setScoreData(data)
     } catch (err: any) {
         if (err.response && err.response.data && err.response.data.error) {
@@ -82,11 +83,11 @@ export default function ATSPage() {
             </Alert>
           )}
 
-          {scoreData && (
+          {scoreData && (  
             <Alert variant="default">
               <AlertDescription>
-                ✅ <strong>Before:</strong> {scoreData.ats_score_before}% &nbsp;
-                🔧 <strong>After:</strong> {scoreData.ats_score_after}% <br />
+                ✅ <strong>Before:</strong> {scoreData.ats_score_initial ?? '--'}% &nbsp;
+                🔧 <strong>After:</strong>  {scoreData.ats_score_final ?? '--'}%
                 <span className="text-muted-foreground text-xs">{scoreData.message}</span>
               </AlertDescription>
             </Alert>

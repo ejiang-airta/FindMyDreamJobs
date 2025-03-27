@@ -6,8 +6,8 @@ entity USERS {
     full_name : string
     email : string (UNIQUE)
     hashed_password : string
-    created_at : datetime (UTC)
-    updated_at : datetime (UTC)
+    created_at : datetime (immutable)
+    updated_at : datetime
 }
 
 entity RESUMES {
@@ -15,26 +15,27 @@ entity RESUMES {
     --
     user_id : int (FK)
     file_path : string
-    parsed_text : string
-    optimized_text : text
-    is_ai_generated : boolean
-    is_user_approved : boolean
-    ats_score_before : float
-    ats_score_after : float
-    created_at : datetime (UTC)
+    parsed_text : text  // Initial parsed text from resume (Original)
+    optimized_text : text // AI-enhanced resume (Optimized)
+    is_ai_generated : boolean // ✅ True if AI optimized resume
+    is_user_approved : boolean // ✅ True if user approves AI resume
+    ats_score_initial : float // ✅ ATS score before optimization
+    ats_score_final : float // ✅ ATS score after AI optimization
+    created_at : datetime (immutable)
+    updated_at : datetime
 }
 
 entity JOBS {
     * id : int (PK)
     --
+    user_id : int (FK) // ✅ Tracks who posted the job
     job_title : string
-    company_name : string
-    location : string
     job_description : text
+    company_name : string
+    extracted_skills : text // ✅ Skills extracted from JD
     job_url : string
-    extracted_skills : text
-    posted_at : datetime (nullable)
-    added_at : datetime (UTC)
+    created_at : datetime (immutable)
+    updated_at : datetime
 }
 
 entity JOB_MATCHES {
@@ -43,13 +44,13 @@ entity JOB_MATCHES {
     user_id : int (FK)
     job_id : int (FK)
     resume_id : int (FK)
-    match_score : float
-    matched_skills : text
-    missing_skills : text
-    ats_score_before : float
-    ats_score_after : float
-    created_at : datetime (UTC)
-    calculated_at : datetime (UTC)
+    match_score_initial : float // ✅ Score before AI optimization
+    match_score_final : float // ✅ Score after AI optimization
+    ats_score_initial : float // ✅ ATS score before optimization (tracked per job)
+    ats_score_final : float // ✅ ATS score after optimization (tracked per job)
+    matched_skills : text // ✅ Skills found in resume
+    missing_skills : text // ✅ Skills missing in resume
+    calculated_at : datetime
 }
 
 entity APPLICATIONS {
@@ -59,17 +60,17 @@ entity APPLICATIONS {
     job_id : int (FK)
     resume_id : int (FK)
     application_url : string
-    application_status : string
+    application_status : string // ✅ ("Not Applied", "In Progress", "Rejected", "Offered")
     applied_date : datetime
+    updated_at : datetime
 }
 
-USERS ||--|{ RESUMES : owns
-USERS ||--|{ JOBS : adds
+USERS ||--|{ RESUMES : uploads
+USERS ||--|{ JOBS : posts
 USERS ||--|{ JOB_MATCHES : generates
 USERS ||--|{ APPLICATIONS : submits
 JOBS ||--|{ JOB_MATCHES : relates
 RESUMES ||--|{ JOB_MATCHES : used_for
 JOBS ||--|{ APPLICATIONS : tracks
-RESUMES ||--|{ APPLICATIONS : used_in
 
 @enduml

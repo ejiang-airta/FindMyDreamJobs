@@ -9,11 +9,12 @@ class JobMatch(Base):
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # ✅ Add ForeignKey
     job_id = Column(Integer, ForeignKey("jobs.id"), nullable=False)
     resume_id = Column(Integer, ForeignKey("resumes.id"), nullable=False)
-    match_score = Column(Float, nullable=False)  
+    match_score_initial = Column(Float, nullable=False)  
+    match_score_final = Column(Float, nullable=True)  
     matched_skills = Column(Text, nullable=True) # ✅ Add matched_skills : text
     missing_skills = Column(Text, nullable=True) # ✅ Add missing_skills : text
-    ats_score_before = Column(Float, nullable=True)  # ✅ Ensure ATS Score fields exist
-    ats_score_after = Column(Float, nullable=True)   # ✅ Ensure ATS Score fields exist
+    ats_score_initial = Column(Float, nullable=True)  # ✅ Ensure ATS Score fields exist
+    ats_score_final = Column(Float, nullable=True)   # ✅ Ensure ATS Score fields exist
     
     #The lambda function is called each time a new row is inserted, ensuring that each row gets the current date and time at the moment of insertion. 
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
@@ -23,6 +24,3 @@ class JobMatch(Base):
     user = relationship("User", back_populates="job_matches")  # ✅ Track job matches per user
     job = relationship("Job", back_populates="job_matches")  # ✅ Link job matches to jobs
     resume = relationship("Resume", back_populates="job_matches")  # ✅ Track resume used in match
-
-    
-
