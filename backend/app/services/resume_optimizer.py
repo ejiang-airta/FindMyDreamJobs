@@ -1,10 +1,22 @@
-def optimize_resume(original_text: str, missing_skills: str) -> str:
-    """
-    AI Enhancement: Inserts missing skills naturally into the resume text.
-    """
-    if not missing_skills:
-        return original_text  # No changes if no missing skills
+# ✅ File: app/services/resume_optimizer.py
+from app.ai.optimizer import optimize_resume_with_skills
+import logging
 
-    enhancements = f"\n\n### Optimization Enhancements:\nWe have enhanced the resume by adding context for missing skills: {missing_skills}."
+# Setup the logger
+logger = logging.getLogger(__name__)
 
-    return original_text + enhancements
+
+# This acts as a pass-through for now, but can evolve in future
+def optimize_resume_with_skills_service(resume_text: str, job_description: str, emphasized_skills: list[str], justification: str) -> str:
+    # Log the optimization process:
+    logger.debug("Delegating optimization to AI logic layer.")
+    logger.info(f"Optimizing resume with {len(emphasized_skills)} emphasized skills.")
+   
+    return optimize_resume_with_skills(
+        resume_text=resume_text,
+        job_description=job_description,
+        emphasized_skills=emphasized_skills,
+        justification=justification
+    )
+
+

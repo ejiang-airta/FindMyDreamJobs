@@ -1,10 +1,18 @@
+# ✅ File: app/routes/ai_optimization.py
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database.connection import SessionLocal
 from app.models.resume import Resume
 from app.models.match import JobMatch
-from app.services.resume_optimizer import optimize_resume
+from app.models.job import Job
+from app.services.resume_optimizer import optimize_resume_with_skills_service
+from app.services.ats_scoring import calculate_ats_score
 from datetime import datetime, timezone
+from typing import List
+import logging
+
+# Setup the logger
+logger = logging.getLogger(__name__)
 
 router = APIRouter()
 
@@ -17,28 +25,91 @@ def get_db():
         db.close()
 
 # 🔹 API: Optimize Resume & Update Final ATS & Match Score
-@router.post("/optimize-resume", tags=["AI Optimization"])
-def optimize_resume(resume_id: int, job_id: int, db: Session = Depends(get_db)):
-
+@router.post("/optimize-resume", tags=["Resume Optimization"])
+def optimize_resume(
+    resume_id: int,
+    job_id: int,
+    emphasized_skills: List[str],
+    justification: str,
+    db: Session = Depends(get_db)
+):
     resume = db.query(Resume).filter(Resume.id == resume_id).first()
-    job_match = db.query(JobMatch).filter(
-        JobMatch.resume_id == resume_id, JobMatch.job_id == job_id
+
+    job = db.query(Job).filter(Job.id == job_id).first()
+    match = db.query(JobMatch).filter(
+        JobMatch.resume_id == resume_id,
+        JobMatch.job_id == job_id
     ).first()
 
-    if not resume or not job_match:
-        raise HTTPException(status_code=404, detail="Resume or Job Match not found.")
+    if not resume or not job:
+        raise HTTPException(status_code=404, detail="Resume or Job not found.")
 
-    # ✅ AI Enhancement
-    optimized_text = optimize_resume(resume.parsed_text, job_match.missing_skills)
+    #  Generate optimized resume using emphasized skills + justification
+    optimized_text = optimize_resume_with_skills_service(
+        resume_text=resume.parsed_text,
+        job_description=job.job_description,
+        emphasized_skills=emphasized_skills,
+        justification=justification
+    )
+    # ✅ Recalculate ATS score from optimized text
+    _, ats_final = calculate_ats_score(optimized_text)
 
-    # ✅ Update Resume
+    # ✅ Recalculate match score final
+    jd_keywords = set(job.extracted_skills.lower().split(",")) if job.extracted_skills else set()
+    matched = [kw for kw in jd_keywords if kw in optimized_text.lower()]
+    match_score_final = round((len(matched) / max(len(jd_keywords), 1)) * 100, 2)
+
+    # 🔄 Update Resume table
+
     resume.optimized_text = optimized_text
+    resume.ats_score_final = ats_final
     resume.is_ai_generated = True
-    resume.ats_score_final = job_match.ats_score_final    # Sync scores
+    resume.is_user_approved = False
+    resume.updated_at = datetime.now(timezone.utc)
+
+    # 🔄 Update JobMatch table if exists
+    if match:
+        match.match_score_final = match_score_final
+        match.ats_score_final = ats_final
+        match.calculated_at = datetime.now(timezone.utc)
     db.commit()
+    
+# 🔹 API: Approve Final Resume
+@router.post("/approve-resume", tags=["Resume Approval"])
+def approve_optimized_resume(resume_id: int, db: Session = Depends(get_db)):
+    resume = db.query(Resume).filter(Resume.id == resume_id).first()
+
+    if not resume:
+        raise HTTPException(status_code=404, detail="Resume not found")
+
+    if not resume.optimized_text:
+        raise HTTPException(status_code=400, detail="Optimized resume not found. Please optimize first.")
+
+    resume.is_user_approved = True
+    resume.updated_at = datetime.now(timezone.utc)
+
+    db.commit()
+    db.refresh(resume)
 
     return {
         "resume_id": resume.id,
-        "optimized": True,
-        "message": "Resume optimized successfully."
+        "message": "✅ Resume approved and ready for application."
     }
+
+    # logging the optimization process:
+    logger.info(f"Starting resume optimization: resume_id={resume_id}, job_id={job_id}")
+    logger.debug(f"Optimized resume text: {optimized_text}")
+    logger.info(f"Resume optimization completed: resume_id={resume_id}, job_id={job_id}")
+    logger.info(f"ATS Score (Final): {ats_final}")
+    logger.info(f"Match Score (Final): {match_score_final}")
+    logger.info(f"Emphasized Skills: {emphasized_skills}")
+    logger.info(f"Justification: {justification}")
+
+    return {
+        "resume_id": resume.id,
+        "optimized_text": optimized_text,
+        "ats_score_final": ats_final,
+        "match_score_final": match_score_final,
+        "message": "✅ Resume optimized and scores updated successfully!"
+    }
+    
