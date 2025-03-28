@@ -85,7 +85,8 @@ def get_matches(db: Session = Depends(get_db)):
             "user_id": match.user_id,
             "job_id": match.job_id,
             "resume_id": match.resume_id,
-            "match_score": match.match_score,
+            "match_score_initial": match.match_score_initial,
+            "match_score_final": match.match_score_final,
             "created_at": match.created_at,
         }
         for match in matches

@@ -96,17 +96,21 @@ async def upload_resume(
 
 # 🔹 2. Get All Resumes
 @router.get("/resumes", tags=["Resumes"])
-def get_resumes(db: Session = Depends(get_db)):
+def get_all_resumes(db: Session = Depends(get_db)):
     resumes = db.query(Resume).all()
     return [
         {
-            "id": resume.id,
-            "user_id": resume.user_id,
-            "file_path": resume.file_path,
-            "parsed_text": resume.parsed_text,
-            "created_at": resume.created_at,
-            "ats_score_initial": resume.ats_score_initial,  # ✅ Must be included
-            "ats_score_final": resume.ats_score_final,      # ✅ Must be included
+            "id": r.id,
+            "user_id": r.user_id,
+            "file_path": r.file_path,
+            "parsed_text": r.parsed_text,
+            "optimized_text": r.optimized_text,
+            "is_ai_generated": r.is_ai_generated,
+            "is_user_approved": r.is_user_approved,
+            "ats_score_initial": r.ats_score_initial or 0,
+            "ats_score_final": r.ats_score_final or 0,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+            "updated_at": r.updated_at.isoformat() if r.updated_at else None,
         }
-        for resume in resumes
+        for r in resumes
     ]

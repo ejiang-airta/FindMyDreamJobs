@@ -6,8 +6,15 @@ from app.models.application import Application
 from app.models.resume import Resume
 from app.models.job import Job
 from datetime import datetime, timezone
+from pydantic import BaseModel
 
 router = APIRouter()
+
+# ✅ Request Model for `/submit-application`
+class ApplicationRequest(BaseModel):
+    resume_id: int
+    job_id: int
+    application_url: str
 
 # Database Dependency
 def get_db():
@@ -19,24 +26,18 @@ def get_db():
 
 # 🔹 API: Submit Job Application
 @router.post("/submit-application", tags=["Applications"])
-def submit_application(
-    resume_id: int,
-    job_id: int,
-    application_url: str,
-    db: Session = Depends(get_db)
-):
-    resume = db.query(Resume).filter(Resume.id == resume_id).first()
-    job = db.query(Job).filter(Job.id == job_id).first()
+def submit_application(req: ApplicationRequest, db: Session = Depends(get_db)):
+    resume = db.query(Resume).filter(Resume.id == req.resume_id).first()
+    job = db.query(Job).filter(Job.id == req.job_id).first()
 
     if not resume or not job:
         raise HTTPException(status_code=404, detail="Resume or Job not found.")
 
-    # Create application record
     application = Application(
         user_id=resume.user_id,
-        job_id=job_id,
-        resume_id=resume_id,
-        application_url=application_url,
+        job_id=req.job_id,
+        resume_id=req.resume_id,
+        application_url=req.application_url,
         application_status="In Progress",
         applied_date=datetime.now(timezone.utc)
     )
@@ -47,13 +48,13 @@ def submit_application(
 
     return {
         "application_id": application.id,
-        "job_id": job_id,
-        "resume_id": resume_id,
-        "application_url": application_url,
+        "job_id": req.job_id,
+        "resume_id": req.resume_id,
+        "application_url": req.application_url,
         "status": "✅ Application recorded successfully."
     }
 
-# 🔹 API: Update Application Status
+# ✅ API: Update Status
 @router.put("/update-application-status", tags=["Applications"])
 def update_application_status(application_id: int, status: str, db: Session = Depends(get_db)):
     application = db.query(Application).filter(Application.id == application_id).first()
@@ -64,9 +65,9 @@ def update_application_status(application_id: int, status: str, db: Session = De
     application.application_status = status
     db.commit()
 
-    return {"message": "Application status updated successfully"}
+    return {"message": "✅ Application status updated successfully."}
 
 # application tracking
 @router.post("/log")
 def log_application(job_id: int, user_id: int):
-    return {"application_id": 301, "message": "Application logged"}
+    return {"application_id": 301, "message": "📝 Application logged."}

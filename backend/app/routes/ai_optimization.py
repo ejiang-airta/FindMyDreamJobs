@@ -10,6 +10,7 @@ from app.services.ats_scoring import calculate_ats_score
 from datetime import datetime, timezone
 from typing import List
 import logging
+from pydantic import BaseModel
 
 # Setup the logger
 logger = logging.getLogger(__name__)
@@ -24,21 +25,24 @@ def get_db():
     finally:
         db.close()
 
+# ✅ Request Model for `/optimize-resume`
+class OptimizationRequest(BaseModel):
+    resume_id: int
+    job_id: int
+    emphasized_skills: List[str]
+    justification: str
+
 # 🔹 API: Optimize Resume & Update Final ATS & Match Score
 @router.post("/optimize-resume", tags=["Resume Optimization"])
 def optimize_resume(
-    resume_id: int,
-    job_id: int,
-    emphasized_skills: List[str],
-    justification: str,
+    payload: OptimizationRequest,
     db: Session = Depends(get_db)
 ):
-    resume = db.query(Resume).filter(Resume.id == resume_id).first()
-
-    job = db.query(Job).filter(Job.id == job_id).first()
+    resume = db.query(Resume).filter(Resume.id == payload.resume_id).first()
+    job = db.query(Job).filter(Job.id == payload.job_id).first()
     match = db.query(JobMatch).filter(
-        JobMatch.resume_id == resume_id,
-        JobMatch.job_id == job_id
+        JobMatch.resume_id == payload.resume_id,
+        JobMatch.job_id == payload.job_id
     ).first()
 
     if not resume or not job:
@@ -48,8 +52,8 @@ def optimize_resume(
     optimized_text = optimize_resume_with_skills_service(
         resume_text=resume.parsed_text,
         job_description=job.job_description,
-        emphasized_skills=emphasized_skills,
-        justification=justification
+        emphasized_skills=payload.emphasized_skills,
+        justification=payload.justification
     )
     # ✅ Recalculate ATS score from optimized text
     _, ats_final = calculate_ats_score(optimized_text)
@@ -73,6 +77,13 @@ def optimize_resume(
         match.ats_score_final = ats_final
         match.calculated_at = datetime.now(timezone.utc)
     db.commit()
+    return {
+        "resume_id": resume.id,
+        "optimized_text": optimized_text,
+        "ats_score_final": ats_final,
+        "match_score_final": match_score_final,
+        "message": "✅ Resume optimized and scores updated successfully!"
+    }
     
 # 🔹 API: Approve Final Resume
 @router.post("/approve-resume", tags=["Resume Approval"])
