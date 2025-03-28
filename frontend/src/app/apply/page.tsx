@@ -14,6 +14,12 @@ export default function ApplyPage() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
+  console.log({
+    resumeId,
+    jobId,
+    applicationUrl
+  })
+
   const handleSubmit = async () => {
     setMessage('')
     setError('')
@@ -48,7 +54,8 @@ export default function ApplyPage() {
       setError('❌ Network error. Please try again.')
     }
   }
-
+  
+  
   return (
     <div className="max-w-xl mx-auto mt-10 space-y-6">
       <h1 className="text-2xl font-bold">📩 Submit Job Application</h1>

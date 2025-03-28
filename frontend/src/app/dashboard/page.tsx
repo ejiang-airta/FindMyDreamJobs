@@ -36,8 +36,11 @@ export default function DashboardPage() {
       setMatches(data)
     } catch (err) {
       setError("❌ Error fetching matches.")
+    } finally {
+      console.log("📦 Match data:", matches)
     }
   }
+  
 
   return (
     <div className="max-w-4xl mx-auto mt-10 space-y-6">
@@ -88,7 +91,7 @@ export default function DashboardPage() {
             matches.map((match: any) => (
               <div key={match.id} className="border p-3 rounded-md">
                 <p><strong>Job ID:</strong> {match.job_id}</p>
-                <p><strong>Match Score:</strong> {match.match_score}%</p>
+                <p><strong>Match Score:</strong> {match.match_score_final ?? match.match_score_initial ?? '--'}%</p>
               </div>
             ))
           ) : (

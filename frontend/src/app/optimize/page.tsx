@@ -2,7 +2,7 @@
 
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -12,6 +12,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 
 export default function OptimizeResumePage() {
   const [resumeId, setResumeId] = useState('')
+  const [jobId, setJobId] = useState('')
   const [emphasized, setEmphasized] = useState('')
   const [missing, setMissing] = useState('')
   const [response, setResponse] = useState<any>(null)
@@ -28,14 +29,21 @@ export default function OptimizeResumePage() {
       return
     }
 
+    if (!jobId) {
+      setError('Please enter a valid Job ID.')
+      return
+    }
+
     try {
-      const res = await fetch('http://127.0.0.1:8000/ai/optimize-resume', {
+      const res = await fetch('http://127.0.0.1:8000/optimize-resume', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           resume_id: parseInt(resumeId),
+          job_id: parseInt(jobId),
           emphasized_skills: emphasized.split(',').map(s => s.trim()),
           missing_skills: missing.split(',').map(s => s.trim()),
+          justification: missing.trim()  // ✅ This line fixes 422 Unprocessable Entity!
         }),
       })
 
@@ -69,7 +77,13 @@ export default function OptimizeResumePage() {
             onChange={e => setResumeId(e.target.value)}
             placeholder="e.g., 6"
           />
-
+          <Label>Job ID</Label>
+          <Input
+            type="number"
+            value={jobId}
+            onChange={e => setJobId(e.target.value)}
+            placeholder="e.g., 1"
+          />
           <Label>🧠 Emphasized Skills (from JD)</Label>
           <Textarea
             rows={2}
@@ -90,9 +104,14 @@ export default function OptimizeResumePage() {
 
           {error && (
             <Alert variant="destructive">
-              <AlertDescription>{error}</AlertDescription>
+              <AlertDescription>
+                {typeof error === 'string'
+                  ? error
+                  : JSON.stringify(error, null, 2)}
+              </AlertDescription>
             </Alert>
           )}
+
 
           {response && (
             <Alert>
