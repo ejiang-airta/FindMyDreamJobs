@@ -13,7 +13,7 @@ import logging
 from pydantic import BaseModel
 
 # Setup the logger
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("app")
 
 router = APIRouter()
 
@@ -33,6 +33,7 @@ class OptimizationRequest(BaseModel):
     justification: str
 
 # 🔹 API: Optimize Resume & Update Final ATS & Match Score
+
 @router.post("/optimize-resume", tags=["Resume Optimization"])
 def optimize_resume(
     payload: OptimizationRequest,
@@ -77,6 +78,15 @@ def optimize_resume(
         match.ats_score_final = ats_final
         match.calculated_at = datetime.now(timezone.utc)
     db.commit()
+    # logging the optimization process:
+    logger.info(f"Starting resume optimization: resume_id={payload.resume_id}, job_id={payload.job_id}")
+    logger.debug(f"Optimized resume text: {optimized_text}")
+    logger.info(f"Resume optimization completed: resume_id={payload.resume_id}, job_id={payload.job_id}")
+    logger.info(f"ATS Score (Final): {ats_final}")
+    logger.info(f"Match Score (Final): {match_score_final}")
+    logger.info(f"Emphasized Skills: {payload.emphasized_skills}")
+    logger.info(f"Justification: {payload.justification}")
+
     return {
         "resume_id": resume.id,
         "optimized_text": optimized_text,
@@ -86,41 +96,16 @@ def optimize_resume(
     }
     
 # 🔹 API: Approve Final Resume
-@router.post("/approve-resume", tags=["Resume Approval"])
-def approve_optimized_resume(resume_id: int, db: Session = Depends(get_db)):
-    resume = db.query(Resume).filter(Resume.id == resume_id).first()
+class ResumeApprovalRequest(BaseModel):
+    resume_id: int
 
+@router.post("/approve-resume", tags=["Resume Optimization"])
+def approve_resume(payload: ResumeApprovalRequest, db: Session = Depends(get_db)):
+    resume = db.query(Resume).filter(Resume.id == payload.resume_id).first()
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found")
 
-    if not resume.optimized_text:
-        raise HTTPException(status_code=400, detail="Optimized resume not found. Please optimize first.")
-
     resume.is_user_approved = True
-    resume.updated_at = datetime.now(timezone.utc)
-
     db.commit()
-    db.refresh(resume)
 
-    return {
-        "resume_id": resume.id,
-        "message": "✅ Resume approved and ready for application."
-    }
-
-    # logging the optimization process:
-    logger.info(f"Starting resume optimization: resume_id={resume_id}, job_id={job_id}")
-    logger.debug(f"Optimized resume text: {optimized_text}")
-    logger.info(f"Resume optimization completed: resume_id={resume_id}, job_id={job_id}")
-    logger.info(f"ATS Score (Final): {ats_final}")
-    logger.info(f"Match Score (Final): {match_score_final}")
-    logger.info(f"Emphasized Skills: {emphasized_skills}")
-    logger.info(f"Justification: {justification}")
-
-    return {
-        "resume_id": resume.id,
-        "optimized_text": optimized_text,
-        "ats_score_final": ats_final,
-        "match_score_final": match_score_final,
-        "message": "✅ Resume optimized and scores updated successfully!"
-    }
-    
+    return {"message": "✅ Resume marked as approved!"}

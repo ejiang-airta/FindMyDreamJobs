@@ -155,6 +155,14 @@ export default function OptimizeResumePage() {
               >
                 🚀 Approve Resume
               </Button>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  window.open(`http://127.0.0.1:8000/download-resume/${resumeId}`, "_blank")
+                }}
+              >
+                📥 Download Resume
+              </Button>
             </div>
           )}
 

@@ -3,7 +3,7 @@ from app.ai.optimizer import optimize_resume_with_skills
 import logging
 
 # Setup the logger
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("app")
 
 
 # This acts as a pass-through for now, but can evolve in future

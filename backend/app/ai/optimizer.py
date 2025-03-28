@@ -5,7 +5,7 @@ import textwrap
 import logging
 
 # Setup the logger
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("app")
 
 def optimize_resume_with_skills(resume_text: str, job_description: str, emphasized_skills: List[str], justification: str) -> str:
     """

@@ -8,6 +8,9 @@ from app.database.connection import SessionLocal
 from app.models.resume import Resume
 from datetime import datetime, timezone
 from app.config.settings import UPLOAD_DIR
+from fastapi.responses import StreamingResponse
+import io
+
 
 router = APIRouter()
 
@@ -114,3 +117,17 @@ def get_all_resumes(db: Session = Depends(get_db)):
         }
         for r in resumes
     ]
+@router.get("/download-resume/{resume_id}", tags=["Resumes"])
+def download_resume(resume_id: int, db: Session = Depends(get_db)):
+    resume = db.query(Resume).filter(Resume.id == resume_id).first()
+    if not resume or not resume.optimized_text:
+        raise HTTPException(status_code=404, detail="Optimized resume not found.")
+
+    buffer = io.BytesIO()
+    buffer.write(resume.optimized_text.encode("utf-8"))
+    buffer.seek(0)
+
+    filename = f"optimized_resume_{resume_id}.txt"
+    return StreamingResponse(buffer, media_type="text/plain", headers={
+        "Content-Disposition": f"attachment; filename={filename}"
+    })
