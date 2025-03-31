@@ -8,8 +8,8 @@ from app.database.connection import SessionLocal
 from app.models.resume import Resume
 from datetime import datetime, timezone
 from app.config.settings import UPLOAD_DIR
-from fastapi.responses import StreamingResponse
-import io
+from fastapi.responses import FileResponse
+from app.services.file_utils import generate_resume_file, cleanup_file
 
 
 router = APIRouter()
@@ -117,17 +117,81 @@ def get_all_resumes(db: Session = Depends(get_db)):
         }
         for r in resumes
     ]
-@router.get("/download-resume/{resume_id}", tags=["Resumes"])
+# @router.get("/download-resume/{resume_id}", tags=["Resumes"])
+# def download_resume(resume_id: int, db: Session = Depends(get_db)):
+#     resume = db.query(Resume).filter(Resume.id == resume_id).first()
+#     if not resume or not resume.optimized_text:
+#         raise HTTPException(status_code=404, detail="Optimized resume not found.")
+
+#     buffer = io.BytesIO()
+#     buffer.write(resume.optimized_text.encode("utf-8"))
+#     buffer.seek(0)
+
+#     filename = f"optimized_resume_{resume_id}.txt"
+#     return StreamingResponse(buffer, media_type="text/plain", headers={
+#         "Content-Disposition": f"attachment; filename={filename}"
+#     })
+
+# 🔹 3. Download Resume
+@router.get("/download-resume/{resume_id}", tags=["Resume"])
 def download_resume(resume_id: int, db: Session = Depends(get_db)):
     resume = db.query(Resume).filter(Resume.id == resume_id).first()
-    if not resume or not resume.optimized_text:
-        raise HTTPException(status_code=404, detail="Optimized resume not found.")
+    if not resume:
+        raise HTTPException(status_code=404, detail="Resume not found")
 
-    buffer = io.BytesIO()
-    buffer.write(resume.optimized_text.encode("utf-8"))
-    buffer.seek(0)
+    # ✅ Pick optimized or original
+    content = resume.optimized_text or resume.parsed_text or ""
+    
+    if not content:
+        raise HTTPException(status_code=400, detail="No resume content available.")
 
-    filename = f"optimized_resume_{resume_id}.txt"
-    return StreamingResponse(buffer, media_type="text/plain", headers={
-        "Content-Disposition": f"attachment; filename={filename}"
-    })
+    # ✅ Generate temp file
+    filepath, filename = generate_resume_file(resume_id, content, is_optimized=bool(resume.optimized_text))
+
+    # ✅ Return FileResponse and delete file after response is sent
+    response = FileResponse(
+        path=filepath,
+        filename=filename,
+        media_type="text/plain",
+    )
+
+    # ⚠️ WARNING: You cannot delete the file *before* returning the response
+    # To safely clean it up, use a background task or let user know it's temporary
+
+    # Option 1: Return the file and ask user to download quickly
+    # Then delete after a small delay using BackgroundTasks
+    from fastapi import BackgroundTasks
+
+    def delete_file():
+        cleanup_file(filepath)
+
+    background_tasks = BackgroundTasks()
+    background_tasks.add_task(delete_file)
+
+    return FileResponse(
+        path=filepath,
+        filename=filename,
+        media_type="text/plain",
+        background=background_tasks
+    )
+# 🔹 4. Get Resume by ID
+@router.get("/resumes/{resume_id}", tags=["Resumes"])
+def get_resume_by_id(resume_id: int, db: Session = Depends(get_db)):
+    resume = db.query(Resume).filter(Resume.id == resume_id).first()
+    if not resume:
+        raise HTTPException(status_code=404, detail="Resume not found")
+
+    return {
+        "id": resume.id,
+        "user_id": resume.user_id,
+        "file_path": resume.file_path,
+        "parsed_text": resume.parsed_text,
+        "optimized_text": resume.optimized_text,
+        "is_ai_generated": resume.is_ai_generated,
+        "is_user_approved": resume.is_user_approved,
+        "ats_score_initial": resume.ats_score_initial or 0,
+        "ats_score_final": resume.ats_score_final or 0,
+        "created_at": resume.created_at.isoformat() if resume.created_at else None,
+        "updated_at": resume.updated_at.isoformat() if resume.updated_at else None,
+    }
+

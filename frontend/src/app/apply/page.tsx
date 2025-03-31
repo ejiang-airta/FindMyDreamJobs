@@ -36,22 +36,25 @@ export default function ApplyPage() {
         body: JSON.stringify({
           resume_id: parseInt(resumeId),
           job_id: parseInt(jobId),
-          application_url: applicationUrl,
+          application_url: applicationUrl.trim()
         }),
       })
 
-      const result = await response.json()
-
+      const data = await response.json()
       if (!response.ok) {
-        setError(`❌ ${result.detail || 'Failed to submit application.'}`)
-      } else {
-        setMessage(`✅ ${result.message}`)
+        const errorMessage = data.detail || data.message || JSON.stringify(data)
+        setError(`❌ ${errorMessage}`)
+        return
+      }
+
+        setMessage(data.status || '✅ Application submitted successfully!')
         setResumeId('')
         setJobId('')
         setApplicationUrl('')
       }
-    } catch (err) {
-      setError('❌ Network error. Please try again.')
+      catch (err: any) {
+        console.error("❌ Network error:", err)
+        setError('❌ Network error occurred. Please try again.')
     }
   }
   
@@ -60,7 +63,7 @@ export default function ApplyPage() {
     <div className="max-w-xl mx-auto mt-10 space-y-6">
       <h1 className="text-2xl font-bold">📩 Submit Job Application</h1>
       <p className="text-muted-foreground text-sm">
-        Enter Resume ID, Job ID, and Application URL to log your application.
+        Enter your Resume ID, Job ID, and the application URL where you applied.
       </p>
 
       <Card>

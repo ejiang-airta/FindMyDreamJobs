@@ -3,12 +3,14 @@
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import NavBar from '@/components/NavBar'  // ✅ import your new NavBar
+
 
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'Find My Dream Job',
-  description: 'AI-powered job matching assistant',
+  title: 'Find My Dream Jobs',
+  description: 'Smart job search & resume optimizer',
 }
 
 export default function RootLayout({
@@ -19,6 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
+        <NavBar />  {/* ✅ Add this line */}
         {children}
       </body>
     </html>

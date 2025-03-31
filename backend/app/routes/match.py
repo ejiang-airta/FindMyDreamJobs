@@ -75,7 +75,7 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
     }
 
 
-# 🔹 API: Get All Matches
+# 🔹 API: Get All Matches for all users - only for admin to use:
 @router.get("/matches", tags=["Job Matches"])
 def get_matches(db: Session = Depends(get_db)):
     matches = db.query(JobMatch).all()
@@ -91,3 +91,29 @@ def get_matches(db: Session = Depends(get_db)):
         }
         for match in matches
     ]
+
+# ✅ API: Get All Matches for a User
+@router.get("/matches/{user_id}", tags=["Job Matches"])
+def get_user_matches(user_id: int, db: Session = Depends(get_db)):
+    matches = (
+        db.query(JobMatch)
+        .filter(JobMatch.user_id == user_id)
+        .join(Job)
+        .join(Resume)
+        .with_entities(
+            JobMatch.id.label("match_id"),
+            JobMatch.job_id,
+            Job.job_title,
+            Job.company_name,
+            JobMatch.resume_id,
+            JobMatch.match_score_initial,
+            JobMatch.match_score_final,
+            JobMatch.ats_score_initial,
+            JobMatch.ats_score_final,
+            JobMatch.created_at
+        )
+        .order_by(JobMatch.created_at.desc())
+        .all()
+    )
+
+    return [dict(m._mapping) for m in matches]

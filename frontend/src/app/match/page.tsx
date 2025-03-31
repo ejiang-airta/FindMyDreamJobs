@@ -1,4 +1,6 @@
-//🟡 Use MatchScore
+// Shows a specific resume-to-job match score (usually used during matching a JD and Resume).
+// 🟡 Use MatchScore
+
 import MatchScore from '@/components/MatchScore'
 
 export default function MatchPage() {

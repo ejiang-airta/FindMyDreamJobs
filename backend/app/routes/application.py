@@ -71,3 +71,28 @@ def update_application_status(application_id: int, status: str, db: Session = De
 @router.post("/log")
 def log_application(job_id: int, user_id: int):
     return {"application_id": 301, "message": "📝 Application logged."}
+
+# 🔹 API: Get All Applications for a User
+@router.get("/applications/{user_id}", tags=["Applications"])
+def get_user_applications(user_id: int, db: Session = Depends(get_db)):
+    apps = (
+        db.query(Application)
+        .filter(Application.user_id == user_id)
+        .join(Job)
+        .join(Resume)
+        .with_entities(
+            Application.id.label("application_id"),
+            Application.job_id,
+            Job.job_title,
+            Job.company_name,
+            Application.resume_id,
+            Application.application_status,
+            Application.application_url,
+            Application.applied_date
+        )
+        .order_by(Application.applied_date.desc())
+        .all()
+    )
+
+    return [dict(app._mapping) for app in apps]
+
