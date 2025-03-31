@@ -1,10 +1,11 @@
+// ✅ File: frontend/src/app/layout.tsx
 //✅ Shared layout
-// /frontend/src/app/layout.tsx
 import './globals.css'
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import NavBar from '@/components/NavBar'  // ✅ import your new NavBar
-
+import { ReactNode } from 'react' 
+import SessionWrapper from '@/components/SessionWrapper' // ✅ integrate the NextAuth session provider
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -13,16 +14,14 @@ export const metadata: Metadata = {
   description: 'Smart job search & resume optimizer',
 }
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en">
       <body className={inter.className}>
-        <NavBar />  {/* ✅ Add this line */}
-        {children}
+        <SessionWrapper>
+          <NavBar />
+          {children}
+        </SessionWrapper>
       </body>
     </html>
   )

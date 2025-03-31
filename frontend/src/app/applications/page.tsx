@@ -1,14 +1,28 @@
-//frontend/src/app/applications/page.tsx
+//✅ File: /frontend/src/app/applications/page.tsx
+// This page is for displaying all the job applications made by the user.
 'use client'
 
 import React, { useEffect, useState } from 'react'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { Label } from '@/components/ui/label'
 import { Input } from '@/components/ui/input'
+import { useSession } from 'next-auth/react'
 
-export default function ApplicationsPage() {
+// This ensures page is only accessible to authenticated users:
+export default function ProtectedPage() {
+  const { data: session, status } = useSession()
+
+  if (status === 'loading') return <p>Loading...</p>
+  if (!session) return <p>Unauthorized. Please sign in.</p>
+
+  return <ApplicationsPage />
+}
+
+
+// This component is the main page for displaying all the job applications made by the user:
+// It fetches the applications from the backend and allows the user to update the status of each application.
+function ApplicationsPage() {
   const [applications, setApplications] = useState([])
   const [error, setError] = useState('')
   const [updateStatus, setUpdateStatus] = useState<{ [key: number]: string }>({})

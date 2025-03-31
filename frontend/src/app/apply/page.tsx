@@ -1,3 +1,5 @@
+//✅ File: frontend/src/app/apply/page.tsx
+// This page is for submitting job applications.
 'use client'
 
 import React, { useState } from 'react'
@@ -6,8 +8,20 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Label } from '@/components/ui/label'
+import { useSession } from 'next-auth/react'
 
-export default function ApplyPage() {
+// This ensures page is only accessible to authenticated users:
+export default function ProtectedPage() {
+  const { data: session, status } = useSession()
+
+  if (status === 'loading') return <p>Loading...</p>
+  if (!session) return <p>Unauthorized. Please sign in.</p>
+
+  return <ApplyPage />
+}
+
+// This component is the main page for submitting job applications:
+function ApplyPage() {
   const [resumeId, setResumeId] = useState('')
   const [jobId, setJobId] = useState('')
   const [applicationUrl, setApplicationUrl] = useState('')

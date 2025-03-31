@@ -1,7 +1,6 @@
 // ✅ File: frontend/src/components/NavBar.tsx
 // Nevigation bar to let user navigate around the pages:
 
-
 'use client'
 
 import Link from 'next/link'

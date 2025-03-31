@@ -7,8 +7,21 @@ import React, { useEffect, useState } from 'react'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts'
 import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useSession } from 'next-auth/react'
 
-export default function StatsPage() {
+// This ensures page is only accessible to authenticated users:
+export default function ProtectedPage() {
+  const { data: session, status } = useSession()
+
+  if (status === 'loading') return <p>Loading...</p>
+  if (!session) return <p>Unauthorized. Please sign in.</p>
+
+  return <StatsPage />
+}
+
+// This component is the main page for displaying application stats.
+// It fetches the application data from the backend and displays it in a bar chart:
+function StatsPage() {
   const [data, setData] = useState<{ status: string; count: number }[]>([])
   const [error, setError] = useState('')
   const userId = 1 // 🔐 Hardcoded for now

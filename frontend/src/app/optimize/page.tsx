@@ -1,4 +1,5 @@
-// Filename: src/app/optimize/page.tsx
+// ✅ File: frontend/src/app/optimize/page.tsx
+// This page is for optimizing resumes based on job descriptions.
 
 'use client'
 
@@ -9,8 +10,21 @@ import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useSession } from 'next-auth/react'
 
-export default function OptimizeResumePage() {
+// This ensures page is only accessible to authenticated users:
+export default function ProtectedPage() {
+  const { data: session, status } = useSession()
+
+  if (status === 'loading') return <p>Loading...</p>
+  if (!session) return <p>Unauthorized. Please sign in.</p>
+
+  return <OptimizeResumePage />
+}
+
+// This component is the main page for optimizing resumes.
+// It allows users to input a resume ID, job ID, and skills to emphasize or justify:
+function OptimizeResumePage() {
   const [resumeId, setResumeId] = useState('')
   const [jobId, setJobId] = useState('')
   const [emphasized, setEmphasized] = useState('')

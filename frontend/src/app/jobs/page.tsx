@@ -1,5 +1,5 @@
-//src/app/jobs/page.tsx 
-//show all jobs the user has analyzed, matched with or interested in applying to:
+// ✅ File: frontend/src/app/jobs/page.tsx
+// This page is for displaying matched jobs:
 'use client'
 
 import React, { useEffect, useState } from 'react'
@@ -7,8 +7,22 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 
-export default function JobsPage() {
+
+// This ensures page is only accessible to authenticated users:
+export default function ProtectedPage() {
+  const { data: session, status } = useSession()
+
+  if (status === 'loading') return <p>Loading...</p>
+  if (!session) return <p>Unauthorized. Please sign in.</p>
+
+  return <JobsPage />
+}
+
+// This component is the main page for displaying matched jobs.
+// It fetches the matched jobs from the backend and allows the user to optimize and apply for each job.
+function JobsPage() {
   const [matches, setMatches] = useState([])
   const [error, setError] = useState('')
 

@@ -1,4 +1,5 @@
-// main user dashboard page:
+//✅ File: frontend/src/app/dashboard/page.tsx
+// This file is the main dashboard page for the user.
 'use client'
 
 import React, { useEffect, useState } from 'react'
@@ -6,8 +7,21 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 
-export default function DashboardPage() {
+// This ensures page is only accessible to authenticated users:
+export default function ProtectedPage() {
+  const { data: session, status } = useSession()
+
+  if (status === 'loading') return <p>Loading...</p>
+  if (!session) return <p>Unauthorized. Please sign in.</p>
+
+  return <DashboardPage />
+}
+
+// This component is the main page for the user dashboard.
+// It displays the user's resumes, job matches, and applications:
+function DashboardPage() {
   const [resumes, setResumes] = useState([])
   const [matches, setMatches] = useState([])
   const [applications, setApplications] = useState([])

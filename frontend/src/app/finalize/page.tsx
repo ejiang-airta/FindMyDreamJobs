@@ -8,8 +8,21 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Label } from '@/components/ui/label'
+import { useSession } from 'next-auth/react'
 
-export default function FinalizePage() {
+// This ensures page is only accessible to authenticated users:
+export default function ProtectedPage() {
+  const { data: session, status } = useSession()
+
+  if (status === 'loading') return <p>Loading...</p>
+  if (!session) return <p>Unauthorized. Please sign in.</p>
+
+  return <FinalizePage />
+}
+
+// This component is the main page for finalizing resumes and submitting applications:
+// It allows users to input a resume ID, fetch its optimized text, approve it, and log the job application.
+function FinalizePage() {
   const [resumeId, setResumeId] = useState('')
   const [jobId, setJobId] = useState('')
   const [optimizedText, setOptimizedText] = useState('')

@@ -1,11 +1,25 @@
+// ✅ File: frontend/src/app/matches/page.tsx
 // this page is for viewing job matches for a user:
 'use client'
 
 import React, { useEffect, useState } from 'react'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { useSession } from 'next-auth/react'
 
-export default function MatchesPage() {
+// This ensures page is only accessible to authenticated users:
+export default function ProtectedPage() {
+  const { data: session, status } = useSession()
+
+  if (status === 'loading') return <p>Loading...</p>
+  if (!session) return <p>Unauthorized. Please sign in.</p>
+
+  return <MatchesPage />
+}
+
+// This component is the main page for viewing job matches.
+// It fetches the matches from the backend and displays them in a card format:
+function MatchesPage() {
   const [matches, setMatches] = useState([])
   const [error, setError] = useState('')
   const userId = 1 // 🔐 Hardcoded until auth is added
