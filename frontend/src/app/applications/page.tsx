@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { useSession } from 'next-auth/react'
+import { getUserId } from '@/lib/auth'
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
@@ -27,8 +28,14 @@ function ApplicationsPage() {
   const [error, setError] = useState('')
   const [updateStatus, setUpdateStatus] = useState<{ [key: number]: string }>({})
 
+  // 🔐 update it to take the login user_id
+  const userId = getUserId()
+  if (!userId) {
+    console.warn("❌ No valid user ID found.")
+    setError("⚠️ You're not logged in. Please sign in.")
+  return
+}
 
-  const userId = parseInt(localStorage.getItem("user_id") || "0") // 🔐 update it to take the login user_id
 
   useEffect(() => {
     fetchApplications()

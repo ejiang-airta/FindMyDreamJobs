@@ -40,7 +40,12 @@ function StatsPage() {
     // you can add more fields here if needed
   }
   // This function retrieves the user ID from local storage:
-    const userId = getUserId() // 🔐 update it to take the login user_id
+  const userId = getUserId()
+  if (!userId) {
+    console.warn("❌ No valid user ID found.")
+    setError("⚠️ You're not logged in. Please sign in.")
+  return
+  }
     console.log("🧠 Using global user ID:", userId)
 
   useEffect(() => {

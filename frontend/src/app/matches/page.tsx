@@ -23,8 +23,14 @@ export default function ProtectedPage() {
 function MatchesPage() {
   const [matchData, setMatchData] = useState([])
   const [error, setError] = useState('')
-  // This function retrieves the user ID from local storage:
-  const userId = getUserId() // 🔐 update it to take the login user_id
+  
+  // This function retrieves the user ID from local storage:   
+  const userId = getUserId()
+  if (!userId) {
+    console.warn("❌ No valid user ID found.")
+    setError("⚠️ You're not logged in. Please sign in.")
+  return
+  }
   console.log("🧠 Using global user ID:", userId)
 
   useEffect(() => {
