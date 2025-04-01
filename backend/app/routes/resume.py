@@ -1,10 +1,12 @@
+# ✅ File: backend/app/routes/resume.py
+# Resume Management APIs:
 import os
 import uuid
 import pdfplumber  # 👈 Install it using: pip install pdfplumber
 from docx import Document  # DOCX Support
 from fastapi import APIRouter, UploadFile, File, Depends, Form, HTTPException
 from sqlalchemy.orm import Session
-from app.database.connection import SessionLocal
+from app.database.connection import get_db, SessionLocal
 from app.models.resume import Resume
 from datetime import datetime, timezone
 from app.config.settings import UPLOAD_DIR
@@ -174,7 +176,7 @@ def download_resume(resume_id: int, db: Session = Depends(get_db)):
         media_type="text/plain",
         background=background_tasks
     )
-# 🔹 4. Get Resume by ID
+# 🔹 4. Get Resume by resume ID
 @router.get("/resumes/{resume_id}", tags=["Resumes"])
 def get_resume_by_id(resume_id: int, db: Session = Depends(get_db)):
     resume = db.query(Resume).filter(Resume.id == resume_id).first()
@@ -194,4 +196,27 @@ def get_resume_by_id(resume_id: int, db: Session = Depends(get_db)):
         "created_at": resume.created_at.isoformat() if resume.created_at else None,
         "updated_at": resume.updated_at.isoformat() if resume.updated_at else None,
     }
+# 🔹 5. Get all resumes for a specific user by user_id:
+@router.get("/resumes/by-user/{user_id}", tags=["Resumes"])
+def get_resumes_by_user(user_id: int, db: Session = Depends(get_db)):
+    resumes = db.query(Resume).filter(Resume.user_id == user_id).all()
 
+    if not resumes:
+        raise HTTPException(status_code=404, detail="No resumes found for this user.")
+
+    return [
+        {
+            "id": r.id,
+            "user_id": r.user_id,
+            "file_path": r.file_path,
+            "parsed_text": r.parsed_text,
+            "optimized_text": r.optimized_text,
+            "is_ai_generated": r.is_ai_generated,
+            "is_user_approved": r.is_user_approved,
+            "ats_score_initial": r.ats_score_initial or 0,
+            "ats_score_final": r.ats_score_final or 0,
+            "created_at": r.created_at.isoformat() if r.created_at else None,
+            "updated_at": r.updated_at.isoformat() if r.updated_at else None,
+        }
+        for r in resumes
+    ]

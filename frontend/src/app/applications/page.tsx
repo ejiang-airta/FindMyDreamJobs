@@ -28,7 +28,7 @@ function ApplicationsPage() {
   const [updateStatus, setUpdateStatus] = useState<{ [key: number]: string }>({})
 
 
-  const userId = 1 // 🔐 Hardcoded for now until auth is added
+  const userId = parseInt(localStorage.getItem("user_id") || "0") // 🔐 update it to take the login user_id
 
   useEffect(() => {
     fetchApplications()

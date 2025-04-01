@@ -8,6 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
+import { getUserId } from '@/lib/auth'
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
@@ -26,6 +27,9 @@ function DashboardPage() {
   const [matches, setMatches] = useState([])
   const [applications, setApplications] = useState([])
   const [error, setError] = useState("")
+  // This function retrieves the user ID from local storage:
+  const userId = getUserId()
+  console.log("🧠 Using global user ID:", userId)
 
   useEffect(() => {
     fetchResumes()
@@ -36,8 +40,10 @@ function DashboardPage() {
   // Fetch data from the backend
   // Fetch resumes
   const fetchResumes = async () => {
-    try {
-      const response = await fetch("http://127.0.0.1:8000/resumes")
+    try {  
+      //const userId = getUserId()
+      console.log("🧠 Using local user ID:", userId)
+      const response = await fetch(`http://127.0.0.1:8000/resumes/by-user/${userId}`)
       if (!response.ok) throw new Error("Failed to fetch resumes.")
       const data = await response.json()
       setResumes(data)
@@ -49,7 +55,8 @@ function DashboardPage() {
   // Fetch matches
   const fetchMatches = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/matches")
+      //const userId = getUserId()
+      const response = await fetch(`http://127.0.0.1:8000/matches/${userId}`)
       if (!response.ok) throw new Error("Failed to fetch matches.")
       const data = await response.json()
       setMatches(data)
@@ -63,7 +70,8 @@ function DashboardPage() {
   // Fetch applications
   const fetchApplications = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/applications/1")
+      //const userId = getUserId()
+      const response = await fetch(`http://127.0.0.1:8000/applications/${userId}`)
       if (!response.ok) throw new Error("Failed to fetch applications.")
       const data = await response.json()
       setApplications(data)

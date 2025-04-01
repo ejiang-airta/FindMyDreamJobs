@@ -8,6 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useSession } from 'next-auth/react'
+import { getUserId } from '@/lib/auth'
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
@@ -24,7 +25,23 @@ export default function ProtectedPage() {
 function StatsPage() {
   const [data, setData] = useState<{ status: string; count: number }[]>([])
   const [error, setError] = useState('')
-  const userId = 1 // 🔐 Hardcoded for now
+  // define the color scheme for the bar chart:
+  const STATUS_COLORS: Record<string, string> = {
+    'In Progress': '#8884d8',
+    'Offered': '#82ca9d',
+    'Rejected': '#f87171',
+    'Default': '#a0aec0'
+  }
+
+  // This type defines the structure of the application data:
+  // you can add more fields here if needed
+  type Application = {
+    application_status: string
+    // you can add more fields here if needed
+  }
+  // This function retrieves the user ID from local storage:
+    const userId = getUserId() // 🔐 update it to take the login user_id
+    console.log("🧠 Using global user ID:", userId)
 
   useEffect(() => {
     fetchStats()
@@ -40,10 +57,11 @@ function StatsPage() {
       }
 
       // Group and count by application_status
-      const counts = apps.reduce((acc: any, app: any) => {
+      const counts = (apps as Application[]).reduce<Record<string, number>>((acc, app) => {
         acc[app.application_status] = (acc[app.application_status] || 0) + 1
         return acc
       }, {})
+      
 
       const chartData = Object.entries(counts).map(([status, count]) => ({
         status,
@@ -77,22 +95,13 @@ function StatsPage() {
               <BarChart data={data} margin={{ top: 20, right: 30, left: 10, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="status" />
-                <YAxis allowDecimals={false} />
+                <YAxis allowDecimals={false} label={{ value: 'Applications', angle: -90, position: 'insideLeft' }} />
                 <Tooltip />
                 <Bar dataKey="count">
-                    {data.map((entry, index) => (
-                        <Cell
-                        key={`cell-${index}`}
-                        fill={
-                            entry.status === 'In Progress' ? '#8884d8' :
-                            entry.status === 'Offered' ? '#82ca9d' :
-                            entry.status === 'Rejected' ? '#f87171' : 
-                            '#a0aec0'  // default gray
-                        }
-                        />
-                    ))}
+                  {data.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={STATUS_COLORS[entry.status] || STATUS_COLORS.Default} />
+                  ))}
                 </Bar>
-
               </BarChart>
             </ResponsiveContainer>
           ) : (
