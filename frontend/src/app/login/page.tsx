@@ -41,8 +41,11 @@ export default function LoginPage() {
           <Button onClick={() => signOut()}>🚪 Sign Out</Button>
         </>
       ) : (
-        <Button onClick={() => signIn("google")}>🔑 Sign in with Google</Button>
-      )}
+        // <Button onClick={() => signIn("google")}>🔑 Sign in with Google</Button>
+        <Button onClick={() => signIn('google')} variant="outline">Log in</Button>
+      )} : (
+        <Button onClick={handleSignup} className="bg-white text-blue-600 hover:bg-gray-100">Sign up</Button>
+      )
     </div>
   )
 }

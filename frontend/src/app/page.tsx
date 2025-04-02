@@ -12,7 +12,7 @@ export default function HomePage() {
     useEffect(() => {
       const fetchUserId = async () => {
         if (session?.user?.email) {
-          const res = await fetch("http://127.0.0.1:8000/auth/whoami", {
+          const res = await fetch("http://localhost:8000/auth/whoami", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
@@ -35,10 +35,9 @@ export default function HomePage() {
       {session ? (
         <>
           <p>👋 Hello, {session.user?.name}</p>
-          <button onClick={() => signOut()}>Sign out</button>
         </>
       ) : (
-        <button onClick={() => signIn("google")}>Sign in with Google</button>
+        <p>Please login to your account</p>
       )}
       <h1 className="text-3xl font-bold">🎯 Welcome to FindMyDreamJobs!</h1>
       <p className="mt-4 text-muted-foreground">Upload your resume, match it to jobs, optimize it — and land interviews faster.</p>  

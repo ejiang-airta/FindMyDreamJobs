@@ -1,3 +1,4 @@
+// File: /frontend/src/components/JobInput.tsx
 //🟡 JD input
 
 'use client'
@@ -13,6 +14,7 @@ const JobInput: React.FC = () => {
   const [jobDescription, setJobDescription] = useState<string>('')
   const [parsedData, setParsedData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
+  const userId = localStorage.getItem("user_id")  // ✅ this must exist
 
   const handleSubmit = async () => {
     if (!jobLink && !jobDescription) {
@@ -29,6 +31,7 @@ const JobInput: React.FC = () => {
         body: JSON.stringify({
           job_link: jobLink,
           job_description: jobDescription,
+          user_id: parseInt(userId || "0"),  // ✅ required!
         }),
       })
 
