@@ -16,7 +16,7 @@ alembic.ini
 .DS_Store
 
 # development file/folders:
-dev tracking/
+dev_tracking/
 results/
 job_Listing*.json
 job_outputs.txt
