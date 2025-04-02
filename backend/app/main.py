@@ -21,12 +21,23 @@ logging.basicConfig(
     ]
 )
 
+origins = [
+    "http://localhost:3000",      # ✅ Next.js dev server
+    "http://127.0.0.1:3000"       # ✅ Alternate dev address
+]
 
 # Optional: Create a reusable logger for your app
 app_logger = logging.getLogger("app")
 
 app = FastAPI()
 
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,  # Allow all origins during dev
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 @app.on_event("startup")
 async def startup_event():
     app_logger.info("✅ Registered Routes:")
@@ -34,24 +45,13 @@ async def startup_event():
         app_logger.info(f"{route.path} → {route.methods}")
 
 # Register API routes
-app.include_router(user.router)
-app.include_router(job.router)
-app.include_router(resume.router)
-app.include_router(application.router)
-app.include_router(match.router)
-app.include_router(auth.router)
 app.include_router(ai_optimization.router)  # ✅ AI Resume Optimization API
+app.include_router(application.router)
 app.include_router(ats.router)              # ✅ New ATS API
-
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],  # Allow all origins during dev
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
+app.include_router(auth.router)
+app.include_router(job.router)
+app.include_router(match.router)
+app.include_router(resume.router)
 
 @app.get("/")
 def read_root():

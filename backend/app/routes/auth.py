@@ -14,12 +14,16 @@ def whoami(payload: dict, db: Session = Depends(get_db)):
     name = payload.get("name")
 
     if not email:
-        return {"error": "Missing email."}
+        raise HTTPException(status_code=400, detail="Missing email.")
 
     user = db.query(User).filter(User.email == email).first()
 
     if not user:
-        user = User(email=email, name=name or "", is_active=True)
+        user = User(
+            email=email,
+            full_name=name or "",  # ✅ use full_name instead of name
+            hashed_password="",     # ✅ dummy for now
+        )
         db.add(user)
         db.commit()
         db.refresh(user)

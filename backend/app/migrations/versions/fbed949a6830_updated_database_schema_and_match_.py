@@ -38,6 +38,7 @@ def upgrade() -> None:
     op.alter_column('users', 'created_at',
                existing_type=sa.VARCHAR(),
                type_=sa.DateTime(),
+               postgresql_using="created_at::timestamp without time zone",
                existing_nullable=True)
     # ### end Alembic commands ###
 
