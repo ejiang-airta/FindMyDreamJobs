@@ -17,3 +17,4 @@ class User(Base):
     resumes = relationship("Resume", back_populates="user")  # ✅ Track resumes uploaded by user
     applications = relationship("Application", back_populates="user")  # ✅ Track jobs applied for by user
     job_matches = relationship("JobMatch", back_populates="user")  # ✅ Track past match results per user
+    jobs = relationship("Job", back_populates="user")  # if not already there
