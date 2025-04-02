@@ -8,7 +8,7 @@ from datetime import datetime
 from app.config.settings import PROJECT_ROOT
 
 # Root logger configuration
-logger_dir  = os.path.join(PROJECT_ROOT, "dev tracking", "logging")
+logger_dir  = os.path.join(PROJECT_ROOT, "dev_tracking", "logging")
 
 logging.basicConfig(
     level=logging.DEBUG,  # Use INFO if you don't want debug logs

@@ -85,6 +85,8 @@ const JobInput: React.FC = () => {
         <div className="mt-4 p-4 bg-gray-100 rounded-md">
           <h3 className="text-lg font-semibold">Extracted Job Details:</h3>
           <p><strong>Title:</strong> {parsedData.title || 'N/A'}</p>
+          <p><strong>Company:</strong> {parsedData.company || 'N/A'}</p>
+          <p><strong>Location:</strong> {parsedData.location || 'N/A'}</p>
           <p><strong>Skills:</strong> {parsedData.skills?.join(', ') || 'N/A'}</p>
           <p><strong>Experience:</strong> {parsedData.experience || 'N/A'}</p>
         </div>

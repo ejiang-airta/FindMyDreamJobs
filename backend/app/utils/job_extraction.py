@@ -1,0 +1,105 @@
+# File: /backend/app/utils/job_extraction.py
+# Utility functions for job extraction
+import re
+import spacy
+
+# Load spaCy English model
+nlp = spacy.load("en_core_web_sm")
+
+# ✅ Extract job title (combined method)
+import re
+
+def extract_title(text: str) -> str:
+    # 1️⃣ Primary match: Capture full phrases like "Director of Engineering"
+    primary_match = re.search(
+        r"(?i)\b(?:VP|Vice President|Director|Head|Manager|Lead|CTO|CEO|Engineering Manager|Engineering Director|VP of Engineering|Director of Engineering)\b(?:\s+of\s+\w+)?",
+        text
+    )
+    if primary_match:
+        title = primary_match.group(0)
+        return title.strip()
+
+    # 2️⃣ Fallback match: lowercase roles (e.g., "backend engineer", "data scientist")
+    fallback_match = re.search(
+        r"(?i)\b(?:backend engineer|frontend engineer|data scientist|software engineer|developer|full stack developer)\b",
+        text
+    )
+    if fallback_match:
+        return fallback_match.group(0).title()
+
+    # 3️⃣ Nothing found
+    return "Unknown Title"
+
+
+# ✅ Extract company name (NER + fallback regex)
+def extract_company_name(text: str) -> str:
+    """
+    Improved company name extractor based on context phrases.
+    """
+
+    # Look for known patterns like "Clio is", "Amazon is", etc.
+    match = re.search(r"\b([A-Z][a-zA-Z0-9&\-]+)\s+is\s+(hiring|looking for|seeking)", text)
+    if match:
+        return match.group(1)
+
+    # Try pattern like "at Clio", "with Amazon"
+    match = re.search(r"\bat\s+([A-Z][a-zA-Z0-9&\-]+)", text)
+    if match:
+        return match.group(1)
+
+    # Try finding company names from sentence start: "Clio is more than a..."
+    match = re.search(r"^([A-Z][a-zA-Z0-9&\-]+)\s+(is|are)", text)
+    if match:
+        return match.group(1)
+
+    # As a last fallback, pick the first capitalized word that’s not a title or buzzword
+    words = text.split()
+    blacklist = {"The", "This", "Our", "We", "A", "An", "About", "As", "In"}
+    for word in words:
+        if word.istitle() and word not in blacklist:
+            return word
+
+    return "Unknown Company"
+
+
+# ✅ Extract required skills
+def extract_skills(text: str) -> list[str]:
+    doc = nlp(text)
+    known_skills = {
+        "Python", "Django", "FastAPI", "Flask", "React", "Angular", "Vue",
+        "SQL", "PostgreSQL", "MongoDB", "Redis", "AWS", "Azure", "GCP",
+        "Docker", "Kubernetes", "CI/CD", "DevOps", "NLP", "Machine Learning"
+    }
+
+    found = set()
+    for chunk in doc.noun_chunks:
+        for skill in known_skills:
+            if skill.lower() in chunk.text.lower():
+                found.add(skill)
+
+    # Fallback: direct match anywhere in the text
+    for skill in known_skills:
+        if skill.lower() in text.lower():
+            found.add(skill)
+
+    return sorted(found)
+
+
+# ✅ Extract required experience
+def extract_experience(text: str) -> str:
+    match = re.search(r"\d+\+?\s+years?", text)
+    return match.group(0).strip() if match else "Unspecified"
+
+# ✅ Extract location
+def extract_location(text: str) -> str:
+    doc = nlp(text)
+
+    # spaCy NER
+    for ent in doc.ents:
+        if ent.label_ in ["GPE", "LOC"]:  # Countries, cities, states
+            return ent.text.strip()
+
+    # Fallback regex
+    match = re.search(r"in\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)", text)
+    return match.group(1).strip() if match else "Unspecified"
+
