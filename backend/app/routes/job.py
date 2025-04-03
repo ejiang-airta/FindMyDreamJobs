@@ -1,4 +1,6 @@
 # ✅ File: //backend/app/routes/job.py
+import requests
+from bs4 import BeautifulSoup
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from pydantic import BaseModel
@@ -31,7 +33,21 @@ async def parse_job_description(job: JobInput, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Job link or description is required.")
 
     # 🔍 Use raw text if provided, else fetch from job link (scraper can be added later)
-    description = job.job_description or "N/A"
+    # If no job description is provided but a job_link is, try to fetch content
+    description = job.job_description
+    if not description and job.job_link:
+        try:
+            response = requests.get(job.job_link, timeout=5)
+            soup = BeautifulSoup(response.text, "html.parser")
+            # Simple strategy: Get largest <p> or all text content
+            paragraphs = soup.find_all("p")
+            description = max(paragraphs, key=lambda p: len(p.text)).text if paragraphs else soup.get_text()
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=f"Failed to extract job description from link: {str(e)}")
+
+    if not description:
+        raise HTTPException(status_code=400, detail="Job description could not be extracted.")
+
 
     # 🧠 Basic parsing logic — can be replaced with spaCy or custom model
     skills = extract_skills(description)

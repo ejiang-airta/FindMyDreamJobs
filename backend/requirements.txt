@@ -7,3 +7,4 @@ psycopg2
 pdfplumber
 python-docx
 spacy   #NLP Library
+beautifulsoup4 # parsing html with a URL

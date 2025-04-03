@@ -2,6 +2,7 @@
 # Utility functions for job extraction
 import re
 import spacy
+from app.config.skills_config import SKILL_KEYWORDS
 
 # Load spaCy English model
 nlp = spacy.load("en_core_web_sm")
@@ -64,25 +65,11 @@ def extract_company_name(text: str) -> str:
 
 # ✅ Extract required skills
 def extract_skills(text: str) -> list[str]:
-    doc = nlp(text)
-    known_skills = {
-        "Python", "Django", "FastAPI", "Flask", "React", "Angular", "Vue",
-        "SQL", "PostgreSQL", "MongoDB", "Redis", "AWS", "Azure", "GCP",
-        "Docker", "Kubernetes", "CI/CD", "DevOps", "NLP", "Machine Learning"
-    }
-
-    found = set()
-    for chunk in doc.noun_chunks:
-        for skill in known_skills:
-            if skill.lower() in chunk.text.lower():
-                found.add(skill)
-
-    # Fallback: direct match anywhere in the text
-    for skill in known_skills:
+    found_skills = []
+    for skill in SKILL_KEYWORDS:
         if skill.lower() in text.lower():
-            found.add(skill)
-
-    return sorted(found)
+            found_skills.append(skill)
+    return sorted(found_skills) or ["N/A"]
 
 
 # ✅ Extract required experience

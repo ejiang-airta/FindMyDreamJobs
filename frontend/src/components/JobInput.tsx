@@ -48,7 +48,7 @@ const JobInput: React.FC = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md space-y-4">
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md space-y-4">
       <h2 className="text-2xl font-semibold">Job Description Input</h2>
 
       <div className="space-y-2">
@@ -65,9 +65,10 @@ const JobInput: React.FC = () => {
         <label className="block text-sm font-medium">Paste Job Description</label>
         <Textarea
           placeholder="Copy and paste job description here..."
-          rows={5}
+          rows={10}
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}
+          className="w-full md:w-[90%] lg:w-[95%] resize-y"
         />
       </div>
 
