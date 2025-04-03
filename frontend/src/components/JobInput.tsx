@@ -88,16 +88,26 @@ const JobInput: React.FC = () => {
           <p><strong>Title:</strong> {parsedData.title || 'N/A'}</p>
           <p><strong>Company:</strong> {parsedData.company || 'N/A'}</p>
           <p><strong>Location:</strong> {parsedData.location || 'N/A'}</p>
-          <p><strong>Skills:</strong> 
-            {parsedData.skills && Array.isArray(parsedData.skills)
-              ? parsedData.skills.map((s: any, idx: number) => (
-                  <span key={idx}>
-                    {s.skill} ({s.frequency}){idx < parsedData.skills.length - 1 ? ', ' : ''}
-                  </span>
-                ))
-              : 'N/A'}
-          </p>
           <p><strong>Experience:</strong> {parsedData.experience || 'N/A'}</p>
+          <p><strong>Emphasized Skills:</strong></p>
+          <ul className="list-disc pl-5">
+            {(parsedData.skills?.emphasized_skills || []).length > 0
+              ? parsedData.skills.emphasized_skills.map((skill: string, idx: number) => (
+                  <li key={idx}>{skill}</li>
+                ))
+              : <li>N/A</li>}
+          </ul>
+          <p><strong>Complete list of Skills:</strong></p>
+          <ul className="list-disc pl-5">
+            {Array.isArray(parsedData.skills?.skills)
+              ? [...parsedData.skills.skills]
+                  .sort((a: any, b: any) => b.frequency - a.frequency)
+                  .map((item: any, idx: number) => (
+                    <li key={idx}>{item.skill}</li>
+                  ))
+              : <li>N/A</li>}
+          </ul>
+
         </div>
       )}
     </div>
