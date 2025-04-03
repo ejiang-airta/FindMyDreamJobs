@@ -8,8 +8,6 @@ from app.config.skills_config import SKILL_KEYWORDS
 nlp = spacy.load("en_core_web_sm")
 
 # ✅ Extract job title (combined method)
-import re
-
 def extract_title(text: str) -> str:
     # 1️⃣ Primary match: Capture full phrases like "Director of Engineering"
     primary_match = re.search(
@@ -63,14 +61,27 @@ def extract_company_name(text: str) -> str:
     return "Unknown Company"
 
 
-# ✅ Extract required skills
-def extract_skills(text: str) -> list[str]:
-    found_skills = []
-    for skill in SKILL_KEYWORDS:
-        if skill.lower() in text.lower():
-            found_skills.append(skill)
-    return sorted(found_skills) or ["N/A"]
 
+
+# ✅ Extract skills from job description summary:
+def extract_skills_with_frequency(text: str) -> list[dict]:
+    """
+    Extracts skills and their frequency from the text based on centralized skill list.
+    Returns a dictionary like: {"Python": 3, "AWS": 1, ...}
+    """
+    text_lower = text.lower()
+    skill_counts = {}
+
+    for skill in SKILL_KEYWORDS:
+        # Escape special regex chars (like C++, .NET, etc.)
+        pattern = re.escape(skill.lower())
+        matches = re.findall(rf"\b{pattern}\b", text_lower)
+
+        if matches:
+            skill_counts[skill] = len(matches)
+
+    # Convert to list of dicts
+    return [{"skill": skill, "frequency": freq} for skill, freq in sorted(skill_counts.items(), key=lambda x: -x[1])]
 
 # ✅ Extract required experience
 def extract_experience(text: str) -> str:

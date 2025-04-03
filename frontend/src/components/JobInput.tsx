@@ -88,7 +88,15 @@ const JobInput: React.FC = () => {
           <p><strong>Title:</strong> {parsedData.title || 'N/A'}</p>
           <p><strong>Company:</strong> {parsedData.company || 'N/A'}</p>
           <p><strong>Location:</strong> {parsedData.location || 'N/A'}</p>
-          <p><strong>Skills:</strong> {parsedData.skills?.join(', ') || 'N/A'}</p>
+          <p><strong>Skills:</strong> 
+            {parsedData.skills && Array.isArray(parsedData.skills)
+              ? parsedData.skills.map((s: any, idx: number) => (
+                  <span key={idx}>
+                    {s.skill} ({s.frequency}){idx < parsedData.skills.length - 1 ? ', ' : ''}
+                  </span>
+                ))
+              : 'N/A'}
+          </p>
           <p><strong>Experience:</strong> {parsedData.experience || 'N/A'}</p>
         </div>
       )}

@@ -2,6 +2,8 @@ from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from app.database.connection import Base
 from datetime import datetime, timezone
+from sqlalchemy.dialects.postgresql import JSONB
+
 
 class Job(Base):
     __tablename__ = "jobs"
@@ -13,7 +15,7 @@ class Job(Base):
     location = Column(String, nullable=True)
     job_description = Column(Text, nullable=False)  # 🛑 Change from String → Text for large JD content
     job_link = Column(String, nullable=True)
-    extracted_skills = Column(Text, nullable=True)  # ✅ Adding this back
+    extracted_skills = Column(JSONB, nullable=True)  # ✅ Store as an 2D array /w skills/frequency
     required_experience = Column(String, nullable=True) # ✅ Adding this for tracking experienve
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=True)
