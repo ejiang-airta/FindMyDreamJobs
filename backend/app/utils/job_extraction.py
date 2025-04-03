@@ -2,7 +2,8 @@
 # Utility functions for job extraction
 import re
 import spacy
-from app.config.skills_config import SKILL_KEYWORDS
+from app.config.skills_config import SKILL_KEYWORDS, MIN_SKILL_FREQUENCY, MAX_EMPHASIZED_SKILLS
+from collections import Counter
 
 # Load spaCy English model
 nlp = spacy.load("en_core_web_sm")
@@ -64,24 +65,40 @@ def extract_company_name(text: str) -> str:
 
 
 # ✅ Extract skills from job description summary:
-def extract_skills_with_frequency(text: str) -> list[dict]:
+def extract_skills_with_frequency(text: str) -> dict:
     """
     Extracts skills and their frequency from the text based on centralized skill list.
-    Returns a dictionary like: {"Python": 3, "AWS": 1, ...}
+    Returns a dictionary like:
+    {
+        "skills": [{"skill": "Python", "frequency": 3}, ...],
+        "emphasized_skills": ["Python", "AWS", ...]
+    }
     """
     text_lower = text.lower()
-    skill_counts = {}
-
+    skill_counter = Counter()
+    # Count exact matches of each skill from SKILL_KEYWORDS
     for skill in SKILL_KEYWORDS:
-        # Escape special regex chars (like C++, .NET, etc.)
-        pattern = re.escape(skill.lower())
-        matches = re.findall(rf"\b{pattern}\b", text_lower)
+        occurrences = len(re.findall(r'\b' + re.escape(skill.lower()) + r'\b', text_lower))
+        if occurrences > 0:
+            skill_counter[skill] = occurrences
 
-        if matches:
-            skill_counts[skill] = len(matches)
+    # 🔢 Full skill list sorted by frequency (high → low)
+    sorted_skills = sorted(
+        [{"skill": skill, "frequency": freq} for skill, freq in skill_counter.items()],
+        key=lambda x: x["frequency"],
+        reverse=True
+    )
 
-    # Convert to list of dicts
-    return [{"skill": skill, "frequency": freq} for skill, freq in sorted(skill_counts.items(), key=lambda x: -x[1])]
+    # 🌟 Emphasized = top N skills that meet MIN frequency
+    emphasized = [
+        s["skill"] for s in sorted_skills if s["frequency"] >= MIN_SKILL_FREQUENCY
+    ][:MAX_EMPHASIZED_SKILLS]
+
+    return {
+        "skills": sorted_skills or [{"skill": "N/A", "frequency": 0}],
+        "emphasized_skills": emphasized or ["N/A"]
+    }
+
 
 # ✅ Extract required experience
 def extract_experience(text: str) -> str:

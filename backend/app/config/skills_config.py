@@ -14,3 +14,6 @@ SKILL_KEYWORDS = [
     "Data Science",
     "Selenium", "Automation Framework",
 ]
+# ✅ Centralized config for skill frequency logic to be used in /rountes/job.py:
+MIN_SKILL_FREQUENCY = 2     # minmum number of frequency to count for emphasized skills
+MAX_EMPHASIZED_SKILLS = 5   # maximum number of record to be stored as emphasized skills
