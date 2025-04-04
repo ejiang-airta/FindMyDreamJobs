@@ -83,3 +83,20 @@ async def parse_job_description(job: JobInput, db: Session = Depends(get_db)):
         "company_name": company,
         "location": location,
     }
+# ✅ Add to routes/job.py
+@router.get("/jobs/{job_id}", tags=["Jobs"])
+def get_job_by_id(job_id: int, db: Session = Depends(get_db)):
+    job = db.query(Job).filter(Job.id == job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    # Return emphasized skills if they exist
+    extracted = job.extracted_skills or {}
+    emphasized_skills = extracted.get("emphasized_skills", [])
+
+    return {
+        "job_id": job.id,
+        "job_title": job.job_title,
+        "company_name": job.company_name,
+        "emphasized_skills": job.extracted_skills.get("emphasized_skills", []) if job.extracted_skills else [],
+    }

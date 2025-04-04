@@ -1,7 +1,8 @@
 # ✅ File: app/routes/ai_optimization.py
+# This file contains route-related utilities for AI optimization in the backend.
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from app.database.connection import SessionLocal
+from app.database.connection import SessionLocal, get_db
 from app.models.resume import Resume
 from app.models.match import JobMatch
 from app.models.job import Job
@@ -19,6 +20,7 @@ router = APIRouter()
 
 # Database Dependency
 def get_db():
+   
     db = SessionLocal()
     try:
         yield db
@@ -60,9 +62,15 @@ def optimize_resume(
     _, ats_final = calculate_ats_score(optimized_text)
 
     # ✅ Recalculate match score final
-    jd_keywords = set(job.extracted_skills.lower().split(",")) if job.extracted_skills else set()
+    # ✅ Extract skills list from structured extracted_skills (JSONB format)
+    extracted = job.extracted_skills or {}
+    jd_skill_objs = extracted.get("skills", [])
+    jd_keywords = {item["skill"].lower() for item in jd_skill_objs if "skill" in item}
+
+    # ✅ Now compare to optimized resume
     matched = [kw for kw in jd_keywords if kw in optimized_text.lower()]
     match_score_final = round((len(matched) / max(len(jd_keywords), 1)) * 100, 2)
+
 
     # 🔄 Update Resume table
 
@@ -100,12 +108,17 @@ class ResumeApprovalRequest(BaseModel):
     resume_id: int
 
 @router.post("/approve-resume", tags=["Resume Optimization"])
-def approve_resume(payload: ResumeApprovalRequest, db: Session = Depends(get_db)):
-    resume = db.query(Resume).filter(Resume.id == payload.resume_id).first()
-    if not resume:
-        raise HTTPException(status_code=404, detail="Resume not found")
+def approve_resume(payload: dict, db: Session = Depends(get_db)):
+    resume_id = int(payload.get("resume_id"))
+    resume = db.query(Resume).filter(Resume.id == resume_id).first()
 
-    resume.is_user_approved = True
+    if not resume or not resume.optimized_text:
+        raise HTTPException(status_code=404, detail="Resume or optimized version not found.")
+
+    # ✅ Overwrite parsed_text with optimized version
+    resume.parsed_text = resume.optimized_text
+    resume.is_approved = True
+    resume.updated_at = datetime.now(timezone.utc)
+
     db.commit()
-
-    return {"message": "✅ Resume marked as approved!"}
+    return { "message": "Resume approved and updated successfully." }
