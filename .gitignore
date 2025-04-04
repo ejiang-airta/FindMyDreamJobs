@@ -21,6 +21,8 @@ results/
 job_Listing*.json
 job_outputs.txt
 testing*.py
+structure.dot
+structure.txt 
 
 # skip the resume upload folder:
 uploads/
