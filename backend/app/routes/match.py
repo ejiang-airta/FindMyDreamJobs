@@ -8,6 +8,8 @@ from datetime import datetime, timezone
 import re
 from pydantic import BaseModel
 import random
+from app.utils.job_extraction import extract_skills_with_frequency
+from app.config.skills_config import SKILL_KEYWORDS
 
 router = APIRouter()
 
@@ -36,31 +38,42 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
     resume_text = resume.parsed_text.lower()
     jd_text = job.job_description.lower()
 
-    # Extract keywords from JD
-    jd_keywords = set(re.findall(r"\b(python|fastapi|sql|aws|docker|react|node|postgre|git)\b", jd_text))
-    jd_keywords_set = set(jd_keywords)
-    print("🔍 Extracted JD Keywords:", jd_keywords_set)  # 👈 Debugging Print
+    jd_skill_freq = extract_skills_with_frequency(jd_text, SKILL_KEYWORDS)
+    resume_skill_freq = extract_skills_with_frequency(resume_text, SKILL_KEYWORDS)
 
+    jd_skills = set(jd_skill_freq.keys())
+    resume_skills = set(resume_skill_freq.keys())
 
-    # Count matches in resume
-    resume_matches = [kw for kw in jd_keywords_set if kw in resume_text]
-    missing_skills = list(jd_keywords_set - set(resume_matches))
-    print("✅ Matched Resume Keywords:", resume_matches)  # 👈 Debugging Print
+    matched = list(jd_skills & resume_skills)
+    missing = list(jd_skills - resume_skills)
 
-    score = round((len(resume_matches) / max(len(jd_keywords), 1)) * 100, 2)  # Avoid zero division
+    match = db.query(JobMatch).filter(
+        JobMatch.resume_id == resume.id, JobMatch.job_id == job.id
+    ).first()
 
+    # 🆕 Calculate match scores:
+    match_score=round(len(matched) / max(len(jd_skills), 1) * 100, 2),
+    ats_score=round(len(matched) / max(len(resume_skills), 1) * 100, 2),
     # ✅ Save match record 
-    match = JobMatch(
-        user_id=resume.user_id,
-        job_id=job.id,
-        resume_id=resume.id,
-        match_score_initial=score,  # ✅ Updated field name
-        matched_skills=",".join(resume_matches),  # ✅ Store matched skills
-        missing_skills=",".join(missing_skills),  # ✅ Store missing skills
-        created_at=datetime.now(timezone.utc),  # ✅ Use timezone-aware datetime
-        calculated_at=datetime.now(timezone.utc)  # ✅ Ensure timestamp is stored
-    )
-
+    if match is None:
+        # 🆕 New match
+        match = JobMatch(
+            user_id=resume.user_id,
+            job_id=job.id,
+            resume_id=resume.id,
+            match_score_initial=match_score,
+            ats_score_initial=ats_score,
+            matched_skills=",".join(matched),
+            missing_skills=",".join(missing),
+            created_at=datetime.now(timezone.utc),
+        )
+    else:
+        # 🔁 Existing match: update final scores
+        match.match_score_final = match_score
+        match.ats_score_final = ats_score
+        match.calculated_at = datetime.now(timezone.utc)
+        match.matched_skills = ",".join(matched)
+        match.missing_skills = ",".join(missing)
     db.add(match)
     db.commit()
     db.refresh(match)
@@ -68,12 +81,11 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
     return {
         "resume_id": resume.id,
         "job_id": job.id,
-        "match_score_initial": score,
-        "keywords_matched": resume_matches,
-        "missing_skills": missing_skills,
-        "match_id": match.id
+        "match_score": match.match_score_final or match.match_score_initial,
+        "ats_score": match.ats_score_final or match.ats_score_initial,
+        "matched_skills": matched,
+        "missing_skills": missing
     }
-
 
 # 🔹 API: Get All Matches for all users - only for admin to use:
 @router.get("/matches", tags=["Job Matches"])
