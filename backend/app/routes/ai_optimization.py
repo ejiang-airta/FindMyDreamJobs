@@ -43,65 +43,86 @@ def optimize_resume(
 ):
     resume = db.query(Resume).filter(Resume.id == payload.resume_id).first()
     job = db.query(Job).filter(Job.id == payload.job_id).first()
+
+    if not resume or not job:
+        raise HTTPException(status_code=404, detail="Resume or Job not found.")
+    
+    # Check if the resume is already optimized
     match = db.query(JobMatch).filter(
         JobMatch.resume_id == payload.resume_id,
         JobMatch.job_id == payload.job_id
     ).first()
 
-    if not resume or not job:
-        raise HTTPException(status_code=404, detail="Resume or Job not found.")
+    # ✅ Extract skills from job JSONB
+    extracted = job.extracted_skills or {}
+    jd_skill_objs = extracted.get("skills", [])
+    jd_keywords = {item["skill"].lower() for item in jd_skill_objs if "skill" in item}
 
-    #  Generate optimized resume using emphasized skills + justification
-    optimized_text = optimize_resume_with_skills_service(
+    # ✅ Match vs resume text
+    matched_skills = [kw for kw in jd_keywords if kw in resume.parsed_text.lower()]
+    missing_skills = list(jd_keywords - set(matched_skills))
+
+    # ✅ Run GPT-based optimizer service:
+    optimized_text, changes_summary = optimize_resume_with_skills_service(
         resume_text=resume.parsed_text,
-        job_description=job.job_description,
+        matched_skills=matched_skills,
+        missing_skills=missing_skills,
         emphasized_skills=payload.emphasized_skills,
         justification=payload.justification
     )
     # ✅ Recalculate ATS score from optimized text
     _, ats_final = calculate_ats_score(optimized_text)
-
     # ✅ Recalculate match score final
-    # ✅ Extract skills list from structured extracted_skills (JSONB format)
-    extracted = job.extracted_skills or {}
-    jd_skill_objs = extracted.get("skills", [])
-    jd_keywords = {item["skill"].lower() for item in jd_skill_objs if "skill" in item}
-
-    # ✅ Now compare to optimized resume
-    matched = [kw for kw in jd_keywords if kw in optimized_text.lower()]
-    match_score_final = round((len(matched) / max(len(jd_keywords), 1)) * 100, 2)
-
+    final_match_score = round((len(matched_skills) / max(len(jd_keywords), 1)) * 100, 2)
 
     # 🔄 Update Resume table
-
     resume.optimized_text = optimized_text
     resume.ats_score_final = ats_final
     resume.is_ai_generated = True
     resume.is_user_approved = False
     resume.updated_at = datetime.now(timezone.utc)
 
-    # 🔄 Update JobMatch table if exists
     if match:
-        match.match_score_final = match_score_final
+        # 🔁 Update final values
+        match.match_score_final = final_match_score
         match.ats_score_final = ats_final
         match.calculated_at = datetime.now(timezone.utc)
+        match.changes_summary = ", ".join(changes_summary)
+
+    else:
+        # 🆕 Create new match record with initial scores
+        match = JobMatch(
+            user_id=resume.user_id,
+            job_id=job.id,
+            resume_id=resume.id,
+            match_score_initial=final_match_score,
+            ats_score_initial=ats_final,
+            matched_skills=",".join(matched_skills),
+            missing_skills=",".join(missing_skills),
+            created_at=datetime.now(timezone.utc),
+            changes_summary=", ".join(changes_summary)
+        )
+        db.add(match)
+
     db.commit()
-    # logging the optimization process:
-    logger.info(f"Starting resume optimization: resume_id={payload.resume_id}, job_id={payload.job_id}")
-    logger.debug(f"Optimized resume text: {optimized_text}")
-    logger.info(f"Resume optimization completed: resume_id={payload.resume_id}, job_id={payload.job_id}")
+
+    # 📜 Logging
+    logger.info(f"Resume optimization complete: resume_id={resume.id}, job_id={job.id}")
+    logger.info(f"Match Score (Final): {final_match_score}")
     logger.info(f"ATS Score (Final): {ats_final}")
-    logger.info(f"Match Score (Final): {match_score_final}")
     logger.info(f"Emphasized Skills: {payload.emphasized_skills}")
     logger.info(f"Justification: {payload.justification}")
+    logger.info(f"Changes Summary: {changes_summary}")
 
     return {
         "resume_id": resume.id,
         "optimized_text": optimized_text,
         "ats_score_final": ats_final,
-        "match_score_final": match_score_final,
+        "match_score_final": final_match_score,
+        "changes_summary": changes_summary,
         "message": "✅ Resume optimized and scores updated successfully!"
     }
+
     
 # 🔹 API: Approve Final Resume
 class ResumeApprovalRequest(BaseModel):

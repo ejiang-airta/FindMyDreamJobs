@@ -47,7 +47,14 @@ function OptimizeResumePage() {
       }
 
       const matchData = await matchRes.json()
+
+      // ✅ Set missing skills directly
       setMissing(matchData.missing_skills?.join(', ') || '')
+
+          // ✅ Optionally preload matched skills as emphasized
+      if (!emphasized.trim()) {
+        setEmphasized(matchData.matched_skills?.join(', ') || '')
+      }
     } catch (err) {
       console.error("❌ Error ensuring match data:", err)
       setError("Failed to prepare matching info.")
@@ -168,11 +175,12 @@ function OptimizeResumePage() {
             onChange={e => setEmphasized(e.target.value)}
             placeholder="e.g., Python, FastAPI, AWS"
           />
-          {emphasized && (
+          {emphasized && missing &&  (
             <div className="bg-yellow-50 border border-yellow-300 p-3 rounded text-sm">
               <strong>📌 Suggested Missing Skills:</strong>
               <p className="mt-1 text-gray-700">
-                Please explain any missing skills from the job requirements in your justification. Example: <em>“Familiar with Docker through side projects.”</em>
+                Please explain any missing skills from the job requirements in your justification. Example: 
+                <em>“Familiar with Docker through side projects.”</em>
               </p>
               <p className="mt-1 text-blue-700">
                 🧠 You’re missing: <strong>{missing}</strong>
@@ -213,6 +221,16 @@ function OptimizeResumePage() {
               <pre className="bg-muted p-4 rounded whitespace-pre-wrap max-h-96 overflow-auto text-sm">
                 {optimizedText}
               </pre>
+              {response?.changes_summary && (
+                <div className="bg-gray-50 p-4 rounded border">
+                  <h4 className="font-semibold text-sm mb-2">🔍 Summary of Optimizations</h4>
+                  <ul className="list-disc list-inside text-sm text-gray-700">
+                    {response.changes_summary.map((line: string, index: number) => (
+                      <li key={index}>{line}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
 
               <div className="flex gap-3">
                 <Button variant="default" onClick={handleApprove}>
