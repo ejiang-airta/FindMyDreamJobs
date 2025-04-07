@@ -33,32 +33,27 @@ export default function NavBar() {
 
   useEffect(() => {
     const fetchUserId = async () => {
-      if (!session?.user?.email) return
-  
-      try {
-        const res = await fetch("http://127.0.0.1:8000/auth/whoami", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: session.user.email,
-            name: session.user.name || "",
-          })
-        })
-  
-        if (!res.ok) {
-          const error = await res.json()
-          throw new Error(error.detail || "Backend error")
-        }
-  
-        const data = await res.json()
-        console.log("✅ Registered user:", data)
-        localStorage.setItem("user_id", data.user_id)
-      } catch (err) {
-        console.error("❌ Failed to sync user with backend:", err)
-      }
+      const session = await getSession()
+    if (!session?.user?.email) return
+    const res = await fetch("http://127.0.0.1:8000/auth/whoami", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: session.user.email,
+        name: session.user.name || "",
+      })
+    })
+
+    const data = await res.json();
+    if (res.ok && data.user_id) {
+      console.log("✅ Registered user:", data)
+      localStorage.setItem("user_id", data.user_id)  // 👈 Store local DB ID
     }
-    fetchUserId()
-  }, [session])
+  }
+
+  fetchUserId()
+}, [])
+
 
   // 🔐 SIGNUP - Register the user in the DB
   const handleSignup = async () => {

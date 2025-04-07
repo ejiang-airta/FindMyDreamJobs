@@ -1,7 +1,7 @@
 # ✅ File: backend/app/routes/auth.py 
 # User Authentication APIs
 
-from fastapi import APIRouter, HTTPException, Request, Depends
+from fastapi import APIRouter, HTTPException, Request, Depends, Body
 from sqlalchemy.orm import Session
 from app.database.connection import get_db
 from app.models.user import User
@@ -9,7 +9,7 @@ from app.models.user import User
 router = APIRouter()
 
 @router.post("/auth/whoami", tags=["Auth"])
-def whoami(payload: dict, db: Session = Depends(get_db)):
+def whoami(payload: dict = Body(...), db: Session = Depends(get_db)):
     email = payload.get("email")
     name = payload.get("name")
 

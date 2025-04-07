@@ -4,3 +4,8 @@ beautifulsoup4
 requests
 schedule
 apscheduler
+dotenv
+sqlalchemy
+sqlalchemy.orm
+psycopg2
+spacy

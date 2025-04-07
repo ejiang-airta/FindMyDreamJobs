@@ -1,3 +1,6 @@
+// File: src/app/optimize/page.tsx
+// This page is for optimizing resumes based on job descriptions.
+// It allows users to input a resume ID and job ID, fetch the emphasized skills, and optimize the resume.
 'use client'
 
 import React, { useState, useEffect } from 'react'
@@ -8,6 +11,8 @@ import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useSession } from 'next-auth/react'
+import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
+
 
 export default function ProtectedPage() {
   const { data: session, status } = useSession()
@@ -15,12 +20,18 @@ export default function ProtectedPage() {
   if (status === 'loading') return <p>Loading...</p>
   if (!session) return <p>Unauthorized. Please sign in.</p>
 
-  return <OptimizeResumePage />
+  const userId = localStorage.getItem("user_id") // ✅ uses centralized logic
+  if (!userId) return <p>❌ No user ID found in localStorage</p>
+
+  return <OptimizeResumePage userId={userId} />
 }
 
-function OptimizeResumePage() {
+// This component handles the resume optimization process.
+function OptimizeResumePage({ userId }: { userId: string }) {
   const [resumeId, setResumeId] = useState('')
   const [jobId, setJobId] = useState('')
+  const [resumes, setResumes] = useState<any[]>([])
+  const [jobs, setJobs] = useState<any[]>([])
   const [emphasized, setEmphasized] = useState('')
   const [missing, setMissing] = useState('')
   const [justification, setJustification] = useState('')
@@ -28,9 +39,42 @@ function OptimizeResumePage() {
   const [error, setError] = useState('')
   const [optimizedText, setOptimizedText] = useState<string | null>(null)
 
+  // 🔄 Load dropdown options
+  useEffect(() => {
+    const fetchDropdowns = async () => {
+      try {
+        const [res1, res2] = await Promise.all([
+          fetch(`http://127.0.0.1:8000/resumes/by-user/${userId}`),
+          fetch(`http://127.0.0.1:8000/jobs/all`)
+        ])
+
+        const resumesData = await res1.json()
+        const jobsData = await res2.json()
+
+        if (res1.ok) setResumes(resumesData)
+        if (res2.ok) setJobs(jobsData)
+      } catch (err) {
+        console.error('❌ Failed to fetch dropdowns', err)
+      }
+    }
+
+    fetchDropdowns()  }, [userId])
+
+    // 🧠 Dropdown for resumes
+    // Keep match logic when both selected
+    useEffect(() => {
+      if (resumeId && jobId) ensureMatchData()
+    }, [resumeId, jobId])
+
+    // Trigger emphasized skill fetch when jobId alone is set
+    useEffect(() => {
+      if (jobId) fetchEmphasized()
+    }, [jobId])
+
+
   // 🧠 Helper to call /match-score if needed, then fetch skills
   const ensureMatchData = async () => {
-    if (!resumeId || !jobId) return
+  //  if (!resumeId || !jobId) return
 
     try {
       const matchRes = await fetch(`http://127.0.0.1:8000/match-score`, {
@@ -42,9 +86,9 @@ function OptimizeResumePage() {
         })
       })
 
-      if (!matchRes.ok) {
-        throw new Error("Failed to compute match score")
-      }
+      // if (!matchRes.ok) {
+      //   throw new Error("Failed to compute match score")
+      // }
 
       const matchData = await matchRes.json()
 
@@ -65,7 +109,7 @@ function OptimizeResumePage() {
   // 🚀 Auto-fetch emphasized_skills from DB when jobId is entered
   // ✅ Extract emphasized_skills from backend
   const fetchEmphasized = async () => {
-    if (!jobId) return
+   //if (!jobId) return
 
     try {
       const jobRes = await fetch(`http://127.0.0.1:8000/jobs/${jobId}`)
@@ -77,12 +121,12 @@ function OptimizeResumePage() {
       console.error("❌ Failed to fetch emphasized skills:", err)
     }
   }
-  useEffect(() => {
-    if (resumeId && jobId) {
-      ensureMatchData()
-      fetchEmphasized()
-    }
-  }, [resumeId, jobId])
+  // useEffect(() => {
+  //   if (resumeId && jobId) {
+  //     ensureMatchData()
+  //     fetchEmphasized()
+  //   }
+  // }, [resumeId, jobId])
   const handleOptimize = async () => {
     setError('')
     setResponse(null)
@@ -145,29 +189,42 @@ function OptimizeResumePage() {
     <div className="max-w-2xl mx-auto mt-10 space-y-6">
       <h1 className="text-2xl font-bold">🛠 Optimize Resume</h1>
       <p className="text-muted-foreground text-sm">
-      Enhance your resume using job-specific skills. Provide Resume & Job ID to continue.
+      Enhance your resume using job-specific skills. Choose a resume and a job to begin.
       </p>
 
       <Card>
         <CardContent className="space-y-4 p-6">
-          <Label>Resume ID</Label>
-          <Input
-            type="number"
-            value={resumeId}
-            onChange={e => setResumeId(e.target.value)}
-            placeholder="e.g., 6"
-          />
+          {/* ✅ Resume Dropdown */}
+          <Label>Select Resume</Label>
+          <Select onValueChange={setResumeId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Choose your resume" />
+            </SelectTrigger>
+            <SelectContent>
+              {resumes.map(r => (
+                <SelectItem key={r.id} value={String(r.id)}>
+                  {`Resume #${r.id}`} - {r.resume_name}
+                </SelectItem>                
+              ))}
+            </SelectContent>
+          </Select>
 
-          <Label>Job ID</Label>
-          <div className="flex space-x-2">
-            <Input
-              type="number"
-              value={jobId}
-              onChange={e => setJobId(e.target.value)}
-              placeholder="e.g., 1"
-            />
-          </div>
+          {/* ✅ Job Dropdown */}
+          <Label>Select Job</Label>
+          <Select onValueChange={setJobId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Choose a job" />
+            </SelectTrigger>
+            <SelectContent>
+              {jobs.map(j => (
+                <SelectItem key={j.id} value={String(j.id)}>
+                  {`Job #${j.id}`} – {j.job_title} @ {j.company_name || 'Unknown'}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
+          {/* Emphasized Skills */}
           <Label>🧠 Emphasized Skills</Label>
           <Textarea
             rows={2}

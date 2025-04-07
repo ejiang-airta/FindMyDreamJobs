@@ -8,6 +8,7 @@ class Resume(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    resume_name = Column(String, nullable=True)  # ✅ Add resume name to be used in the frontend
     file_path = Column(String)  # Path to the uploaded resume file
     parsed_text = Column(Text)  # Extracted raw text from the resume file, original resume
     optimized_text = Column(Text, nullable=True)  # AI-enhanced resume

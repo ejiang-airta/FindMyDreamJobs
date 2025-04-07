@@ -3,12 +3,13 @@ import requests
 from bs4 import BeautifulSoup
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
 from app.database.connection import get_db
 from app.models.job import Job
+from typing import List
 from datetime import datetime, timezone
 import re
 import spacy
+from app.schemas.job import JobOut, JobInput  # centeralized JobInput and JobOut to schemas/job.py
 from app.utils.job_extraction import (
     extract_title,
     extract_company_name,
@@ -22,10 +23,7 @@ router = APIRouter()
 # Load spaCy model
 nlp = spacy.load("en_core_web_sm")
 
-class JobInput(BaseModel):
-    job_link: str | None = None
-    job_description: str | None = None
-    user_id: int  # Required to track which user added this job
+
 
 @router.post("/parse-job-description", tags=["Jobs"])
 async def parse_job_description(job: JobInput, db: Session = Depends(get_db)):
@@ -83,7 +81,13 @@ async def parse_job_description(job: JobInput, db: Session = Depends(get_db)):
         "company_name": company,
         "location": location,
     }
-# ✅ Add to routes/job.py
+# Get all jobs
+@router.get("/jobs/all")
+def get_all_jobs(db: Session = Depends(get_db)):
+    jobs = db.query(Job).order_by(Job.created_at.desc()).all()
+    return jobs
+
+# ✅ Get jobs by user_id
 @router.get("/jobs/{job_id}", tags=["Jobs"])
 def get_job_by_id(job_id: int, db: Session = Depends(get_db)):
     job = db.query(Job).filter(Job.id == job_id).first()

@@ -85,6 +85,7 @@ async def upload_resume(
     # ✅ If valid, store resume in DB
     new_resume = Resume(
         user_id=user_id,
+        resume_name=file.filename,  # 👈 Store the original filename
         file_path=file_path,
         parsed_text=extracted_text,     # 👈 Store extracted tex# 👈 Now we save the actual text!
         created_at=datetime.now(timezone.utc)
@@ -96,6 +97,7 @@ async def upload_resume(
     return {
         "message": "✅ Resume uploaded successfully",
         "resume_id": new_resume.id,
+        "resume_name": new_resume.resume_name,
         "file_path": file_path
     }
 
@@ -208,6 +210,7 @@ def get_resumes_by_user(user_id: int, db: Session = Depends(get_db)):
         {
             "id": r.id,
             "user_id": r.user_id,
+            "resume_name": r.resume_name,
             "file_path": r.file_path,
             "parsed_text": r.parsed_text,
             "optimized_text": r.optimized_text,

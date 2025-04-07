@@ -6,6 +6,8 @@ import sys
 import os
 from datetime import datetime
 from app.config.settings import PROJECT_ROOT
+from dotenv import load_dotenv
+load_dotenv()
 
 # Root logger configuration
 logger_dir  = os.path.join(PROJECT_ROOT, "dev_tracking", "logging")
@@ -52,6 +54,8 @@ app.include_router(auth.router)
 app.include_router(job.router)
 app.include_router(match.router)
 app.include_router(resume.router)
+
+
 
 @app.get("/")
 def read_root():
