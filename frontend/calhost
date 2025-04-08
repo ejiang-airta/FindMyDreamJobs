@@ -1,0 +1,14 @@
+                             List of databases
+    Name    |  Owner   | Encoding | Collate | Ctype |  Access privileges   
+------------+----------+----------+---------+-------+----------------------
+ dream_jobs | e_jiang  | UTF8     | C       | C     | =Tc/e_jiang         +
+            |          |          |         |       | e_jiang=CTc/e_jiang +
+            |          |          |         |       | job_user=CTc/e_jiang
+ job_db     | job_user | UTF8     | C       | C     | 
+ postgres   | e_jiang  | UTF8     | C       | C     | 
+ template0  | e_jiang  | UTF8     | C       | C     | =c/e_jiang          +
+            |          |          |         |       | e_jiang=CTc/e_jiang
+ template1  | e_jiang  | UTF8     | C       | C     | =c/e_jiang          +
+            |          |          |         |       | e_jiang=CTc/e_jiang
+(5 rows)
+

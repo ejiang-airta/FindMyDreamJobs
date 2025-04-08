@@ -21,7 +21,6 @@ const navItems = [
   { href: '/finalize', label: '✅ Finalize' },
   { href: '/apply', label: '📩 Apply' },
   { href: '/applications', label: '🧾 Applications' },
-  { href: '/jobs', label: '📋 Jobs' },
   { href: '/matches', label: '🧠 Matches' },
   { href: '/stats', label: '📈 Stats' },
 ]

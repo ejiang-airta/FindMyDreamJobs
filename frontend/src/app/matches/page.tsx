@@ -78,7 +78,7 @@ function MatchesPage() {
                 <p><strong>📌 Missing Skills:</strong> {match.missing_skills || '--'}</p>
                 <div className="w-full bg-gray-200 rounded-full h-2.5">
                 <div className="bg-green-500 h-2.5 rounded-full" style={{ width: `${match.match_score_final || match.match_score_initial}%` }} />
-</div>
+              </div>
               </div>
             ))
           ) : (

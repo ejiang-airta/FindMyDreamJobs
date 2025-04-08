@@ -12,6 +12,10 @@ import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useSession } from 'next-auth/react'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
+import { toast } from "sonner"  // ✅ at the top
+import { motion } from "framer-motion"
+
+
 
 
 export default function ProtectedPage() {
@@ -157,6 +161,7 @@ function OptimizeResumePage({ userId }: { userId: string }) {
       }
 
       setResponse(data)
+      toast.success("🎉 Resume optimization complete!")
     } catch (err) {
       setError('Unexpected error occurred.')
       console.error(err)
@@ -174,7 +179,7 @@ function OptimizeResumePage({ userId }: { userId: string }) {
   
         const data = await response.json()
         if (response.ok) {
-          alert(data.message || "✅ Resume approved!")
+          toast.success(data.message || "✅ Resume approved!")
         } else {
           alert(data.detail || "❌ Failed to approve resume.")
         }
@@ -186,14 +191,15 @@ function OptimizeResumePage({ userId }: { userId: string }) {
   
 
   return (
-    <div className="max-w-2xl mx-auto mt-10 space-y-6">
+    // ✅ Main container
+    <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 md:px-8 mt-10 space-y-6">
       <h1 className="text-2xl font-bold">🛠 Optimize Resume</h1>
       <p className="text-muted-foreground text-sm">
       Enhance your resume using job-specific skills. Choose a resume and a job to begin.
       </p>
 
       <Card>
-        <CardContent className="space-y-4 p-6">
+      <CardContent className="space-y-6 p-4 sm:p-6">
           {/* ✅ Resume Dropdown */}
           <Label>Select Resume</Label>
           <Select onValueChange={setResumeId}>
@@ -273,37 +279,43 @@ function OptimizeResumePage({ userId }: { userId: string }) {
           )}
 
           {optimizedText && (
-            <div className="mt-6 space-y-4">
-              <h3 className="text-lg font-semibold">📝 Optimized Resume Preview</h3>
-              <pre className="bg-muted p-4 rounded whitespace-pre-wrap max-h-96 overflow-auto text-sm">
-                {optimizedText}
-              </pre>
-              {response?.changes_summary && (
-                <div className="bg-gray-50 p-4 rounded border">
-                  <h4 className="font-semibold text-sm mb-2">🔍 Summary of Optimizations</h4>
-                  <ul className="list-disc list-inside text-sm text-gray-700">
-                    {response.changes_summary.map((line: string, index: number) => (
-                      <li key={index}>{line}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+            <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="mt-6 space-y-4" >
+              <div className="mt-6 space-y-4">
+                <h3 className="text-lg font-semibold">📝 Optimized Resume Preview</h3>
+                <pre className="bg-muted p-4 rounded whitespace-pre-wrap max-h-96 overflow-auto text-sm">
+                  {optimizedText}
+                </pre>
+                {response?.changes_summary && (
+                  <div className="bg-gray-50 p-4 rounded border">
+                    <h4 className="font-semibold text-sm mb-2">🔍 Summary of Optimizations</h4>
+                    <ul className="list-disc list-inside text-sm text-gray-700">
+                      {response.changes_summary.map((line: string, index: number) => (
+                        <li key={index}>{line}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-              <div className="flex gap-3">
-                <Button variant="default" onClick={handleApprove}>
-                    🚀 Approve Resume
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    window.open(`http://127.0.0.1:8000/download-resume/${resumeId}`, "_blank")
-                  }}
-                >
-                  📥 Download Resume
-                </Button>
+                <div className="flex gap-3">
+                  <Button variant="default" onClick={handleApprove}>
+                      🚀 Approve Resume
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => {
+                      window.open(`http://127.0.0.1:8000/download-resume/${resumeId}`, "_blank")
+                    }}
+                  >
+                    📥 Download Resume
+                  </Button>
+                </div>
               </div>
-            </div>
-          )}
+            </motion.div>
+            )}
         </CardContent>
       </Card>
     </div>

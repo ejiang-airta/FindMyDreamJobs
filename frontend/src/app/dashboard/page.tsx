@@ -27,7 +27,8 @@ function DashboardPage() {
   const [matches, setMatches] = useState([])
   const [applications, setApplications] = useState([])
   const [error, setError] = useState("")
-
+  const [jobs, setJobs] = useState([])
+  
   // This function retrieves the user ID from local storage:
   const userId = getUserId()
   if (!userId) {
@@ -37,6 +38,9 @@ function DashboardPage() {
   }
 
   useEffect(() => {
+    fetch('http://127.0.0.1:8000/jobs/all')
+      .then(res => res.json())
+      .then(data => setJobs(data))
     fetchResumes()
     fetchMatches()
     fetchApplications()
@@ -102,13 +106,12 @@ function DashboardPage() {
         </CardHeader>
         <CardContent className="space-y-4">
           {resumes.length > 0 ? (
-            resumes.map((resume: any) => (
-              <div key={resume.id} className="border p-3 rounded-md">
-                <p><strong>ID:</strong> {resume.id}</p>
-                <p><strong>Uploaded:</strong> {new Date(resume.created_at).toLocaleString()}</p>
-                <p><strong>ATS Score:</strong> 
-                {resume.ats_score_initial !== null ? `${resume.ats_score_initial}%` : '—'} → 
-                {resume.ats_score_final !== null ? `${resume.ats_score_final}%` : '—'}
+            resumes.map((r : any) => (
+              <div key={r.id} className="border p-3 rounded-md">
+                <p><strong>Resume #{r.id}:</strong> {r.resume_name}</p>
+                <p><strong>Uploaded:</strong> {new Date(r.created_at).toLocaleString()}</p>
+                <p><strong>ATS Score: </strong> 
+                {r.ats_score_initial !== null ? `${r.ats_score_initial}%` : '—'} → {r.ats_score_final !== null ? `${r.ats_score_final}%` : '—'}
                 </p>
               </div>
             ))
@@ -130,7 +133,12 @@ function DashboardPage() {
           {matches.length > 0 ? (
             matches.map((match: any) => (
               <div key={`match-${match.job_id}`} className="border p-3 rounded-md">
-                <p><strong>Job ID:</strong> {match.job_id}</p>
+                <p>
+                  <strong>Job #{match.job_id}:</strong>{' '}
+                  {match.job_title && match.company_name
+                    ? `${match.job_title} - ${match.company_name}`
+                    : `Job #${match.job_id}`}
+                </p>
                 <p><strong>Match Score:</strong> {match.match_score_final ?? match.match_score_initial ?? '--'}%</p>
               </div>
             ))
@@ -148,10 +156,14 @@ function DashboardPage() {
         <CardContent className="space-y-4">
           {applications.length > 0 ? (
             applications.map((app: any) => (
-              <div key={app.application_id} className="border p-3 rounded-md">
-                <p><strong>Job:</strong> {app.job_title} @ {app.company_name}</p>
+              <div key={app.id} className="border p-3 rounded-md">
+                <p><strong>Job #{app.application_id}:</strong> {app.job_title} @ {app.company_name}</p>
                 <p><strong>Status:</strong> {app.application_status}</p>
-                <p><strong>Resume ID:</strong> {app.resume_id}</p>
+                <p><strong>Resume #{app.resume_id}:</strong>{' '}
+                  {app.resume_name
+                      ? `${app.resume_name}`
+                      : 'Unnamed'}
+                </p>
                 <p><strong>Applied On:</strong> {new Date(app.applied_date).toLocaleString()}</p>
                 <a
                   href={app.application_url}

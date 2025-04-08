@@ -86,12 +86,12 @@ function MatchPage({ userId }: { userId: string }) {
   }
 
   return (
-    <div className="max-w-xl mx-auto mt-10 space-y-6">
+    <div className="w-full max-w-2xl mx-auto px-4 sm:px-6 md:px-8 mt-10 space-y-6">
       <h1 className="text-2xl font-bold">📊 Resume/Job Match</h1>
       <p className="text-muted-foreground text-sm">Compare your resume with a job description to calculate match & ATS scores.</p>
 
       <Card>
-        <CardContent className="space-y-4 p-6">
+         <CardContent className="space-y-6 p-4 sm:p-6">
           <div>
             <Label>Select Resume</Label>
             <Select onValueChange={setResumeId}>

@@ -9,12 +9,15 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { useSession } from 'next-auth/react'
 import { getUserId } from '@/lib/auth'
+import { Badge } from '@/components/ui/badge'
+import { Skeleton } from '@/components/ui/skeleton'
+
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
   const { data: session, status } = useSession()
 
-  if (status === 'loading') return <p>Loading...</p>
+  if (status === 'loading') return <Skeleton className="h-6 w-40" />
   if (!session) return <p>Unauthorized. Please sign in.</p>
 
   return <ApplicationsPage />
@@ -27,6 +30,7 @@ function ApplicationsPage() {
   const [applications, setApplications] = useState([])
   const [error, setError] = useState('')
   const [updateStatus, setUpdateStatus] = useState<{ [key: number]: string }>({})
+  const [isLoading, setIsLoading] = useState(false)
 
   // 🔐 update it to take the login user_id
   const userId = getUserId()
@@ -42,6 +46,7 @@ function ApplicationsPage() {
   }, [])
 
   const fetchApplications = async () => {
+    setIsLoading(true)
     try {
       const res = await fetch(`http://127.0.0.1:8000/applications/${userId}`)
       const data = await res.json()
@@ -53,8 +58,10 @@ function ApplicationsPage() {
       setApplications(data)
     } catch (err) {
       setError('❌ Failed to load applications. Please try again later.')
-    }
+    } finally {
+      setIsLoading(false)
   }
+}
   const handleStatusUpdate = async (applicationId: number) => {
     const newStatus = updateStatus[applicationId]
   
@@ -107,12 +114,14 @@ function ApplicationsPage() {
           <h2 className="text-xl font-bold">🧾 Application History</h2>
         </CardHeader>
         <CardContent className="space-y-4">
-          {applications.length > 0 ? (
+        {isLoading ? (
+            <Skeleton className="h-10 w-full" />
+          ) : applications.length > 0 ? (
             applications.map((app: any) => (
               <div key={app.application_id} className="border p-4 rounded-md">
                 <p><strong>📄 Job Title:</strong> {app.job_title}</p>
                 <p><strong>🏢 Company:</strong> {app.company_name}</p>
-                <p><strong>📝 Resume ID:</strong> {app.resume_id}     
+                <p><strong>📝 Resume #</strong>{app.resume_id} – {app.resume_name || 'Unnamed'}  
                 <Button
                     className="ml-8"  // <-- adds left margin (space)
                     variant="outline"
@@ -139,7 +148,7 @@ function ApplicationsPage() {
                 <p><strong>🔗 URL:</strong> <a href={app.application_url} target="_blank" className="text-blue-600 underline">{app.application_url}</a></p>
                 <p><strong>📅 Date Applied:</strong> {new Date(app.applied_date).toLocaleDateString()}</p>
                 <p>
-                  <strong>📊 Status:</strong> {app.application_status}
+                  <strong>📊 Status:</strong> <Badge>{app.application_status}</Badge>
                   <Input
                     className="mt-2"
                     type="text"

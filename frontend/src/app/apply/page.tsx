@@ -2,13 +2,15 @@
 // This page is for submitting job applications.
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Label } from '@/components/ui/label'
 import { useSession } from 'next-auth/react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
@@ -17,16 +19,36 @@ export default function ProtectedPage() {
   if (status === 'loading') return <p>Loading...</p>
   if (!session) return <p>Unauthorized. Please sign in.</p>
 
-  return <ApplyPage />
+  return <ApplyPage userId={session.user.id} />
 }
 
 // This component is the main page for submitting job applications:
-function ApplyPage() {
+function ApplyPage({ userId }: { userId: string }) {
   const [resumeId, setResumeId] = useState('')
+  const [resumes, setResumes] = useState<any[]>([])
+  const [jobs, setJobs] = useState<any[]>([])
   const [jobId, setJobId] = useState('')
   const [applicationUrl, setApplicationUrl] = useState('')
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+
+  // Fetch resumes and jobs from the backend:
+  useEffect(() => {
+    const userId = localStorage.getItem("user_id")
+    if (!userId) return
+    const fetchData = async () => {
+      
+      try {
+        const res1 = await fetch(`http://127.0.0.1:8000/resumes/by-user/${userId}`)
+        const res2 = await fetch(`http://127.0.0.1:8000/jobs/all`)
+        if (res1.ok) setResumes(await res1.json())
+        if (res2.ok) setJobs(await res2.json())
+      } catch (err) {
+        console.error('❌ Failed to load resumes or jobs:', err)
+      }
+    }
+    fetchData()
+  }, [])
 
   console.log({
     resumeId,
@@ -77,32 +99,43 @@ function ApplyPage() {
     <div className="max-w-xl mx-auto mt-10 space-y-6">
       <h1 className="text-2xl font-bold">📩 Submit Job Application</h1>
       <p className="text-muted-foreground text-sm">
-        Enter your Resume ID, Job ID, and the application URL where you applied.
+        Please select your resume, job, and enter application URL. They all required for applying the job.
       </p>
 
       <Card>
-        <CardContent className="p-6 space-y-4">
+      <CardContent className="p-6 space-y-4">
           <div>
-            <Label htmlFor="resumeId">Resume ID</Label>
-            <Input
-              id="resumeId"
-              type="number"
-              value={resumeId}
-              onChange={(e) => setResumeId(e.target.value)}
-              placeholder="e.g. 6"
-            />
+            <Label htmlFor="resumeId">Resume</Label>
+            <Select value={resumeId} onValueChange={setResumeId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select resume" />
+              </SelectTrigger>
+              <SelectContent>
+                {resumes.map((resume) => (
+                  <SelectItem key={resume.id} value={String(resume.id)}>
+                    Resume #{resume.id} – {resume.resume_name || 'Unnamed'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div>
-            <Label htmlFor="jobId">Job ID</Label>
-            <Input
-              id="jobId"
-              type="number"
-              value={jobId}
-              onChange={(e) => setJobId(e.target.value)}
-              placeholder="e.g. 3"
-            />
+            <Label htmlFor="jobId">Job</Label>
+            <Select value={jobId} onValueChange={setJobId}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select job" />
+              </SelectTrigger>
+              <SelectContent>
+                {jobs.map((job) => (
+                  <SelectItem key={job.id} value={String(job.id)}>
+                    Job #{job.id} – {job.job_title} - {job.company_name || 'Unknown'}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
 
           <div>
             <Label htmlFor="applicationUrl">Application URL</Label>
