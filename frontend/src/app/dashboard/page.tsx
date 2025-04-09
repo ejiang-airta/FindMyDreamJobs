@@ -132,7 +132,7 @@ function DashboardPage() {
         <CardContent className="space-y-4">
           {matches.length > 0 ? (
             matches.map((match: any) => (
-              <div key={`match-${match.job_id}`} className="border p-3 rounded-md">
+              <div key={`match-${match.job_id}-${match.resume_id}`} className="border p-3 rounded-md">
                 <p>
                   <strong>Job #{match.job_id}:</strong>{' '}
                   {match.job_title && match.company_name
@@ -147,7 +147,7 @@ function DashboardPage() {
           )}
         </CardContent>
       </Card>
-
+      
       {/* Applications Tracking Section */}
       <Card>
         <CardHeader>
@@ -156,7 +156,7 @@ function DashboardPage() {
         <CardContent className="space-y-4">
           {applications.length > 0 ? (
             applications.map((app: any) => (
-              <div key={app.id} className="border p-3 rounded-md">
+              <div key={`app-${app.application_id}`} className="border p-3 rounded-md">
                 <p><strong>Job #{app.application_id}:</strong> {app.job_title} @ {app.company_name}</p>
                 <p><strong>Status:</strong> {app.application_status}</p>
                 <p><strong>Resume #{app.resume_id}:</strong>{' '}
