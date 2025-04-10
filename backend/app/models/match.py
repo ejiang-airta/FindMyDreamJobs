@@ -2,9 +2,13 @@ from sqlalchemy import Column, Integer, ForeignKey, Float, Text, DateTime
 from sqlalchemy.orm import relationship
 from app.database.connection import Base
 from datetime import datetime, timezone
+from sqlalchemy import UniqueConstraint
 
 class JobMatch(Base):
     __tablename__ = "job_matches"
+    __table_args__ = (
+        UniqueConstraint('job_id', 'resume_id', name='unique_job_resume_combination'),
+    )  # ✅ Ensure unique matches per job_id/resume_id
     id = Column(Integer, primary_key=True, index=True)
     user_id = Column(Integer, ForeignKey("users.id"), nullable=False)  # ✅ Add ForeignKey
     job_id = Column(Integer, ForeignKey("jobs.id"), nullable=False)
