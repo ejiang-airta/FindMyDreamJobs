@@ -12,6 +12,7 @@ from datetime import datetime, timezone
 from app.config.settings import UPLOAD_DIR
 from fastapi.responses import FileResponse
 from app.services.file_utils import generate_resume_file, cleanup_file
+from app.services.ats_scoring import calculate_ats_score  # 👈 Import ATS scoring function
 
 
 router = APIRouter()
@@ -77,6 +78,9 @@ async def upload_resume(
     # 🔹 Extract text from PDF, DOCX, or TXT
     extracted_text = extract_text_from_file(file_path)
 
+    # right after extraction, call the ATS scoring engine:
+    ats_score_initial = calculate_ats_score(extracted_text)
+
     # ✅ If extraction fails (unsupported format), raise an HTTPException (NO DB ENTRY)
     if extracted_text.startswith("❌ Error:"):
         os.remove(file_path)  # Clean up the invalid file
@@ -88,6 +92,7 @@ async def upload_resume(
         resume_name=file.filename,  # 👈 Store the original filename
         file_path=file_path,
         parsed_text=extracted_text,     # 👈 Store extracted tex# 👈 Now we save the actual text!
+        ats_score_initial=ats_score_initial,
         created_at=datetime.now(timezone.utc)
     )
     db.add(new_resume)

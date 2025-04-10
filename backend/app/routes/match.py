@@ -1,3 +1,5 @@
+# File: app/routes/match.py
+# This file contains route-related utilities for job matching in the backend.
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database.connection import SessionLocal
@@ -35,6 +37,7 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Resume or Job not found.")
 
     resume_text = resume.parsed_text.lower()
+
     # ✅ Extract structured skills from job.extracted_skills JSONB
     extracted = job.extracted_skills or {}
     jd_keywords = set()
@@ -45,14 +48,13 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
         skill_map = {item["skill"].lower(): item["skill"] for item in jd_skill_objs if "skill" in item}
         jd_keywords = set(skill_map.keys())
 
-
     # ✅ Match vs resume
     matched_skills = [skill_map[kw] for kw in jd_keywords if kw in resume_text]
     missing_skills = [skill_map[kw] for kw in jd_keywords if kw not in resume_text]
 
     # ✅ Compute scores
     match_score = round((len(matched_skills) / max(len(jd_keywords), 1)) * 100, 2)
-    ats_score = round((len(matched_skills) / max(len(resume_text.split()), 1)) * 100, 2)
+    ats_score_before, ats_score_after, _ = calculate_ats_score(resume_text)
 
     # ✅ Find or create JobMatch
     match = db.query(JobMatch).filter(
@@ -66,7 +68,7 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
             job_id=job.id,
             resume_id=resume.id,
             match_score_initial=match_score,
-            ats_score_initial=ats_score,
+            ats_score_initial=ats_score_before,
             matched_skills=",".join(matched_skills),
             missing_skills=",".join(missing_skills),
             created_at=datetime.now(timezone.utc),
@@ -75,7 +77,7 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
     else:
         # 🔁 Existing → update final scores only
         match.match_score_final = match_score
-        match.ats_score_final = ats_score
+        match.ats_score_final = ats_score_after
         match.calculated_at = datetime.now(timezone.utc)
         match.matched_skills = ",".join(matched_skills)
         match.missing_skills = ",".join(missing_skills)

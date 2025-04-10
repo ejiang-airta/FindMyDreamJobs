@@ -1,36 +1,77 @@
-# File: /backend/app/services/ats_scoring.py
+# ✅ File: /backend/app/services/ats_scoring.py
+# ATS Scoring Engine (Modular & Extensible)
+
+from typing import List, Tuple, Dict
 import re
 import random
+from app.config.skills_config import SKILL_KEYWORDS
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 
-# ✅ Function: Calculate ATS Score (Before & After)
-def calculate_ats_score(resume_text: str):
-    """
-    Calculate ATS score based on resume text.
-    Returns: (before_score, after_score)
-    """
+# ✨ Define base rules for ATS formatting check
+SECTION_KEYWORDS = ["experience", "education", "skills", "summary"]
+# ✨ Define keywords for ATS scoring from config.skills_config:
+ATS_KEYWORDS = SKILL_KEYWORDS
 
-    if not resume_text or len(resume_text.strip()) == 0:
-        return 0, 0  # If empty resume, return zero scores
+# ✅ Formatting check
 
+def check_formatting_rules(resume_text: str) -> List[str]:
+    warnings = []
+    text = resume_text.lower()
+
+    if "@" not in text:
+        warnings.append("Missing email/contact information.")
+    if not any(kw in text for kw in SECTION_KEYWORDS):
+        warnings.append("Missing major resume sections (e.g., Education, Skills, Experience).")
+    if text.count(".") / max(len(text.split("\n")), 1) < 0.5:
+        warnings.append("Lack of bullet point structure (too few sentences per line).")
+
+    return warnings
+
+# ✅ Keyword-based scoring
+
+def calculate_keyword_score(resume_text: str, keywords: List[str]) -> int:
     resume_text = resume_text.lower()
+    return sum(1 for kw in keywords if kw in resume_text)
 
-    # ✅ Basic Checks
-    has_contact = "email" in resume_text or "@" in resume_text
-    has_sections = all(kw in resume_text for kw in ["experience", "education", "skills"])
+# ✅ TF-IDF Matching Logic
 
-    # ✅ Count Keyword Density (Customize as needed)
-    ats_keywords = ["python", "sql", "aws", "docker", "fastapi", "react", "node", "git"]
-    keyword_density = sum(1 for word in ats_keywords if word in resume_text)
+def calculate_similarity_score(resume_text: str, job_description: str) -> float:
+    try:
+        tfidf = TfidfVectorizer(stop_words='english')
+        vectors = tfidf.fit_transform([resume_text, job_description])
+        score = cosine_similarity(vectors[0:1], vectors[1:2])[0][0]
+        return round(score * 100, 2)
+    except Exception:
+        return 0.0
 
-    # ✅ Base Scoring Logic
-    base_score = 40
-    if has_contact:
-        base_score += 10
-    if has_sections:
-        base_score += 20
-    base_score += keyword_density * 5
+# ✅ Main ATS Scoring API (can be swapped easily)
 
-    before_score = min(base_score, 85)  # ✅ Cap score at 85%
-    after_score = min(before_score + 10 + random.randint(0, 5), 100)  # ✅ Fake improvement
+def calculate_ats_score(resume_text: str, job_description: str = "") -> Tuple[int, int, List[str]]:
+    """
+    Returns:
+    - before_score: ATS formatting score (based on resume only)
+    - match_score: resume/job match score (TF-IDF + keyword density)
+    - warnings: list of improvement suggestions
+    """
+    if not resume_text or len(resume_text.strip()) == 0:
+        return 0, 0, ["Empty resume text"]
 
-    return before_score, after_score
+    # 🔍 Step 1: Formatting / ATS readiness
+    warnings = check_formatting_rules(resume_text)
+    # While there's no public open-source standard for ATS scoring, 
+    # these numbers mirror what Jobscan and Rezi consider ideal resume structure.
+    # 50 is the starting point assuming minimal content
+    formatting_score = 50 + calculate_keyword_score(resume_text, ATS_KEYWORDS) * 2
+    formatting_score = min(formatting_score, 85)
+
+    # 🔍 Step 2: Match Score (if JD provided)
+    match_score = 0
+    if job_description:
+        match_score = calculate_similarity_score(resume_text, job_description)
+
+    ats_score = formatting_score
+
+    # 🚀 Future: We can add pluggable scorers here
+
+    return ats_score, match_score, warnings
