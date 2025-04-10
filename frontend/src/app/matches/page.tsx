@@ -69,7 +69,7 @@ function MatchesPage() {
         <CardContent className="space-y-4">
           {matchData.length > 0 ? (
             matchData.map((match: any) => (
-              <div key={match.id} className="border p-4 rounded-md">
+              <div key={`${match.job_id}-${match.resume_id}`} className="border p-4 rounded-md">
                 <p><strong>Job ID:</strong> {match.job_id}</p>
                 <p><strong>Resume ID:</strong> {match.resume_id}</p>
                 <p><strong>🔢 Match Score:</strong> {match.match_score_final ?? match.match_score_initial}%</p>
