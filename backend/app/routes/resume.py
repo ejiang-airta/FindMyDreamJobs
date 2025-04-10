@@ -79,7 +79,9 @@ async def upload_resume(
     extracted_text = extract_text_from_file(file_path)
 
     # right after extraction, call the ATS scoring engine:
-    ats_score_initial = calculate_ats_score(extracted_text)
+    formatting_score, _, _ = calculate_ats_score(extracted_text)
+    ats_score_initial = formatting_score  # 👈 only store the numeric score
+
 
     # ✅ If extraction fails (unsupported format), raise an HTTPException (NO DB ENTRY)
     if extracted_text.startswith("❌ Error:"):
