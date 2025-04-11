@@ -13,20 +13,22 @@ import { User } from 'lucide-react'
 
 
 const navItems = [
+  { href: '/', label: '🏠 Home' },
   { href: '/dashboard', label: '📊 Dashboard' },
   { href: '/upload', label: '📤 Upload' },
   { href: '/analyze', label: '📑 Analyze' },
   { href: '/match', label: '🔍 Match' },
   { href: '/optimize', label: '🛠 Optimize' },
-  { href: '/finalize', label: '✅ Finalize' },
+  //{ href: '/finalize', label: '✅ Finalize' }, // this page is a bit duplicative with the apply page
   { href: '/apply', label: '📩 Apply' },
   { href: '/applications', label: '🧾 Applications' },
-  { href: '/matches', label: '🧠 Matches' },
+  //{ href: '/matches', label: '🧠 Matches' },  //hide this page for now for a cleaner UI
   { href: '/stats', label: '📈 Stats' },
+  { href: '/wizard', label: '🧙 Wizard' },
 ]
 
 export default function NavBar() {
-  const pathname = usePathname()
+  const pathname = typeof window !== 'undefined' ? usePathname() : ''
   const { data: session, status } = useSession()
   const [ username, setUserName] = useState("")
 
@@ -154,4 +156,3 @@ export default function NavBar() {
     </nav>
   )
 }
-
