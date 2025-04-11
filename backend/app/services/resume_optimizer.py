@@ -26,9 +26,17 @@ def optimize_resume_with_skills_service(
     justification: str
 ) -> Tuple[str, List[str]]:
     """
-    Primary service function to optimize a resume using GPT-4o.
-    Returns: optimized_text, changes_summary
-    Only missing skills mentioned in justification will be allowed to be added.
+     Optimize a resume using GPT-4o based on job-specific skills and user justification.
+
+    Args:
+        resume_text: The original resume text.
+        matched_skills: Skills found in both resume and job description.
+        missing_skills: Skills not found in resume but present in JD.
+        emphasized_skills: High-priority skills for the job.
+        justification: User explanation for missing skills.
+
+    Returns:
+        Tuple of (optimized resume text, list of bullet point changes).
     """
     logger.info(f"Optimizing resume with {len(emphasized_skills)} emphasized skills.")
 
@@ -47,22 +55,23 @@ def _optimize_with_gpt(
     justification: str
 ) -> Tuple[str, List[str]]:
     """
-    Uses OpenAI GPT to rewrite the resume.
+    Uses OpenAI GPT to optimize the resume content.
     """
     matched_str = ", ".join(matched_skills)
     emphasized_str = ", ".join(emphasized_skills)
 
-    # Only keep missing skills that appear in the justification
+    # Include only missing skills explicitly justified by user
     allowed_missing_skills = [s for s in missing_skills if s.lower() in justification.lower()]
     missing_str = ", ".join(allowed_missing_skills)
 
 
     prompt = f"""
-You are a professional resume editor. Given a user's resume, your job is to optimize it by enhancing its language, formatting, and emphasis based on job-specific skills and user justification.
+You are a professional resume editor. Your task is to optimize a candidate's resume using the following data.
 
 Matched Skills (already present in the resume): {matched_str}
 Emphasized Skills (important for this job): {emphasized_str}
 User Justification: {justification}
+Allowed Missing Skills (from JD): {missing_str}
 
 Only incorporate missing skills {missing_str} if they are mentioned or justified explicitly in the justification section. Do not fabricate experience. Be ATS-friendly and highlight achievements where possible.
 
@@ -75,33 +84,34 @@ Please return two sections:
 1. Optimized Resume (rewrite and enhance the original).
 2. Bullet list summary of key changes and optimizations you made.
 
-Format your answer like this:
+Return only the following format:
 ===========================
 Optimized Resume:
-[...new rewritten resume...]
+[new rewritten resume]
 
 Changes Summary:
-- [...]
-- [...]
+- Bullet 1
+- Bullet 2
 ===========================
 """
 
     response = client.chat.completions.create(
         model="gpt-4o",
         messages=[
-            {"role": "system", "content": "You are a helpful and precise resume rewriting assistant."},
+            {"role": "system", "content": "You are a precise and honest resume optimizer."},
             {"role": "user", "content": prompt}
         ],
         temperature=0.7,
         max_tokens=1500
     )
 
-    result_text = response.choices[0].message.content
-    logger.info("🔍 GPT Response:\n" + result_text)
+    result_text = response.choices[0].message.content or ""
+    logger.info("📩 GPT Response received.")
 
     optimized_text = ""
     changes_summary = []
 
+    # ✅ Parse GPT response
     if "Optimized Resume:" in result_text and "Changes Summary:" in result_text:
         parts = result_text.split("Changes Summary:")
         optimized_part = parts[0].split("Optimized Resume:")[-1].strip()
@@ -112,12 +122,15 @@ Changes Summary:
 
     if not optimized_text:
         optimized_text = result_text.strip()  # fallback to full text
-        changes_summary = ["⚠️ GPT response format not detected — full response shown."]
+        changes_summary = ["⚠️ GPT response format not detected. Showing full output."]
+        logger.warning("⚠️ GPT response not formatted as expected.")
+
         raise ValueError("GPT did not return a valid optimized resume.")
 
     return optimized_text, changes_summary
 
 
+# 🔹 Optional utility - currently unused
 # def _fallback_static_formatter(
 #     resume_text: str,
 #     emphasized_skills: List[str],
@@ -162,6 +175,10 @@ Changes Summary:
 
 # Optional: MVP legacy highlighting logic (not used in main flow)
 def optimize_resume_for_job(resume_text: str, job_skills: List[str], emphasized_skills: List[str]) -> str:
+    """
+    Basic resume highlighting by formatting matched/emphasized job skills.
+    """
+
     highlighted_resume = resume_text
     sorted_skills = sorted(set(job_skills), key=len, reverse=True)
 
