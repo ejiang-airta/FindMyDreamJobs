@@ -2,27 +2,32 @@
 // Lets users approve & download, and submit the application
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Label } from '@/components/ui/label'
 import { useSession } from 'next-auth/react'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
   const { data: session, status } = useSession()
+  const userId = typeof window !== 'undefined' ? localStorage.getItem("user_id") : null
 
   if (status === 'loading') return <p>Loading...</p>
-  if (!session) return <p>Unauthorized. Please sign in.</p>
+  if (!session || !userId) return <p>Unauthorized. Please sign in.</p>
 
-  return <FinalizePage />
+  return <FinalizePage userId={userId} />
 }
 
 // This component is the main page for finalizing resumes and submitting applications:
 // It allows users to input a resume ID, fetch its optimized text, approve it, and log the job application.
-function FinalizePage() {
+function FinalizePage({ userId }: { userId: string }) {
+  const [resumes, setResumes] = useState<any[]>([])
+  const [jobs, setJobs] = useState<any[]>([])
   const [resumeId, setResumeId] = useState('')
   const [jobId, setJobId] = useState('')
   const [optimizedText, setOptimizedText] = useState('')
@@ -30,12 +35,28 @@ function FinalizePage() {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
 
+  // Fetch resumes and jobs for the dropdowns:
+  useEffect(() => {
+    const fetchDropdowns = async () => {
+      try {
+        const [res1, res2] = await Promise.all([
+          fetch(`http://127.0.0.1:8000/resumes/by-user/${userId}`),
+          fetch(`http://127.0.0.1:8000/jobs/all`)
+        ])
+        if (res1.ok) setResumes(await res1.json())
+        if (res2.ok) setJobs(await res2.json())
+      } catch (err) {
+        console.error("❌ Error loading options:", err)
+      }
+    }
+
+    fetchDropdowns()
+  }, [userId])
+
   const handleFetch = async () => {
-    setError('')
-    setOptimizedText('')
   
     if (!resumeId) {
-      setError('⚠️ Resume ID is required.')
+      setError('⚠️ Resume is required.')
       return
     }
   
@@ -48,6 +69,8 @@ function FinalizePage() {
       }
   
       setOptimizedText(data.optimized_text || 'No optimized text found.')
+      setMessage('')
+      setError('')
     } catch (err) {
       console.error('Fetch Error:', err)
       setError('❌ Could not fetch optimized resume')
@@ -64,12 +87,18 @@ function FinalizePage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.detail || 'Approval failed')
       setMessage('✅ Resume approved!')
+      setError('')
     } catch (err) {
       setError('❌ Approval failed')
     }
   }
 
   const handleSubmit = async () => {
+    if (!resumeId || !jobId || !applicationUrl) {
+      setError('⚠️ All fields are required to submit.')
+      return
+    }
+
     try {
       const res = await fetch('http://127.0.0.1:8000/submit-application', {
         method: 'POST',
@@ -83,6 +112,7 @@ function FinalizePage() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.detail || 'Application failed')
       setMessage('🚀 Application logged successfully!')
+      setError('')
     } catch (err) {
       setError('❌ Application failed')
     }
@@ -97,21 +127,33 @@ function FinalizePage() {
 
       <Card>
         <CardContent className="p-6 space-y-4">
-          <Label>Resume ID</Label>
-          <Input
-            type="number"
-            value={resumeId}
-            onChange={(e) => setResumeId(e.target.value)}
-            placeholder="e.g., 6"
-          />
+        <Label>Select Resume</Label>
+          <Select onValueChange={setResumeId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Choose your resume" />
+            </SelectTrigger>
+            <SelectContent>
+              {resumes.map(r => (
+                <SelectItem key={r.id} value={String(r.id)}>
+                  Resume #{r.id} – {r.resume_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
-          <Label>Job ID</Label>
-          <Input
-            type="number"
-            value={jobId}
-            onChange={(e) => setJobId(e.target.value)}
-            placeholder="e.g., 2"
-          />
+          <Label>Select Job</Label>
+          <Select onValueChange={setJobId}>
+            <SelectTrigger>
+              <SelectValue placeholder="Choose a job" />
+            </SelectTrigger>
+            <SelectContent>
+              {jobs.map(j => (
+                <SelectItem key={j.id} value={String(j.id)}>
+                  Job #{j.id} – {j.job_title} @ {j.company_name}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
 
           <Button onClick={handleFetch}>📄 Load Optimized Resume</Button>
 

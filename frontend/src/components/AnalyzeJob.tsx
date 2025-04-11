@@ -1,24 +1,25 @@
-// File: /frontend/src/components/JobInput.tsx
-//🟡 JD input
-
+// ✅ File: /frontend/src/components/AnalyzeJob.tsx
+// This component is for analyzing job descriptions.
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { toast } from 'sonner'
 
-interface JobInputProps {
-  onAnalysisComplete?: () => void
+interface AnalyzeJobProps {
+  isWizard?: boolean
+  onSuccess?: () => void
 }
 
-const JobInput: React.FC<JobInputProps> = ({ onAnalysisComplete }) => {
-  const [jobLink, setJobLink] = useState<string>('')
-  const [jobDescription, setJobDescription] = useState<string>('')
+const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) => {
+  const [jobLink, setJobLink] = useState('')
+  const [jobDescription, setJobDescription] = useState('')
   const [parsedData, setParsedData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
-  const userId = localStorage.getItem("user_id")  // ✅ this must exist
+  const userId = localStorage.getItem("user_id")
 
   const handleSubmit = async () => {
     if (!jobLink && !jobDescription) {
@@ -35,7 +36,7 @@ const JobInput: React.FC<JobInputProps> = ({ onAnalysisComplete }) => {
         body: JSON.stringify({
           job_link: jobLink,
           job_description: jobDescription,
-          user_id: parseInt(userId || "0"),  // ✅ required!
+          user_id: parseInt(userId || "0"),
         }),
       })
 
@@ -43,10 +44,8 @@ const JobInput: React.FC<JobInputProps> = ({ onAnalysisComplete }) => {
 
       if (response.ok) {
         setParsedData(result)
-
-        // ✅ Notify wizard that analysis is complete
-        if (onAnalysisComplete) onAnalysisComplete()
-          
+        toast.success("✅ Job description parsed successfully!")
+        if (onSuccess) onSuccess()
       } else {
         setError(`❌ Error: ${result.detail || 'Failed to parse job description'}`)
       }
@@ -56,11 +55,11 @@ const JobInput: React.FC<JobInputProps> = ({ onAnalysisComplete }) => {
   }
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-md space-y-4">
-      <h2 className="text-2xl font-semibold">Job Description Input</h2>
+    <div className="space-y-6">
+      <h2 className="text-xl font-semibold">📄 Analyze Job Description</h2>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium">Paste Job URL (Optional)</label>
+        <label className="text-sm font-medium">Paste Job URL (Optional)</label>
         <Input
           type="text"
           placeholder="https://example.com/job-posting"
@@ -70,17 +69,17 @@ const JobInput: React.FC<JobInputProps> = ({ onAnalysisComplete }) => {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium">Paste Job Description</label>
+        <label className="text-sm font-medium">Paste Job Description</label>
         <Textarea
           placeholder="Copy and paste job description here..."
           rows={10}
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}
-          className="w-full md:w-[90%] lg:w-[95%] resize-y"
+          className="resize-y"
         />
       </div>
 
-      <Button className="w-full mt-4" onClick={handleSubmit}>
+      <Button className="w-full" onClick={handleSubmit}>
         Analyze Job Description
       </Button>
 
@@ -91,7 +90,7 @@ const JobInput: React.FC<JobInputProps> = ({ onAnalysisComplete }) => {
       )}
 
       {parsedData && (
-        <div className="mt-4 p-4 bg-gray-100 rounded-md">
+        <div className="p-4 bg-gray-100 rounded-md space-y-2">
           <h3 className="text-lg font-semibold">Extracted Job Details:</h3>
           <p><strong>Title:</strong> {parsedData.title || 'N/A'}</p>
           <p><strong>Company:</strong> {parsedData.company || 'N/A'}</p>
@@ -101,25 +100,24 @@ const JobInput: React.FC<JobInputProps> = ({ onAnalysisComplete }) => {
           <ul className="list-disc pl-5">
             {(parsedData.skills?.emphasized_skills || []).length > 0
               ? parsedData.skills.emphasized_skills.map((skill: string, idx: number) => (
-                  <li key={idx}>{skill}</li>
-                ))
+                <li key={idx}>{skill}</li>
+              ))
               : <li>N/A</li>}
           </ul>
-          <p><strong>Complete list of Skills:</strong></p>
+          <p><strong>All Skills:</strong></p>
           <ul className="list-disc pl-5">
             {Array.isArray(parsedData.skills?.skills)
               ? [...parsedData.skills.skills]
-                  .sort((a: any, b: any) => b.frequency - a.frequency)
-                  .map((item: any, idx: number) => (
-                    <li key={idx}>{item.skill}</li>
-                  ))
+                .sort((a: any, b: any) => b.frequency - a.frequency)
+                .map((item: any, idx: number) => (
+                  <li key={idx}>{item.skill}</li>
+                ))
               : <li>N/A</li>}
           </ul>
-
         </div>
       )}
     </div>
   )
 }
 
-export default JobInput
+export default AnalyzeJob

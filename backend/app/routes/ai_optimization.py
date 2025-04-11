@@ -48,7 +48,7 @@ def optimize_resume(payload: dict = Body(...), db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Resume or Job not found")
 
     resume_text = resume.parsed_text
-    job_text = job.parsed_text
+    job_text = job.job_description
 
     jd_keywords = extract_skills_with_frequency(job_text)
     resume_keywords = set(resume_text.lower().split())
@@ -58,8 +58,13 @@ def optimize_resume(payload: dict = Body(...), db: Session = Depends(get_db)):
     missing_skills = [skill for skill in jd_keywords if skill.lower() not in resume_keywords]
 
     optimized_text, changes_summary = optimize_resume_with_skills_service(
-        resume_text, matched_skills, emphasized_skills, justification
+        resume_text,
+        matched_skills,
+        missing_skills,       # ✅ added this
+        emphasized_skills,
+        justification
     )
+
 
     # 🔍 Calculate ATS score using updated optimized text
     _, ats_score_final, _ = calculate_ats_score(optimized_text)

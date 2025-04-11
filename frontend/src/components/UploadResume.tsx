@@ -1,68 +1,76 @@
-//✅ Resume Upload UI
-'use client'
-
+//✅ File: frontend/src/components/UploadResume.tsx
+// This component is for uploading resumes.
 import React, { useState } from 'react'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { Label } from '@/components/ui/label'
+import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 
-const UploadResume: React.FC = () => {
+interface Props {
+  onSuccess?: () => void
+  isWizard?: boolean // ✅ Accept wizard prop (optional)
+}
+
+const UploadResume: React.FC<Props> = ({ onSuccess, isWizard }) => {
   const [file, setFile] = useState<File | null>(null)
-  const [status, setStatus] = useState<string | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const [isUploading, setIsUploading] = useState(false)
+
+  const userId = localStorage.getItem("user_id")
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      setFile(e.target.files[0])
+    }
+  }
 
   const handleUpload = async () => {
     if (!file) {
-      setStatus('Please select a file to upload.')
+      setError("Please choose a file before uploading.")
+      return
+    }
+    if (!userId) {
+      setError("User not found in session. Please log in again.")
       return
     }
 
-    const formData = new FormData()
-    formData.append("file", file) // ✅ MUST use "file"
-    formData.append("user_id", "1")  // 👈 Add this line!
+    setIsUploading(true)
+    setError(null)
 
+    const formData = new FormData()
+    formData.append("file", file)
+    formData.append("user_id", userId)
 
     try {
-      const response = await fetch('http://localhost:8000/upload-resume', {
-        method: 'POST',
+      const response = await fetch("http://localhost:8000/upload-resume", {
+        method: "POST",
         body: formData,
       })
 
-      const result = await response.json()
+      const data = await response.json()
 
-      if (response.ok) {
-        setStatus(`✅ Upload successful! Resume ID: ${result.resume_id}`)
+      if (!response.ok) {
+        setError(data.detail || "Upload failed.")
       } else {
-        setStatus(`❌ Upload failed: ${result.detail || 'Unknown error.'}`)
+        // ✅ Success: notify parent if in wizard mode
+        if (onSuccess) onSuccess()
       }
-    } catch (err: any) {
-      const message = err?.response?.data?.error || err.message || "Unexpected error occurred."
-      console.error("Upload error:", err)
-      setError(message)
+    } catch (err) {
+      setError("❌ Upload failed. Please try again.")
+    } finally {
+      setIsUploading(false)
     }
   }
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-md space-y-4">
-      <h2 className="text-2xl font-semibold">Upload Resume</h2>
-
-      <div className="space-y-2">
-        <Label htmlFor="resumeFile">Select Resume File</Label>
-        <Input
-          id="resumeFile"
-          type="file"
-          accept=".pdf,.doc,.docx,.txt"
-          onChange={(e) => setFile(e.target.files?.[0] || null)}
-        />
-      </div>
-
-      <Button className="w-full mt-4" onClick={handleUpload}>
-        Upload Resume
+    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow space-y-4">
+      <h2 className="text-2xl font-semibold">Upload Your Resume</h2>
+      <Input type="file" accept=".pdf,.docx,.txt" onChange={handleFileChange} />
+      <Button className="w-full" onClick={handleUpload} disabled={isUploading}>
+        {isUploading ? 'Uploading...' : 'Upload Resume'}
       </Button>
-
-      {status && (
+      {error && (
         <Alert variant="destructive">
-          <AlertDescription>{status}</AlertDescription>
+          <AlertDescription>{error}</AlertDescription>
         </Alert>
       )}
     </div>

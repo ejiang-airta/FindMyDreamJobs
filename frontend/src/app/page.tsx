@@ -1,47 +1,68 @@
 // ✅ File: frontend/src/app/page.tsx
-// This is the main page of the application. It serves as a landing page and provides options for users to sign in or sign out:
 'use client'
-import { signIn, signOut, useSession } from "next-auth/react"
-import { Button } from "@/components/ui/button"
-import { useEffect } from 'react'
 
+import { Button } from '@/components/ui/button'
+import { useSession } from 'next-auth/react'
+import { useRouter } from 'next/navigation'
 
 export default function HomePage() {
   const { data: session } = useSession()
+  const router = useRouter()
 
-    useEffect(() => {
-      const fetchUserId = async () => {
-        if (session?.user?.email) {
-          const res = await fetch("http://localhost:8000/auth/whoami", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              email: session.user.email,
-              name: session.user.name
-            })
-          })
-          const data = await res.json()
-          if (data?.user_id) {
-            localStorage.setItem("user_id", data.user_id)
-          }
-        }
-      }
-    
-      fetchUserId()
-    }, [session])
+  const handleGetStarted = () => {
+    router.push('/wizard') // 👉 Go to the step-by-step onboarding wizard
+  }
 
   return (
-    <div className="p-10 text-center">
-      {session ? (
-        <>
-          <p>👋 Hello, {session.user?.name}</p>
-        </>
-      ) : (
-        <p>Please login to your account</p>
+    <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-400 text-white text-center p-10">
+      <h1 className="text-5xl font-extrabold mb-4">Find Your Dream Job</h1>
+      <p className="text-lg mb-8">
+        Upload your resume and let our AI match you with the perfect job opportunities.
+      </p>
+
+      {session?.user && (
+        <p className="text-md font-semibold mb-6">
+          Welcome back, {session.user.name}!
+        </p>
       )}
-      <h1 className="text-3xl font-bold">🎯 Welcome to FindMyDreamJobs!</h1>
-      <p className="mt-4 text-muted-foreground">Upload your resume, match it to jobs, optimize it — and land interviews faster.</p>  
+
+      <div className="flex justify-center space-x-4">
+        <Button onClick={handleGetStarted} className="bg-white text-blue-600 hover:bg-blue-100">
+          Get Started
+        </Button>
+        <Button variant="ghost" className="text-white border border-white">
+          Learn More
+        </Button>
+      </div>
+
+      <section className="mt-20 bg-white text-gray-800 p-10 rounded-lg shadow-lg max-w-4xl mx-auto">
+        <h2 className="text-3xl font-bold mb-4">Why Choose Us</h2>
+        <p className="mb-10">
+          Our platform uses advanced AI to help you find and land your dream job.
+        </p>
+
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="p-4 rounded shadow-md border">
+            <h3 className="font-semibold text-lg mb-2">Smart Resume Analysis</h3>
+            <p className="text-sm">Get insights about your resume and how it matches with job requirements.</p>
+          </div>
+          <div className="p-4 rounded shadow-md border">
+            <h3 className="font-semibold text-lg mb-2">Automated Job Matching</h3>
+            <p className="text-sm">Find jobs that match your skills and experience automatically.</p>
+          </div>
+          <div className="p-4 rounded shadow-md border">
+            <h3 className="font-semibold text-lg mb-2">Application Tracking</h3>
+            <p className="text-sm">Track all your job applications in one place.</p>
+          </div>
+        </div>
+
+        <div className="mt-10">
+          <p className="text-xl font-semibold">Ready to find your dream job?</p>
+          <Button onClick={handleGetStarted} className="mt-4 bg-blue-600 hover:bg-blue-700">
+            Start your journey today.
+          </Button>
+        </div>
+      </section>
     </div>
-    
   )
 }
