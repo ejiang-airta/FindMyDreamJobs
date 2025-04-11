@@ -12,6 +12,8 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=True)
+    wizard_progress = Column(String(50), nullable=True) # ✅ Track progress in the wizard
+
 
     # Define the relationship between the User and Resume models
     resumes = relationship("Resume", back_populates="user")  # ✅ Track resumes uploaded by user
