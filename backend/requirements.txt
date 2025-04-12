@@ -13,3 +13,5 @@ spacy			#NLP Library
 scikit-learn>=1.3.0
 apscheduler
 schedule		# match/ats sccore calculation
+passlib
+bcrypt
