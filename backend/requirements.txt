@@ -15,3 +15,5 @@ apscheduler
 schedule		# match/ats sccore calculation
 passlib
 bcrypt
+openai
+pydantic
