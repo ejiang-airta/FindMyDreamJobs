@@ -11,6 +11,7 @@ load_dotenv()
 
 # Root logger configuration
 logger_dir  = os.path.join(PROJECT_ROOT, "dev_tracking", "logging")
+os.makedirs(logger_dir , exist_ok=True)
 
 logging.basicConfig(
     level=logging.DEBUG,  # Use INFO if you don't want debug logs
