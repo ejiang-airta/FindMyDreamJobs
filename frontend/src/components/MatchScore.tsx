@@ -24,7 +24,13 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess }) 
   const [keywords, setKeywords] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
 
-  const userId = localStorage.getItem('user_id')
+  const [userId, setUserId] = useState<string | null>(null)
+  
+    useEffect(() => {
+      // Only runs in the browser
+      const id = localStorage.getItem('user_id')
+      setUserId(id)
+    }, [])
 
   useEffect(() => {
     const fetchDropdowns = async () => {

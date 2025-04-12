@@ -43,12 +43,12 @@ function AnalyzePage({ session }: { session: any }) {
   
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden">
+    <div className="flex flex-col overflow-hidden">
       <header className="px-6 py-4 border-b bg-white shadow-sm">
         <h1 className="text-2xl font-semibold">🧠 Analyze Job Description</h1>
       </header>
 
-      <main className="flex-1 overflow-auto px-6 py-4">
+      <main className="flex-1  px-6 py-4">
         <AnalyzeJob onSuccess={() => setAnalysisDone(true)} isWizard={false} />
       </main>
     </div>

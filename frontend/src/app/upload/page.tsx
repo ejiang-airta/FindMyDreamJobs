@@ -3,7 +3,7 @@
 
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -12,8 +12,17 @@ export default function UploadPage() {
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
+  
+  const [userId, setUserId] = useState<string | null>(null)
 
-  const userId = localStorage.getItem("user_id")
+  useEffect(() => {
+    // Only runs in the browser
+    const id = localStorage.getItem('user_id')
+    setUserId(id)
+  }, [])
+
+  if (!userId) return <p className="text-center mt-10">🔒 Please log in to upload a resume.</p>
+
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
