@@ -1,18 +1,24 @@
 # ✅ File: backend/app/routes/auth.py 
 # User Authentication APIs
 
-from fastapi import APIRouter, HTTPException, Request, Depends, Body
+from fastapi import APIRouter, HTTPException, Depends, Body
 from sqlalchemy.orm import Session
 from app.database.connection import get_db
 from app.models.user import User
 from pydantic import BaseModel
-
+from passlib.context import CryptContext  # ✅ Added for password hashing
 
 router = APIRouter()
+pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")  # ✅ Use bcrypt
 
 class SignupRequest(BaseModel):
     email: str
     full_name: str
+    password: str
+
+class LoginRequest(BaseModel):
+    email: str
+    password: str
 
 @router.post("/auth/whoami", tags=["Auth"])
 def whoami(payload: dict = Body(...), db: Session = Depends(get_db)):
@@ -27,8 +33,8 @@ def whoami(payload: dict = Body(...), db: Session = Depends(get_db)):
     if not user:
         user = User(
             email=email,
-            full_name=name or "",  # ✅ use full_name instead of name
-            hashed_password="",     # ✅ dummy for now
+            full_name=name or "",
+            hashed_password="",
         )
         db.add(user)
         db.commit()
@@ -36,37 +42,26 @@ def whoami(payload: dict = Body(...), db: Session = Depends(get_db)):
 
     return {"user_id": user.id}
 
-@router.post("/auth/signup", response_model=None, tags=["Auth"])
-def signup(payload: dict = Body(...), db: Session = Depends(get_db)):
-    email = payload.get("email")
-    full_name = payload.get("full_name")
-    password = payload.get("password")
-
-    # Validate the payload:
-    if not email or not full_name or not password:
-            raise HTTPException(status_code=400, detail="Missing fields.")
-
-    # Check if the user already exists:
-    existing = db.query(User).filter(User.email == email).first()
-
+@router.post("/auth/signup", tags=["Auth"])
+def signup(payload: SignupRequest, db: Session = Depends(get_db)):
+    existing = db.query(User).filter(User.email == payload.email).first()
     if existing:
         raise HTTPException(status_code=400, detail="User already exists.")
-    
-    # Create the user:
-    hashed_pw = password + "_fakehash"  # 🔒 Replace with real hashing later
 
+    hashed_pw = pwd_context.hash(payload.password)
     user = User(
-        email=email,
-        full_name=full_name,
-        hashed_password=hashed_pw,  # ✅ placeholder for now
+        email=payload.email,
+        full_name=payload.full_name,
+        hashed_password=hashed_pw,
     )
-
     db.add(user)
     db.commit()
     db.refresh(user)
+    return {"message": f"✅ User {payload.email} signed up!", "user_id": user.id}
 
-    return {"message": f"✅ User {email} signed up!", "user_id": user.id}
-
-@router.post("/login")
-def login(email: str, password: str):
-    return {"message": f"User {email} logged in"}
+@router.post("/auth/login", tags=["Auth"])
+def login(payload: LoginRequest, db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.email == payload.email).first()
+    if not user or not pwd_context.verify(payload.password, user.hashed_password):
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    return {"user_id": user.id, "message": "✅ Login successful!"}

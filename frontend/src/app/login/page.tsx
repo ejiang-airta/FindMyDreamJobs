@@ -1,128 +1,71 @@
 // ✅ File: frontend/src/app/login/page.tsx
 // This page is for logging in to the application.
+// ✅ Improved login page UI + logic
 'use client'
 
-import { signIn, signOut, useSession } from "next-auth/react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { signIn, useSession } from 'next-auth/react'
+import { Input } from '@/components/ui/input'
+import { Button } from '@/components/ui/button'
+import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
-
 
 export default function LoginPage() {
   const { data: session } = useSession()
+  const router = useRouter()
   const [email, setEmail] = useState('')
-  const [fullName, setFullName] = useState('')
-  const [password, setPassword] = useState('') // add this for signup and login with password
-
+  const [password, setPassword] = useState('')
 
   useEffect(() => {
-      const fetchUserId = async () => {
-      if (session?.user?.email) {
-          const res = await fetch("http://127.0.0.1:8000/auth/whoami", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-              email: session.user.email,
-              name: session.user.name ?? ""
-          })
-          })
-          const data = await res.json()
-          if (data?.user_id) {
-          localStorage.setItem("user_id", data.user_id)
-          }
-      }
-      }
-  
-      fetchUserId()
-  }, [session])
-
-  // Function to handle signup
-  const handleSignup = async () => {
-    if (!email || !fullName) {
-      alert("Please enter both name and email.")
-      return
+    if (session?.user?.email) {
+      router.push('/')
     }
+  }, [session, router])
 
-    try {
-      // 1️⃣ Create user via backend
-      const res = await fetch("http://127.0.0.1:8000/auth/signup", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, full_name: fullName, password })
-      })
-  
-      const data = await res.json()
-      if (!res.ok) {
-        alert("❌ Sign up failed: " + data.detail)
-        return
-      }
-  
-      // 2️⃣ Now sign in using NextAuth credentials provider
-      const result = await signIn("credentials", {
-        email,
-        password,
-        name: fullName,
-        redirect: false,
-        callbackUrl: "/dashboard"
-      })
-
-      console.log("🧪 signIn result:", result)
-  
-      if (result?.error) {
-        alert("❌ Login failed: " + result.error)
-      } else {
-        // ✅ Redirect manually to dashboard
-        window.location.href = "/dashboard"
-      }
-    } catch (err) {
-      console.error("❌ Error during signup:", err)
-      alert("❌ Something went wrong. Please try again.")
+  const handleLogin = async () => {
+    if (!email || !password) return alert("Please enter both email and password.")
+    const result = await signIn('credentials', {
+      email,
+      password,
+      redirect: false
+    })
+    if (result?.error) {
+      alert("Login failed: " + result.error)
+    } else {
+      router.push('/')
     }
   }
-  
 
   return (
-    <div className="max-w-xl mx-auto mt-10 space-y-6 text-center">
-      <h1 className="text-2xl font-bold">🔐 Sign In to Continue</h1>
+    <div className="max-w-md mx-auto mt-12 bg-white p-8 rounded-lg shadow-md">
+      <h2 className="text-xl font-bold text-center mb-2">Sign In</h2>
+      <p className="text-sm text-center text-gray-500 mb-4">
+        Don’t have an account?{' '}
+        <a href="/signup" className="text-blue-600 hover:underline">Create one</a>
+      </p>
 
-      {session ? (
-        <>
-          <p>Welcome back, {session.user?.name || "User"}!</p>
-          <Button onClick={() => signOut()} className="w-full">
-            Sign out
-          </Button>
-        </>
-      ) : (
-          <div className="space-y-4">
-            <Button onClick={() => signIn("google")} className="w-full" variant="outline">
-              Sign in with Google
-            </Button>
-            <Button onClick={handleSignup} className="w-full">
-              Sign up with Email
-            </Button>        
-          <div className="border-t pt-4 space-y-2">
-          <Input
-              type="text"
-              placeholder="Your full name"
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-            />
+      <div className="space-y-4">
+        <Input
+          type="email"
+          placeholder="Your email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+        <Input
+          type="password"
+          placeholder="Your password"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        <Button className="w-full" onClick={handleLogin}>
+          Sign In
+        </Button>
 
-            <Input
-              type="email"
-              placeholder="Your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-            <Input
-              type="password"
-              placeholder="Your password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+        <div className="text-center text-sm text-gray-500">or sign in with</div>
+
+        <div className="flex justify-center space-x-4">
+          <Button onClick={() => signIn('google')} variant="outline">Google</Button>
         </div>
-      )}
+      </div>
     </div>
   )
 }
