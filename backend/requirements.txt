@@ -1,11 +1,15 @@
-python-multipart
 fastapi
 uvicorn
 python-dotenv
-psycopg2-binary # PostgreSQL
-psycopg2
+psycopg2-binary		# PostgreSQL
+sqlalchemy
 pdfplumber
 python-docx
-spacy   #NLP Library
-beautifulsoup4 # parsing html with a URL
-scikit-learn>=1.3.0 # match/ats sccore calculation
+python-multipart
+requests
+bs4
+beautifulsoup4		# parsing html with a URL
+spacy			#NLP Library
+scikit-learn>=1.3.0
+apscheduler
+schedule		# match/ats sccore calculation
