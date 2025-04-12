@@ -111,7 +111,7 @@ export default function WizardPage() {
       case 'apply':
         return (
           <>
-            <ApplyJob isWizard />
+            <ApplyJob userId={userId} isWizard />
             <div className="flex justify-between mt-6">
               <Button variant="secondary" onClick={goToPrevStep}>⬅️ Prev</Button>
               <Button
