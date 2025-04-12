@@ -23,7 +23,9 @@ export default function MatchPageProtected() {
 
   const user = session.user // no TypeScript warning now!
 
-  return <MatchPage userId={user.id} />
+  const userId = typeof window !== "undefined" ? localStorage.getItem("user_id") : ""
+  return <MatchPage userId={userId} />
+
 }
 
 function MatchPage({ userId }: { userId: string }) {
