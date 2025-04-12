@@ -1,0 +1,37 @@
+2025-04-11 19:28:17,582 - INFO - app - ✅ Registered Routes:
+2025-04-11 19:28:17,583 - INFO - app - /openapi.json → {'GET', 'HEAD'}
+2025-04-11 19:28:17,583 - INFO - app - /docs → {'GET', 'HEAD'}
+2025-04-11 19:28:17,583 - INFO - app - /docs/oauth2-redirect → {'GET', 'HEAD'}
+2025-04-11 19:28:17,583 - INFO - app - /redoc → {'GET', 'HEAD'}
+2025-04-11 19:28:17,583 - INFO - app - /optimize-resume → {'POST'}
+2025-04-11 19:28:17,583 - INFO - app - /approve-resume → {'POST'}
+2025-04-11 19:28:17,583 - INFO - app - /submit-application → {'POST'}
+2025-04-11 19:28:17,583 - INFO - app - /update-application-status → {'PUT'}
+2025-04-11 19:28:17,583 - INFO - app - /log → {'POST'}
+2025-04-11 19:28:17,583 - INFO - app - /applications/{user_id} → {'GET'}
+2025-04-11 19:28:17,583 - INFO - app - /ats-score → {'POST'}
+2025-04-11 19:28:17,583 - INFO - app - /auth/whoami → {'POST'}
+2025-04-11 19:28:17,583 - INFO - app - /auth/signup → {'POST'}
+2025-04-11 19:28:17,583 - INFO - app - /auth/login → {'POST'}
+2025-04-11 19:28:17,583 - INFO - app - /wizard/progress → {'POST'}
+2025-04-11 19:28:17,583 - INFO - app - /wizard/progress/get → {'POST'}
+2025-04-11 19:28:17,584 - INFO - app - /parse-job-description → {'POST'}
+2025-04-11 19:28:17,584 - INFO - app - /jobs/all → {'GET'}
+2025-04-11 19:28:17,584 - INFO - app - /jobs/{job_id} → {'GET'}
+2025-04-11 19:28:17,584 - INFO - app - /match-score → {'POST'}
+2025-04-11 19:28:17,584 - INFO - app - /matches → {'GET'}
+2025-04-11 19:28:17,584 - INFO - app - /matches/{user_id} → {'GET'}
+2025-04-11 19:28:17,584 - INFO - app - /upload-resume → {'POST'}
+2025-04-11 19:28:17,584 - INFO - app - /resumes → {'GET'}
+2025-04-11 19:28:17,584 - INFO - app - /download-resume/{resume_id} → {'GET'}
+2025-04-11 19:28:17,584 - INFO - app - /resumes/{resume_id} → {'GET'}
+2025-04-11 19:28:17,584 - INFO - app - /resumes/by-user/{user_id} → {'GET'}
+2025-04-11 19:28:17,584 - INFO - app - / → {'GET'}
+2025-04-11 19:29:50,031 - WARNING - passlib.handlers.bcrypt - (trapped) error reading bcrypt version
+Traceback (most recent call last):
+  File "/Users/e_jiang/Projects/job_env/lib/python3.12/site-packages/passlib/handlers/bcrypt.py", line 620, in _load_backend_mixin
+    version = _bcrypt.__about__.__version__
+              ^^^^^^^^^^^^^^^^^
+AttributeError: module 'bcrypt' has no attribute '__about__'
+2025-04-11 19:29:50,033 - DEBUG - passlib.handlers.bcrypt - detected 'bcrypt' backend, version '<unknown>'
+2025-04-11 19:29:50,034 - DEBUG - passlib.handlers.bcrypt - 'bcrypt' backend lacks $2$ support, enabling workaround
