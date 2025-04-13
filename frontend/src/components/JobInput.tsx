@@ -3,7 +3,7 @@
 
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
@@ -18,7 +18,13 @@ const JobInput: React.FC<JobInputProps> = ({ onAnalysisComplete }) => {
   const [jobDescription, setJobDescription] = useState<string>('')
   const [parsedData, setParsedData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
-  const userId = localStorage.getItem("user_id")  // ✅ this must exist
+  const [userId, setUserId] = useState<string | null>(null)
+    
+      useEffect(() => {
+        // Only runs in the browser
+        const id = localStorage.getItem('user_id')
+        setUserId(id)
+      }, [])
 
   const handleSubmit = async () => {
     if (!jobLink && !jobDescription) {
