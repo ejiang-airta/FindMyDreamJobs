@@ -38,11 +38,13 @@ function MatchPage({ userId }: { userId: string }) {
   const [error, setError] = useState('')
 
   useEffect(() => {
-    const userId = localStorage.getItem("user_id")
+    const [userId, setUserId] = useState<string | null>(null)
     if (!userId) return
   
     const fetchData = async () => {
       try {
+        const id = localStorage.getItem('user_id')
+        setUserId(id)
         const res1 = await fetch(`http://127.0.0.1:8000/resumes/by-user/${userId}`)
         const res2 = await fetch(`http://127.0.0.1:8000/jobs/all`) // <-- we fixed this earlier
         if (res1.ok) setResumes(await res1.json())

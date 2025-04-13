@@ -1,6 +1,6 @@
 //✅ File: frontend/src/components/UploadResume.tsx
 // This component is for uploading resumes.
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -15,7 +15,13 @@ const UploadResume: React.FC<Props> = ({ onSuccess, isWizard }) => {
   const [error, setError] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
 
-  const userId = localStorage.getItem("user_id")
+  const [userId, setUserId] = useState<string | null>(null)
+  
+    useEffect(() => {
+      // Only runs in the browser
+      const id = localStorage.getItem('user_id')
+      setUserId(id)
+    }, [])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {

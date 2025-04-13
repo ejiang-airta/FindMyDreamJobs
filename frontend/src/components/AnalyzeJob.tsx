@@ -19,7 +19,13 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
   const [jobDescription, setJobDescription] = useState('')
   const [parsedData, setParsedData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
-  const userId = localStorage.getItem("user_id")
+  const [userId, setUserId] = useState<string | null>(null)
+  
+    useEffect(() => {
+      // Only runs in the browser
+      const id = localStorage.getItem('user_id')
+      setUserId(id)
+    }, [])
 
   const handleSubmit = async () => {
     if (!jobLink && !jobDescription) {
