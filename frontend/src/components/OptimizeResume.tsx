@@ -272,7 +272,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
                   <Button
                     variant="secondary"
                     onClick={() => {
-                      window.open(`http://127.0.0.1:8000/download-resume/${resumeId}`, "_blank")
+                      window.open(`${BACKEND_BASE_URL}/download-resume/${resumeId}`, "_blank")
                     }}
                   >
                     📥 Download Resume
