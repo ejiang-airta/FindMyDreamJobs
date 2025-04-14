@@ -9,7 +9,7 @@ import AnalyzeJob from '@/components/AnalyzeJob'
 import MatchScore from '@/components/MatchScore'
 import OptimizeResume from '@/components/OptimizeResume'
 import ApplyJob from '@/components/ApplyJob'
-
+import { BACKEND_BASE_URL }  from '@/lib/env'
 import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Loader } from 'lucide-react'
@@ -34,7 +34,7 @@ export default function WizardPage() {
     console.log("📦 Wizard: user_id =", userId)
     localStorage.setItem('wizard_mode', 'true')
 
-    fetch('http://127.0.0.1:8000/wizard/progress/get', {
+    fetch(`${BACKEND_BASE_URL}/wizard/progress/get`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email })
@@ -63,7 +63,7 @@ export default function WizardPage() {
   const updateStep = async (step: string) => {
     console.log("🔁 Moving to step:", step)
     setCurrentStep(step)
-    await fetch('http://127.0.0.1:8000/wizard/progress', {
+    await fetch(`${BACKEND_BASE_URL}/wizard/progress`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, step })

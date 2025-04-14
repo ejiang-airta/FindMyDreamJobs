@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Label } from '@/components/ui/label'
 import { useSession } from 'next-auth/react'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 
 // This ensures page is only accessible to authenticated users:
@@ -42,7 +43,7 @@ function ATSPage() {
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/ats-score?resume_id=${resumeId}`, {
+      const response = await fetch(`${BACKEND_BASE_URL}//ats-score?resume_id=${resumeId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" }
       })

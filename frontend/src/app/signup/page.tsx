@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import React, { useState } from 'react'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 export default function SignupPage() {
   const router = useRouter()
@@ -19,7 +20,7 @@ export default function SignupPage() {
     }
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/auth/signup', {
+      const res = await fetch(`${BACKEND_BASE_URL}/auth/signup`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ full_name: fullName, email, password })

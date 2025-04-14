@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useSession } from 'next-auth/react'
 import { getUserId } from '@/lib/auth'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
@@ -54,7 +55,7 @@ function StatsPage() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch(`http://127.0.0.1:8000/applications/${userId}`)
+      const res = await fetch(`${BACKEND_BASE_URL}//applications/${userId}`)
       const apps = await res.json()
 
       if (!res.ok) {

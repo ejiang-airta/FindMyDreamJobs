@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { toast } from 'sonner'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 interface ApplyJobProps {
   userId: string
@@ -29,8 +30,8 @@ const ApplyJob: React.FC<ApplyJobProps> = ({ userId, isWizard = false, onSuccess
     const fetchData = async () => {
       try {
         const [res1, res2] = await Promise.all([
-          fetch(`http://127.0.0.1:8000/resumes/by-user/${userId}`),
-          fetch(`http://127.0.0.1:8000/jobs/all`),
+          fetch(`${BACKEND_BASE_URL}//resumes/by-user/${userId}`),
+          fetch(`${BACKEND_BASE_URL}//jobs/all`),
         ])
         if (res1.ok) setResumes(await res1.json())
         if (res2.ok) setJobs(await res2.json())
@@ -51,7 +52,7 @@ const ApplyJob: React.FC<ApplyJobProps> = ({ userId, isWizard = false, onSuccess
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/submit-application', {
+      const response = await fetch(`${BACKEND_BASE_URL}/submit-application`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

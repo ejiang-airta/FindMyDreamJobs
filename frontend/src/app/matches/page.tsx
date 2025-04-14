@@ -7,6 +7,7 @@ import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useSession } from 'next-auth/react'
 import { getUserId } from '@/lib/auth'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
@@ -36,7 +37,7 @@ function MatchesPage() {
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const res = await fetch(`http://127.0.0.1:8000/matches/${userId}`)
+        const res = await fetch(`${BACKEND_BASE_URL}//matches/${userId}`)
         const data = await res.json()
   
         setMatchData(data)  // ← No transformation here

@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils'
 import { getSession, useSession, signIn, signOut } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { useEffect, useState } from 'react'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 const navItems = [
   { href: '/', label: '🏠 Home' },
@@ -34,7 +35,7 @@ export default function NavBar() {
       if (!session?.user?.email) return
 
       // Register user
-      const res = await fetch("http://127.0.0.1:8000/auth/whoami", {
+      const res = await fetch("${BACKEND_BASE_URL}/auth/whoami", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -50,7 +51,7 @@ export default function NavBar() {
       }
 
       // Fetch wizard progress
-      const wizardRes = await fetch("http://127.0.0.1:8000/wizard/progress/get", {
+      const wizardRes = await fetch("${BACKEND_BASE_URL}/wizard/progress/get", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: session.user.email })

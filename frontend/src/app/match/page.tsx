@@ -12,7 +12,7 @@ import { Textarea } from '@/components/ui/textarea'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useSession } from "next-auth/react"
-//import MatchPage from "./MatchPage"
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 
 export default function MatchPageProtected() {
@@ -43,10 +43,8 @@ function MatchPage({ userId }: { userId: string }) {
   
     const fetchData = async () => {
       try {
-        const id = localStorage.getItem('user_id')
-        setUserId(id)
-        const res1 = await fetch(`http://127.0.0.1:8000/resumes/by-user/${userId}`)
-        const res2 = await fetch(`http://127.0.0.1:8000/jobs/all`) // <-- we fixed this earlier
+        const res1 = await fetch(`${BACKEND_BASE_URL}//resumes/by-user/${userId}`)
+        const res2 = await fetch(`${BACKEND_BASE_URL}//jobs/all`) // <-- we fixed this earlier
         if (res1.ok) setResumes(await res1.json())
         if (res2.ok) setJobs(await res2.json())
       } catch (err) {
@@ -70,7 +68,7 @@ function MatchPage({ userId }: { userId: string }) {
     }
 
     try {
-      const response = await fetch('http://127.0.0.1:8000/match-score', {
+      const response = await fetch(`${BACKEND_BASE_URL}/match-score`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resume_id: parseInt(resumeId), job_id: parseInt(jobId) })

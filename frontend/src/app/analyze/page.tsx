@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import React, { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import AnalyzeJob from '@/components/AnalyzeJob'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 
 // This ensures page is only accessible to authenticated users:
@@ -28,7 +29,7 @@ function AnalyzePage({ session }: { session: any }) {
     const wizardMode = localStorage.getItem("wizard_mode")
     if (analysisDone && wizardMode === "true") {
       // ✅ Update wizard progress to "match"
-      fetch("http://127.0.0.1:8000/wizard/progress", {
+      fetch(`${BACKEND_BASE_URL}/wizard/progress`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

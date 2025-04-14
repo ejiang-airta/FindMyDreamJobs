@@ -9,6 +9,7 @@ import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 interface MatchScoreProps {
   isWizard?: boolean
@@ -36,8 +37,8 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess }) 
     const fetchDropdowns = async () => {
       try {
         const [res1, res2] = await Promise.all([
-          fetch(`http://127.0.0.1:8000/resumes/by-user/${userId}`),
-          fetch(`http://127.0.0.1:8000/jobs/all`),
+          fetch(`${BACKEND_BASE_URL}//resumes/by-user/${userId}`),
+          fetch(`${BACKEND_BASE_URL}//jobs/all`),
         ])
         setResumes(await res1.json())
         setJobs(await res2.json())
@@ -56,7 +57,7 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess }) 
     }
 
     try {
-      const response = await fetch(`http://127.0.0.1:8000/match-score`, {
+      const response = await fetch(`${BACKEND_BASE_URL}//match-score`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

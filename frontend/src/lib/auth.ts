@@ -5,7 +5,7 @@ import type { NextAuthOptions } from "next-auth"
 
 // 🌐 Dynamically resolve backend API base
 const API_BASE_URL =
-process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000"
+  process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000"
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -28,8 +28,14 @@ export const authOptions: NextAuthOptions = {
           })
 
           const user = await response.json()
-
-          if (response.ok && user) return user
+          if (response.ok && user) {
+            // ✅ Save token and user_id for later use
+            if (typeof window !== "undefined") {
+              localStorage.setItem("token", user.token)
+              localStorage.setItem("user_id", user.user_id?.toString() || "")
+            }
+            return user
+          }
           return null
         } catch (err) {
           console.error("❌ Login error:", err)
@@ -37,6 +43,7 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
+
 
     // 🔐 Google login
     GoogleProvider({
@@ -80,4 +87,9 @@ export function getUserId(): number | null {
 // ✅ Check if user is authenticated
 export function isAuthenticated(): boolean {
   return getUserId() !== null
+}
+
+// ✅ Helper: Get JWT token from localStorage (for auth headers)
+export function getToken(): string | null {
+  return localStorage.getItem("token") || null
 }

@@ -10,6 +10,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Label } from '@/components/ui/label'
 import { useSession } from 'next-auth/react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 
 // This ensures page is only accessible to authenticated users:
@@ -40,8 +41,8 @@ function FinalizePage({ userId }: { userId: string }) {
     const fetchDropdowns = async () => {
       try {
         const [res1, res2] = await Promise.all([
-          fetch(`http://127.0.0.1:8000/resumes/by-user/${userId}`),
-          fetch(`http://127.0.0.1:8000/jobs/all`)
+          fetch(`${BACKEND_BASE_URL}//resumes/by-user/${userId}`),
+          fetch(`${BACKEND_BASE_URL}//jobs/all`)
         ])
         if (res1.ok) setResumes(await res1.json())
         if (res2.ok) setJobs(await res2.json())
@@ -61,7 +62,7 @@ function FinalizePage({ userId }: { userId: string }) {
     }
   
     try {
-      const response = await fetch(`http://127.0.0.1:8000/resumes/${resumeId}`)  // Adjust this route as needed
+      const response = await fetch(`${BACKEND_BASE_URL}//resumes/${resumeId}`)  // Adjust this route as needed
       const data = await response.json()
   
       if (!response.ok) {
@@ -79,7 +80,7 @@ function FinalizePage({ userId }: { userId: string }) {
 
   const handleApprove = async () => {
     try {
-      const res = await fetch('http://127.0.0.1:8000/approve-resume', {
+      const res = await fetch(`${BACKEND_BASE_URL}/approve-resume`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ resume_id: parseInt(resumeId) })
@@ -100,7 +101,7 @@ function FinalizePage({ userId }: { userId: string }) {
     }
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/submit-application', {
+      const res = await fetch(`${BACKEND_BASE_URL}/submit-application`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

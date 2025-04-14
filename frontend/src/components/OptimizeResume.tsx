@@ -15,6 +15,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select'
 import { toast } from "sonner"
 import { motion } from "framer-motion"
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 interface OptimizeProps {
   userId: string
@@ -38,8 +39,8 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
     const fetchDropdowns = async () => {
       try {
         const [res1, res2] = await Promise.all([
-          fetch(`http://127.0.0.1:8000/resumes/by-user/${userId}`),
-          fetch(`http://127.0.0.1:8000/jobs/all`)
+          fetch(`${BACKEND_BASE_URL}//resumes/by-user/${userId}`),
+          fetch(`${BACKEND_BASE_URL}//jobs/all`)
         ])
 
         setResumes(await res1.json())
@@ -62,7 +63,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
 
   const ensureMatchData = async () => {
     try {
-      const matchRes = await fetch(`http://127.0.0.1:8000/match-score`, {
+      const matchRes = await fetch(`${BACKEND_BASE_URL}//match-score`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -85,7 +86,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
 
   const fetchEmphasized = async () => {
     try {
-      const jobRes = await fetch(`http://127.0.0.1:8000/jobs/${jobId}`)
+      const jobRes = await fetch(`${BACKEND_BASE_URL}//jobs/${jobId}`)
       if (!jobRes.ok) return
       const jobData = await jobRes.json()
       const skills = jobData?.emphasized_skills || []
@@ -105,7 +106,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
     }
 
     try {
-      const res = await fetch('http://127.0.0.1:8000/optimize-resume', {
+      const res = await fetch(`${BACKEND_BASE_URL}/optimize-resume`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -138,7 +139,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
 
   const handleApprove = async () => {
     try {
-      const response = await fetch("http://127.0.0.1:8000/approve-resume", {
+      const response = await fetch("${BACKEND_BASE_URL}/approve-resume", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resume_id: resumeId })

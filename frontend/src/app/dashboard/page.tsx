@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
 import { getUserId } from '@/lib/auth'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
@@ -29,6 +30,7 @@ function DashboardPage() {
   const [error, setError] = useState("")
   const [jobs, setJobs] = useState([])
   
+  
   // This function retrieves the user ID from local storage:
   const userId = getUserId()
   if (!userId) {
@@ -38,7 +40,7 @@ function DashboardPage() {
   }
 
   useEffect(() => {
-    fetch('http://127.0.0.1:8000/jobs/all')
+    fetch(`${BACKEND_BASE_URL}/jobs/all`)
       .then(res => res.json())
       .then(data => setJobs(data))
     fetchResumes()
@@ -51,7 +53,7 @@ function DashboardPage() {
   const fetchResumes = async () => {
     try {  
       console.log("🧠 Using local user ID:", userId)
-      const response = await fetch(`http://127.0.0.1:8000/resumes/by-user/${userId}`)
+      const response = await fetch(`${BACKEND_BASE_URL}//resumes/by-user/${userId}`)
       if (!response.ok) throw new Error("Failed to fetch resumes.")
       const data = await response.json()
       setResumes(data)
@@ -63,7 +65,7 @@ function DashboardPage() {
   // Fetch matches
   const fetchMatches = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/matches/${userId}`)
+      const response = await fetch(`${BACKEND_BASE_URL}//matches/${userId}`)
       if (!response.ok) throw new Error("Failed to fetch matches.")
       const data = await response.json()
       setMatches(data)
@@ -77,7 +79,7 @@ function DashboardPage() {
   // Fetch applications
   const fetchApplications = async () => {
     try {
-      const response = await fetch(`http://127.0.0.1:8000/applications/${userId}`)
+      const response = await fetch(`${BACKEND_BASE_URL}//applications/${userId}`)
       if (!response.ok) throw new Error("Failed to fetch applications.")
       const data = await response.json()
       setApplications(data)
