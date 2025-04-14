@@ -178,7 +178,7 @@ function DashboardPage() {
                 <Button
                   variant="outline"
                   onClick={() => {
-                    const downloadUrl = `http://127.0.0.1:8000/download-resume/${app.resume_id}`
+                    const downloadUrl = `${BACKEND_BASE_URL}/download-resume/${app.resume_id}`
                     window.open(downloadUrl, '_blank')  // ✅ Trigger browser download
                   }}
                 >
