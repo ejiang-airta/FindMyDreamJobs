@@ -39,8 +39,8 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
     const fetchDropdowns = async () => {
       try {
         const [res1, res2] = await Promise.all([
-          fetch(`${BACKEND_BASE_URL}//resumes/by-user/${userId}`),
-          fetch(`${BACKEND_BASE_URL}//jobs/all`)
+          fetch(`${BACKEND_BASE_URL}/resumes/by-user/${userId}`),
+          fetch(`${BACKEND_BASE_URL}/jobs/all`)
         ])
 
         setResumes(await res1.json())
@@ -63,7 +63,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
 
   const ensureMatchData = async () => {
     try {
-      const matchRes = await fetch(`${BACKEND_BASE_URL}//match-score`, {
+      const matchRes = await fetch(`${BACKEND_BASE_URL}/match-score`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -86,7 +86,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
 
   const fetchEmphasized = async () => {
     try {
-      const jobRes = await fetch(`${BACKEND_BASE_URL}//jobs/${jobId}`)
+      const jobRes = await fetch(`${BACKEND_BASE_URL}/jobs/${jobId}`)
       if (!jobRes.ok) return
       const jobData = await jobRes.json()
       const skills = jobData?.emphasized_skills || []
@@ -139,7 +139,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
 
   const handleApprove = async () => {
     try {
-      const response = await fetch("${BACKEND_BASE_URL}/approve-resume", {
+      const response = await fetch(`${BACKEND_BASE_URL}/approve-resume`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ resume_id: resumeId })

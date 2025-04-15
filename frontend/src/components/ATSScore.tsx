@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 export default function ATSScore() {
   const [resumeId, setResumeId] = useState('')
@@ -24,7 +25,7 @@ export default function ATSScore() {
     setError(null)
 
     try {
-      const response = await fetch(`http://localhost:8000/ats-score?resume_id=${resumeId}`, {
+      const response = await fetch(`${BACKEND_BASE_URL}/ats-score?resume_id=${resumeId}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
       })

@@ -53,7 +53,7 @@ function DashboardPage() {
   const fetchResumes = async () => {
     try {  
       console.log("🧠 Using local user ID:", userId)
-      const response = await fetch(`${BACKEND_BASE_URL}//resumes/by-user/${userId}`)
+      const response = await fetch(`${BACKEND_BASE_URL}/resumes/by-user/${userId}`)
       if (!response.ok) throw new Error("Failed to fetch resumes.")
       const data = await response.json()
       setResumes(data)
@@ -65,7 +65,7 @@ function DashboardPage() {
   // Fetch matches
   const fetchMatches = async () => {
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}//matches/${userId}`)
+      const response = await fetch(`${BACKEND_BASE_URL}/matches/${userId}`)
       if (!response.ok) throw new Error("Failed to fetch matches.")
       const data = await response.json()
       setMatches(data)
@@ -79,7 +79,7 @@ function DashboardPage() {
   // Fetch applications
   const fetchApplications = async () => {
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}//applications/${userId}`)
+      const response = await fetch(`${BACKEND_BASE_URL}/applications/${userId}`)
       if (!response.ok) throw new Error("Failed to fetch applications.")
       const data = await response.json()
       setApplications(data)

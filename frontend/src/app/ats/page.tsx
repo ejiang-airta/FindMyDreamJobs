@@ -43,7 +43,7 @@ function ATSPage() {
     }
 
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}//ats-score?resume_id=${resumeId}`, {
+      const response = await fetch(`${BACKEND_BASE_URL}/ats-score?resume_id=${resumeId}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" }
       })

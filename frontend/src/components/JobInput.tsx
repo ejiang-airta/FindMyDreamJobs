@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 interface JobInputProps {
   onAnalysisComplete?: () => void
@@ -35,7 +36,7 @@ const JobInput: React.FC<JobInputProps> = ({ onAnalysisComplete }) => {
     setError(null)
 
     try {
-      const response = await fetch('http://localhost:8000/parse-job-description', {
+      const response = await fetch(`${BACKEND_BASE_URL}/parse-job-description`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

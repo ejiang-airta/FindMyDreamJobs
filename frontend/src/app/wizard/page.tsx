@@ -14,18 +14,30 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Loader } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { getUserId } from '@/lib/auth'
 
 const steps = ['upload', 'analyze', 'match', 'optimize', 'apply']
 const stepLabels = ['Upload Resume', 'Analyze Job', 'Match Score', 'Optimize Resume', 'Apply Job']
 
-export default function WizardPage() {
+export default function ProtectedPage() {
+  const { data: session, status } = useSession()
+  const userId = getUserId()
+
+    if (status === "loading") return <p>Loading...</p>
+    if (!session?.user || !userId) return <p>Unauthorized or user ID missing</p>
+
+    return <WizardPage />
+  }
+
+function WizardPage() {
   const [currentStep, setCurrentStep] = useState<string | null>(null)
   const [isReady, setIsReady] = useState(false)
+  const [stepComplete, setStepComplete] = useState(false)
   const { data: session, status } = useSession()
   const router = useRouter()
 
   const email = session?.user?.email || ''
-  const userId = typeof window !== 'undefined' ? localStorage.getItem('user_id') : null
+  const userId = getUserId()
 
   useEffect(() => {
     if (!email || !userId) return
@@ -44,12 +56,7 @@ export default function WizardPage() {
         const step = data?.step
         console.log("📥 Wizard Progress Step:", step)
 
-        if (step && steps.includes(step)) {
-          setCurrentStep(step)
-        } else {
-          console.log("🧭 No wizard step found, starting at 'upload'")
-          setCurrentStep('upload')
-        }
+        setCurrentStep(step && steps.includes(step) ? step : 'upload')
 
         setIsReady(true)
       })
@@ -63,6 +70,7 @@ export default function WizardPage() {
   const updateStep = async (step: string) => {
     console.log("🔁 Moving to step:", step)
     setCurrentStep(step)
+    setStepComplete(false)
     await fetch(`${BACKEND_BASE_URL}/wizard/progress`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -83,35 +91,60 @@ export default function WizardPage() {
   const renderStep = () => {
     if (!userId) return <p className="text-center text-red-500">❌ User ID not found.</p>
 
+    const commonControls = (
+      <>
+        {stepComplete && <p className="text-green-600 text-sm mt-4">✅ Step completed. Click Next to continue.</p>}
+        <div className="flex justify-between mt-6">
+          <Button variant="secondary" onClick={goToPrevStep} disabled={steps.indexOf(currentStep || '') === 0}>
+            ⬅️ Prev
+          </Button>
+          {currentStep !== 'apply' && (
+            <Button onClick={goToNextStep} disabled={!stepComplete}>
+              Next ➡️
+            </Button>
+          )}
+        </div>
+      </>
+    )
+
     switch (currentStep) {
       case 'upload':
-        return <UploadResume isWizard onSuccess={() => updateStep('analyze')} />
+        return (
+          <>
+            <UploadResume isWizard onSuccess={() => setStepComplete(true)} />
+            {stepComplete && <p className="text-green-600 text-sm mt-4">✅ Step completed. Click Next to continue.</p>}
+            <div className="flex justify-end mt-6"> {/* ✅ Only show "Next" */}
+              <Button onClick={goToNextStep} disabled={!stepComplete}>
+                Next ➡️
+              </Button>
+            </div>
+          </>
+        )
       case 'analyze':
-        return <AnalyzeJob isWizard onSuccess={() => updateStep('match')} />
+        return (
+          <>
+            <AnalyzeJob isWizard onSuccess={() => setStepComplete(true)} />
+            {commonControls}
+          </>
+        )
       case 'match':
         return (
           <>
-            <MatchScore isWizard onSuccess={() => updateStep('optimize')} />
-            <div className="flex justify-between mt-6">
-              <Button variant="secondary" onClick={goToPrevStep}>⬅️ Prev</Button>
-              <Button onClick={goToNextStep}>Next ➡️</Button>
-            </div>
+            <MatchScore isWizard onSuccess={() => setStepComplete(true)} />
+            {commonControls}
           </>
         )
       case 'optimize':
         return (
           <>
-            <OptimizeResume userId={userId} isWizard onSuccess={() => updateStep('apply')} />
-            <div className="flex justify-between mt-6">
-              <Button variant="secondary" onClick={goToPrevStep}>⬅️ Prev</Button>
-              <Button onClick={goToNextStep}>Next ➡️</Button>
-            </div>
+            <OptimizeResume userId={String(userId)} isWizard onSuccess={() => setStepComplete(true)} />  
+            {commonControls}
           </>
         )
       case 'apply':
         return (
           <>
-            <ApplyJob userId={userId} isWizard />
+            <ApplyJob userId={String(userId)} isWizard />
             <div className="flex justify-between mt-6">
               <Button variant="secondary" onClick={goToPrevStep}>⬅️ Prev</Button>
               <Button

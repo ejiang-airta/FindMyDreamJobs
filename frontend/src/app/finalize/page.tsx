@@ -11,17 +11,20 @@ import { Label } from '@/components/ui/label'
 import { useSession } from 'next-auth/react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BACKEND_BASE_URL }  from '@/lib/env'
+import { getUserId } from '@/lib/auth'
 
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
   const { data: session, status } = useSession()
-  const userId = typeof window !== 'undefined' ? localStorage.getItem("user_id") : null
+  
+    if (status === "loading") return <p>Loading...</p>
+    if (!session?.user) return <p>Unauthorized</p>
+  
+    const userId = getUserId()
+    if (!userId) return <p>❌ No user ID found</p>
 
-  if (status === 'loading') return <p>Loading...</p>
-  if (!session || !userId) return <p>Unauthorized. Please sign in.</p>
-
-  return <FinalizePage userId={userId} />
+  return <FinalizePage userId={String(userId)} />
 }
 
 // This component is the main page for finalizing resumes and submitting applications:
@@ -41,8 +44,8 @@ function FinalizePage({ userId }: { userId: string }) {
     const fetchDropdowns = async () => {
       try {
         const [res1, res2] = await Promise.all([
-          fetch(`${BACKEND_BASE_URL}//resumes/by-user/${userId}`),
-          fetch(`${BACKEND_BASE_URL}//jobs/all`)
+          fetch(`${BACKEND_BASE_URL}/resumes/by-user/${userId}`),
+          fetch(`${BACKEND_BASE_URL}/jobs/all`)
         ])
         if (res1.ok) setResumes(await res1.json())
         if (res2.ok) setJobs(await res2.json())
@@ -62,7 +65,7 @@ function FinalizePage({ userId }: { userId: string }) {
     }
   
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}//resumes/${resumeId}`)  // Adjust this route as needed
+      const response = await fetch(`${BACKEND_BASE_URL}/resumes/${resumeId}`)  // Adjust this route as needed
       const data = await response.json()
   
       if (!response.ok) {

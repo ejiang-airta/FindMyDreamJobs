@@ -37,8 +37,8 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess }) 
     const fetchDropdowns = async () => {
       try {
         const [res1, res2] = await Promise.all([
-          fetch(`${BACKEND_BASE_URL}//resumes/by-user/${userId}`),
-          fetch(`${BACKEND_BASE_URL}//jobs/all`),
+          fetch(`${BACKEND_BASE_URL}/resumes/by-user/${userId}`),
+          fetch(`${BACKEND_BASE_URL}/jobs/all`),
         ])
         setResumes(await res1.json())
         setJobs(await res2.json())
@@ -57,7 +57,7 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess }) 
     }
 
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}//match-score`, {
+      const response = await fetch(`${BACKEND_BASE_URL}/match-score`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -96,11 +96,13 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess }) 
             <SelectValue placeholder="Choose your resume" />
           </SelectTrigger>
           <SelectContent>
-            {resumes.map((r) => (
-              <SelectItem key={r.id} value={String(r.id)}>
-                {`Resume #${r.id}`} – {r.resume_name}
-              </SelectItem>
-            ))}
+          {Array.isArray(resumes) ? resumes.map(r => (
+            <SelectItem key={r.id} value={String(r.id)}>
+              {`Resume #${r.id}`} – {r.resume_name}
+            </SelectItem>
+          )) : (
+            <div className="text-red-500 text-sm mt-2">❌ No resumes found</div>
+          )}
           </SelectContent>
         </Select>
 

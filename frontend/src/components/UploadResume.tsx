@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
+import { BACKEND_BASE_URL }  from '@/lib/env'
 
 interface Props {
   onSuccess?: () => void
@@ -47,7 +48,7 @@ const UploadResume: React.FC<Props> = ({ onSuccess, isWizard }) => {
     formData.append("user_id", userId)
 
     try {
-      const response = await fetch("http://localhost:8000/upload-resume", {
+      const response = await fetch(`${BACKEND_BASE_URL}/upload-resume`, {
         method: "POST",
         body: formData,
       })
@@ -78,7 +79,7 @@ const UploadResume: React.FC<Props> = ({ onSuccess, isWizard }) => {
         <Alert variant="destructive">
           <AlertDescription>{error}</AlertDescription>
         </Alert>
-      )}
+      )}      
     </div>
   )
 }

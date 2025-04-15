@@ -55,7 +55,7 @@ function StatsPage() {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch(`${BACKEND_BASE_URL}//applications/${userId}`)
+      const res = await fetch(`${BACKEND_BASE_URL}/applications/${userId}`)
       const apps = await res.json()
 
       if (!res.ok) {

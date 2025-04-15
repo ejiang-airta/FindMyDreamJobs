@@ -7,41 +7,24 @@ import React, { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import AnalyzeJob from '@/components/AnalyzeJob'
 import { BACKEND_BASE_URL }  from '@/lib/env'
+import { getUserId } from '@/lib/auth'
 
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
   const { data: session, status } = useSession()
+  const userId = getUserId()
 
-  if (status === 'loading') return <p>Loading...</p>
-  if (!session) return <p>Unauthorized. Please sign in.</p>
+    if (status === "loading") return <p>Loading...</p>
+    if (!session?.user || !userId) return <p>Unauthorized or user ID missing</p>
 
-  return <AnalyzePage session={session} />
-}
+    return <AnalyzePage />
+  }
 
 // This component is the main page for analyzing job descriptions and resumes.
-function AnalyzePage({ session }: { session: any }) {
+function AnalyzePage() {
   const router = useRouter()
-  const [analysisDone, setAnalysisDone] = useState(false)
-
-  // 🔄 Auto-advance wizard if in wizard mode
-  useEffect(() => {
-    const wizardMode = localStorage.getItem("wizard_mode")
-    if (analysisDone && wizardMode === "true") {
-      // ✅ Update wizard progress to "match"
-      fetch(`${BACKEND_BASE_URL}/wizard/progress`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: session.user.email,
-          step: "match"
-        }),
-      }).then(() => {
-        router.push("/wizard") // 🚀 Go to next step in wizard
-      })
-    }
-  }, [analysisDone, session, router])
-  
+  const [analysisDone, setAnalysisDone] = useState(false)  
 
   return (
     <div className="flex flex-col overflow-hidden">
@@ -51,6 +34,11 @@ function AnalyzePage({ session }: { session: any }) {
 
       <main className="flex-1  px-6 py-4">
         <AnalyzeJob onSuccess={() => setAnalysisDone(true)} isWizard={false} />
+        {analysisDone && (
+          <div className="mt-4 text-green-600 text-sm font-medium">
+            ✅ Job analysis completed successfully.
+          </div>
+        )}
       </main>
     </div>
   )

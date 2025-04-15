@@ -3,85 +3,23 @@
 
 'use client'
 
-import React, { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Alert, AlertDescription } from '@/components/ui/alert'
+import UploadResume from '@/components/UploadResume'
+import { useSession } from 'next-auth/react'
 
-export default function UploadPage() {
-  const [file, setFile] = useState<File | null>(null)
-  const [error, setError] = useState<string | null>(null)
-  const [isUploading, setIsUploading] = useState(false)
-  
-  const [userId, setUserId] = useState<string | null>(null)
+export default function UploadPageProtected() {
+  const { data: session, status } = useSession()
 
-  useEffect(() => {
-    // Only runs in the browser
-    const id = localStorage.getItem('user_id')
-    setUserId(id)
-  }, [])
+  if (status === 'loading') return <p>Loading...</p>
+  if (!session?.user) return <p>Unauthorized</p>
 
-  if (!userId) return <p className="text-center mt-10">🔒 Please log in to upload a resume.</p>
+  return <UploadPage />
+}
 
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files.length > 0) {
-      setFile(e.target.files[0])
-    }
-  }
-
-  const handleUpload = async () => {
-    if (!file) {
-      setError("Please choose a file before uploading.")
-      return
-    }
-    if (!userId) {
-      setError("User not found in session. Please log in again.")
-      return
-    }
-
-    setIsUploading(true)
-    setError(null)
-
-    const formData = new FormData()
-    formData.append("file", file)
-    formData.append("user_id", userId)
-
-    try {
-      const response = await fetch("http://localhost:8000/upload-resume", {
-        method: "POST",
-        body: formData,
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        setError(data.detail || "Upload failed.")
-      } else {
-        alert("✅ Resume uploaded successfully!")
-        setFile(null)
-      }
-    } catch (err) {
-      setError("❌ Upload failed. Please try again.")
-    } finally {
-      setIsUploading(false)
-    }
-  }
-
+function UploadPage() {
   return (
-    <div className="max-w-3xl mx-auto mt-10 space-y-6 px-4">
-      <h1 className="text-2xl font-bold">📤 Upload Your Resume</h1>
-      <div className="bg-white shadow-md rounded p-6 space-y-4">
-        <Input type="file" accept=".pdf,.docx,.txt" onChange={handleFileChange} />
-        <Button className="w-full" onClick={handleUpload} disabled={isUploading}>
-          {isUploading ? 'Uploading...' : 'Upload Resume'}
-        </Button>
-        {error && (
-          <Alert variant="destructive">
-            <AlertDescription>{error}</AlertDescription>
-          </Alert>
-        )}
-      </div>
+    <div className="max-w-3xl mx-auto mt-10 px-4">
+      <h1 className="text-2xl font-bold mb-4">📤 Upload Resume</h1>
+      <UploadResume isWizard={false} />
     </div>
   )
 }

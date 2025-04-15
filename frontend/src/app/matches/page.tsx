@@ -37,7 +37,7 @@ function MatchesPage() {
   useEffect(() => {
     const fetchMatches = async () => {
       try {
-        const res = await fetch(`${BACKEND_BASE_URL}//matches/${userId}`)
+        const res = await fetch(`${BACKEND_BASE_URL}/matches/${userId}`)
         const data = await res.json()
   
         setMatchData(data)  // ← No transformation here

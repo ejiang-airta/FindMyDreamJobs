@@ -49,7 +49,7 @@ function ApplicationsPage() {
   const fetchApplications = async () => {
     setIsLoading(true)
     try {
-      const res = await fetch(`${BACKEND_BASE_URL}//applications/${userId}`)
+      const res = await fetch(`${BACKEND_BASE_URL}/applications/${userId}`)
       const data = await res.json()
 
       if (!res.ok) {
@@ -72,7 +72,7 @@ function ApplicationsPage() {
     }
   
     try {
-      const response = await fetch(`${BACKEND_BASE_URL}//update-application-status?application_id=${applicationId}&status=${encodeURIComponent(newStatus.trim())}`, {
+      const response = await fetch(`${BACKEND_BASE_URL}/update-application-status?application_id=${applicationId}&status=${encodeURIComponent(newStatus.trim())}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -129,7 +129,8 @@ function ApplicationsPage() {
                     size="sm"
                     onClick={async () => {
                         try {
-                        const res = await fetch(`${BACKEND_BASE_URL}//download-resume/${app.resume_id}`)
+                        const res = await fetch(`${BACKEND_BASE_URL}/download-resume/${app.resume_id}`)
+                        
                         const blob = await res.blob()
                         const url = window.URL.createObjectURL(blob)
                         const a = document.createElement('a')
