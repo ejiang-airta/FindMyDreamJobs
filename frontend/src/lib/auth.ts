@@ -79,6 +79,7 @@ export const authOptions: NextAuthOptions = {
 
 // ✅ Helper: Safely get user_id from localStorage
 export function getUserId(): number | null {
+  if (typeof window === 'undefined') return null
   const value = localStorage.getItem("user_id")
   const parsed = parseInt(value || "", 10)
   return isNaN(parsed) ? null : parsed
