@@ -68,6 +68,14 @@ export default function NavBar() {
     fetchUser()
   }, [pathname])
 
+  // store the user_id to localstorage:
+  useEffect(() => {
+    // Ensure user_id is set after Google sign-in
+    if (session?.user?.id) {
+      localStorage.setItem("user_id", String(session.user.id))
+    }
+  }, [session])
+
   return (
     <nav className="bg-white shadow-sm border-b sticky top-0 z-50">
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">

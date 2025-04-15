@@ -13,6 +13,7 @@ from app.utils.job_extraction import extract_skills_with_frequency
 from typing import List
 import logging
 from pydantic import BaseModel
+from app.config.skills_config import MIN_SKILL_FREQUENCY
 
 # Setup the logger
 logger = logging.getLogger("app")
@@ -50,11 +51,21 @@ def optimize_resume(payload: dict = Body(...), db: Session = Depends(get_db)):
     resume_text = resume.parsed_text
     job_text = job.job_description
 
+    # ✅ Extract keywords from JD
     jd_keywords = extract_skills_with_frequency(job_text)
     resume_keywords = set(resume_text.lower().split())
 
+    # ✅ Matched skills = those present in both resume and JD
     matched_skills = [skill for skill in jd_keywords if skill.lower() in resume_keywords]
-    emphasized_skills = [skill for skill in matched_skills if jd_keywords[skill] >= 2]
+
+    # ✅ Emphasized = matched skills with high frequency in JD
+    emphasized_skills = []
+    for skill in matched_skills:
+        if skill in jd_keywords:
+            freq = jd_keywords[skill]
+            if isinstance(freq, int) and freq >= MIN_SKILL_FREQUENCY:
+                emphasized_skills.append(skill)
+
     missing_skills = [skill for skill in jd_keywords if skill.lower() not in resume_keywords]
 
     optimized_text, changes_summary = optimize_resume_with_skills_service(
@@ -66,12 +77,13 @@ def optimize_resume(payload: dict = Body(...), db: Session = Depends(get_db)):
     )
 
 
-    # 🔍 Calculate ATS score using updated optimized text
+    # 🔍 Calculate ATS score & match score using updated optimized text
     _, ats_score_final, _ = calculate_ats_score(optimized_text)
 
     # 🔍 Calculate updated match score
     match_score_final = round((len(matched_skills) / max(len(jd_keywords), 1)) * 100, 2)
 
+    # 🔄 Save or update match record
     existing_match = db.query(JobMatch).filter_by(resume_id=resume_id, job_id=job_id).first()
     if existing_match:
         existing_match.match_score_final = match_score_final
