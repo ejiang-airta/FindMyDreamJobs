@@ -26,7 +26,8 @@ logging.basicConfig(
 
 origins = [
     "http://localhost:3000",      # ✅ Next.js dev server
-    "http://127.0.0.1:3000"       # ✅ Alternate dev address
+    "http://127.0.0.1:3000",       # ✅ Alternate dev address
+    "https://findmydreamjobs-frontend.onrender.com",  # prod frontend
 ]
 
 # Optional: Create a reusable logger for your app
