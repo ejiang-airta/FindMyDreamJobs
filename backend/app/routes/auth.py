@@ -64,4 +64,9 @@ def login(payload: LoginRequest, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == payload.email).first()
     if not user or not pwd_context.verify(payload.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
-    return {"user_id": user.id, "message": "✅ Login successful!"}
+    return {
+        "user_id": user.id,
+        "email": user.email,
+        "name": user.full_name,  # ✅ Add this line if it's not already included
+        "message": "✅ Login successful!"
+    }

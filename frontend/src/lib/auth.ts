@@ -3,10 +3,7 @@ import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import type { NextAuthOptions } from "next-auth"
 import { useUserId } from "@/hooks/useUserId"
-
-// 🌐 Dynamically resolve backend API base
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000"
+import { BACKEND_BASE_URL } from '@/lib/env'
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -19,7 +16,7 @@ export const authOptions: NextAuthOptions = {
       },  
       async authorize(credentials) {
         try {
-          const response = await fetch(`${API_BASE_URL}/auth/login`, {
+          const response = await fetch(`${BACKEND_BASE_URL}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
