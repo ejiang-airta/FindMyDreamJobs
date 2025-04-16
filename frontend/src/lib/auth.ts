@@ -2,6 +2,7 @@
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import type { NextAuthOptions } from "next-auth"
+import { useUserId } from "@/hooks/useUserId"
 
 // 🌐 Dynamically resolve backend API base
 const API_BASE_URL =
@@ -77,17 +78,10 @@ export const authOptions: NextAuthOptions = {
   },
 }
 
-// ✅ Helper: Safely get user_id from localStorage
-export function getUserId(): number | null {
-  if (typeof window === 'undefined') return null
-  const value = localStorage.getItem("user_id")
-  const parsed = parseInt(value || "", 10)
-  return isNaN(parsed) ? null : parsed
-}
 
 // ✅ Check if user is authenticated
 export function isAuthenticated(): boolean {
-  return getUserId() !== null
+  return useUserId() !== null
 }
 
 // ✅ Helper: Get JWT token from localStorage (for auth headers)
