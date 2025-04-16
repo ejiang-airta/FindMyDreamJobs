@@ -62,8 +62,8 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
   }
 
   return (
-    <div className="space-y-6">
-      <h2 className="text-xl font-semibold">📄 Analyze Job Description</h2>
+    <div className="space-y-10 max-w-2xl mx-auto">
+      <h2 className="text-2xl font-bold">📄 Analyze Job Description</h2>
 
       <div className="space-y-2">
         <label className="text-sm font-medium">Paste Job URL (Optional)</label>
@@ -86,7 +86,7 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
         />
       </div>
 
-      <Button className="w-full" onClick={handleSubmit}>
+      <Button className="bg-blue-500 text-white hover:bg-blue-600" onClick={handleSubmit}>
         Analyze Job Description
       </Button>
 

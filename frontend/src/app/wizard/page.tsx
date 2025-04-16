@@ -14,14 +14,14 @@ import { useSession } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { Loader } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { getUserId } from '@/lib/auth'
+import { useUserId } from '@/hooks/useUserId'
 
 const steps = ['upload', 'analyze', 'match', 'optimize', 'apply']
 const stepLabels = ['Upload Resume', 'Analyze Job', 'Match Score', 'Optimize Resume', 'Apply Job']
 
 export default function ProtectedPage() {
   const { data: session, status } = useSession()
-  const userId = getUserId()
+  const userId = useUserId()
 
     if (status === "loading") return <p>Loading...</p>
     if (!session?.user || !userId) return <p>Unauthorized or user ID missing</p>
@@ -37,7 +37,7 @@ function WizardPage() {
   const router = useRouter()
 
   const email = session?.user?.email || ''
-  const userId = getUserId()
+  const userId = useUserId()
 
   useEffect(() => {
     if (!email || !userId) return

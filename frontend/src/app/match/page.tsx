@@ -7,6 +7,8 @@
 
 import MatchScore from '@/components/MatchScore'
 import { useSession } from 'next-auth/react'
+import { useUserId } from '@/hooks/useUserId'
+import { useEffect } from 'react'
 
 export default function MatchPageProtected() {
   const { data: session, status } = useSession()
@@ -18,10 +20,16 @@ export default function MatchPageProtected() {
 }
 
 function MatchPage() {
+  const userId = useUserId()
+
+  useEffect(() => {
+    if (!userId) return  // wait for hydration
+  }, [userId])
+
   return (
     <div className="max-w-3xl mx-auto mt-10 px-4">
       <h1 className="text-2xl font-bold mb-4">📊 Match Score</h1>
-      <MatchScore isWizard={false} />
+      <MatchScore isWizard={false} userId={userId} />
     </div>
   )
 }

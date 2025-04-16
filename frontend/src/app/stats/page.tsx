@@ -8,7 +8,7 @@ import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContaine
 import { Card, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useSession } from 'next-auth/react'
-import { getUserId } from '@/lib/auth'
+import { useUserId } from '@/hooks/useUserId'
 import { BACKEND_BASE_URL }  from '@/lib/env'
 
 // This ensures page is only accessible to authenticated users:
@@ -41,17 +41,18 @@ function StatsPage() {
     // you can add more fields here if needed
   }
   // This function retrieves the user ID from local storage:
-  const userId = getUserId()
-  if (!userId) {
-    console.warn("❌ No valid user ID found.")
-    setError("⚠️ You're not logged in. Please sign in.")
-  return
-  }
-    console.log("🧠 Using global user ID:", userId)
+  const userId = useUserId()
 
   useEffect(() => {
+    if (!userId) {
+      console.warn("❌ No valid user ID found.")
+      
+      return 
+    }
+    console.log("🧠 Using global user ID:", userId)
+
     fetchStats()
-  }, [])
+  }, [userId])
 
   const fetchStats = async () => {
     try {

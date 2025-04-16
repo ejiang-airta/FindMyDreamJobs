@@ -14,9 +14,10 @@ import { BACKEND_BASE_URL }  from '@/lib/env'
 interface MatchScoreProps {
   isWizard?: boolean
   onSuccess?: () => void
+  userId?: string | null  // <-- new
 }
 
-const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess }) => {
+const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess, userId }) => {
   const [resumeId, setResumeId] = useState('')
   const [jobId, setJobId] = useState('')
   const [resumes, setResumes] = useState<any[]>([])
@@ -24,14 +25,6 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess }) 
   const [matchScore, setMatchScore] = useState<number | null>(null)
   const [keywords, setKeywords] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
-
-  const [userId, setUserId] = useState<string | null>(null)
-  
-    useEffect(() => {
-      // Only runs in the browser
-      const id = localStorage.getItem('user_id')
-      setUserId(id)
-    }, [])
 
   useEffect(() => {
     const fetchDropdowns = async () => {
@@ -46,6 +39,7 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess }) 
         console.error('❌ Error loading dropdowns:', err)
       }
     }
+    
 
     fetchDropdowns()
   }, [userId])

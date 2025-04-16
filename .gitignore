@@ -10,7 +10,7 @@ __pycache__/
 # Alembic / DB
 *.sqlite3
 *.log
-alembic.ini
+#alembic.ini
 
 # macOS
 .DS_Store
@@ -23,6 +23,8 @@ job_outputs.txt
 testing*.py
 structure.dot
 structure.txt 
+go.sh
+*results.txt
 
 # skip the resume upload folder:
 uploads/

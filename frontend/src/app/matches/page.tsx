@@ -6,7 +6,7 @@ import React, { useEffect, useState } from 'react'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useSession } from 'next-auth/react'
-import { getUserId } from '@/lib/auth'
+import { useUserId } from '@/hooks/useUserId'
 import { BACKEND_BASE_URL }  from '@/lib/env'
 
 // This ensures page is only accessible to authenticated users:
@@ -26,7 +26,7 @@ function MatchesPage() {
   const [error, setError] = useState('')
   
   // This function retrieves the user ID from local storage:   
-  const userId = getUserId()
+  const userId = useUserId()
   if (!userId) {
     console.warn("❌ No valid user ID found.")
     setError("⚠️ You're not logged in. Please sign in.")

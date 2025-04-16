@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import OptimizeResume from '@/components/OptimizeResume'
-import { getUserId } from '@/lib/auth'
+import { useUserId } from '@/hooks/useUserId'
 
 export default function ProtectedPage() {
   const { data: session, status } = useSession()
@@ -11,7 +11,7 @@ export default function ProtectedPage() {
   if (status === 'loading') return <p>Loading...</p>
   if (!session) return <p>Unauthorized. Please sign in.</p>
 
-  const userId = getUserId()
+  const userId = useUserId()
     if (!userId) return <p>❌ No user ID found</p>
 
   if (!userId) return <p>❌ No user ID found in localStorage</p>

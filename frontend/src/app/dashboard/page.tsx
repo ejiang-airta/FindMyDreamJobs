@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
-import { getUserId } from '@/lib/auth'
+import { useUserId } from '@/hooks/useUserId'
 import { BACKEND_BASE_URL }  from '@/lib/env'
 
 // This ensures page is only accessible to authenticated users:
@@ -24,123 +24,66 @@ export default function ProtectedPage() {
 // This component is the main page for the user dashboard.
 // It displays the user's resumes, job matches, and applications:
 function DashboardPage() {
+  const userId = useUserId()
   const [resumes, setResumes] = useState([])
   const [matches, setMatches] = useState([])
   const [applications, setApplications] = useState([])
-  const [error, setError] = useState("")
-  const [jobs, setJobs] = useState([])
-  
-  
-  // This function retrieves the user ID from local storage:
-  const userId = getUserId()
-  if (!userId) {
-    console.warn("❌ No valid user ID found.")
-    setError("⚠️ You're not logged in. Please sign in.")
-  return
-  }
-
-  useEffect(() => {
-    fetch(`${BACKEND_BASE_URL}/jobs/all`)
-      .then(res => res.json())
-      .then(data => setJobs(data))
-    fetchResumes()
-    fetchMatches()
-    fetchApplications()
-  }, [])
-
-  // Fetch data from the backend
-  // Fetch resumes
-  const fetchResumes = async () => {
-    try {  
-      console.log("🧠 Using local user ID:", userId)
-      const response = await fetch(`${BACKEND_BASE_URL}/resumes/by-user/${userId}`)
-      if (!response.ok) throw new Error("Failed to fetch resumes.")
-      const data = await response.json()
-      setResumes(data)
-    } catch (err) {
-      setError("❌ Error fetching resumes.")
-    }
-  }
-
-  // Fetch matches
-  const fetchMatches = async () => {
-    try {
-      const response = await fetch(`${BACKEND_BASE_URL}/matches/${userId}`)
-      if (!response.ok) throw new Error("Failed to fetch matches.")
-      const data = await response.json()
-      setMatches(data)
-    } catch (err) {
-      setError("❌ Error fetching matches.")
-    } finally {
-      console.log("📦 Match data:", matches)
-    }
-  }
-
-  // Fetch applications
-  const fetchApplications = async () => {
-    try {
-      const response = await fetch(`${BACKEND_BASE_URL}/applications/${userId}`)
-      if (!response.ok) throw new Error("Failed to fetch applications.")
-      const data = await response.json()
-      setApplications(data)
-    } catch (err) {
-      setError("❌ Error fetching applications.")
-    }
-  }
+  const [error, setError] = useState('')
  
+  // ✅ Wait for localStorage hydration + validate session user email
+  useEffect(() => {
+    if (!userId) return
+
+    Promise.all([
+      fetch(`${BACKEND_BASE_URL}/resumes/by-user/${userId}`),
+      fetch(`${BACKEND_BASE_URL}/matches/${userId}`),
+      fetch(`${BACKEND_BASE_URL}/applications/${userId}`)
+    ])
+      .then(async ([resumeRes, matchRes, appRes]) => {
+        if (!resumeRes.ok || !matchRes.ok || !appRes.ok) throw new Error('Fetching failed')
+        setResumes(await resumeRes.json())
+        setMatches(await matchRes.json())
+        setApplications(await appRes.json())
+      })
+      .catch((err) => {
+        console.error("Error fetching data:", err)
+        setError("❌ Error fetching dashboard data.")
+      })
+  }, [userId])
+
   return (
     <div className="max-w-4xl mx-auto mt-10 space-y-6">
       <h1 className="text-3xl font-bold">📊 Dashboard</h1>
-      <p className="text-muted-foreground text-sm">
-        Manage your resumes, job matches, and applications.
-      </p>
-
-      {error && (
-        <Alert variant="destructive">
-          <AlertDescription>{error}</AlertDescription>
-        </Alert>
-      )}
-
-      {/* Resume Section */}
+      {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
+      
+      {/* Display resumes, matches, applications */}
+      {/* ✅ Resumes */}
       <Card>
-        <CardHeader>
-          <h2 className="text-xl font-bold">📄 Your Resumes</h2>
-        </CardHeader>
+        <CardHeader><h2 className="text-xl font-bold">📄 Your Resumes</h2></CardHeader>
         <CardContent className="space-y-4">
           {resumes.length > 0 ? (
-            resumes.map((r : any) => (
+            resumes.map((r: any) => (
               <div key={r.id} className="border p-3 rounded-md">
                 <p><strong>Resume #{r.id}:</strong> {r.resume_name}</p>
                 <p><strong>Uploaded:</strong> {new Date(r.created_at).toLocaleString()}</p>
-                <p><strong>ATS Score: </strong> 
-                {r.ats_score_initial !== null ? `${r.ats_score_initial}%` : '—'} → {r.ats_score_final !== null ? `${r.ats_score_final}%` : '—'}
-                </p>
+                <p><strong>ATS Score:</strong> {r.ats_score_initial ?? '--'} → {r.ats_score_final ?? '--'}</p>
               </div>
             ))
           ) : (
             <p className="text-muted-foreground">No resumes uploaded yet.</p>
           )}
-          <Link href="/upload">
-            <Button>📤 Upload New Resume</Button>
-          </Link>
+          <Link href="/upload"><Button>📤 Upload New Resume</Button></Link>
         </CardContent>
       </Card>
 
-      {/* Job Matches Section */}
+      {/* ✅ Matches */}
       <Card>
-        <CardHeader>
-          <h2 className="text-xl font-bold">🔍 Job Matches</h2>
-        </CardHeader>
+        <CardHeader><h2 className="text-xl font-bold">🔍 Job Matches</h2></CardHeader>
         <CardContent className="space-y-4">
           {matches.length > 0 ? (
             matches.map((match: any) => (
               <div key={`match-${match.job_id}-${match.resume_id}`} className="border p-3 rounded-md">
-                <p>
-                  <strong>Job #{match.job_id}:</strong>{' '}
-                  {match.job_title && match.company_name
-                    ? `${match.job_title} - ${match.company_name}`
-                    : `Job #${match.job_id}`}
-                </p>
+                <p><strong>Job #{match.job_id}:</strong> {match.job_title} - {match.company_name}</p>
                 <p><strong>Match Score:</strong> {match.match_score_final ?? match.match_score_initial ?? '--'}%</p>
               </div>
             ))
@@ -149,39 +92,20 @@ function DashboardPage() {
           )}
         </CardContent>
       </Card>
-      
-      {/* Applications Tracking Section */}
+
+      {/* ✅ Applications */}
       <Card>
-        <CardHeader>
-          <h2 className="text-xl font-bold">📋 Tracked Applications</h2>
-        </CardHeader>
+        <CardHeader><h2 className="text-xl font-bold">📋 Tracked Applications</h2></CardHeader>
         <CardContent className="space-y-4">
           {applications.length > 0 ? (
             applications.map((app: any) => (
               <div key={`app-${app.application_id}`} className="border p-3 rounded-md">
                 <p><strong>Job #{app.application_id}:</strong> {app.job_title} @ {app.company_name}</p>
                 <p><strong>Status:</strong> {app.application_status}</p>
-                <p><strong>Resume #{app.resume_id}:</strong>{' '}
-                  {app.resume_name
-                      ? `${app.resume_name}`
-                      : 'Unnamed'}
-                </p>
+                <p><strong>Resume #{app.resume_id}:</strong> {app.resume_name || 'Unnamed'}</p>
                 <p><strong>Applied On:</strong> {new Date(app.applied_date).toLocaleString()}</p>
-                <a
-                  href={app.application_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-blue-600 underline text-sm"
-                >
-                  🔗 View Application
-                </a>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    const downloadUrl = `${BACKEND_BASE_URL}/download-resume/${app.resume_id}`
-                    window.open(downloadUrl, '_blank')  // ✅ Trigger browser download
-                  }}
-                >
+                <a href={app.application_url} target="_blank" className="text-blue-600 underline text-sm">🔗 View Application</a>
+                <Button variant="outline" onClick={() => window.open(`${BACKEND_BASE_URL}/download-resume/${app.resume_id}`, '_blank')}>
                   ⬇️ Download Resume
                 </Button>
               </div>
@@ -192,18 +116,11 @@ function DashboardPage() {
         </CardContent>
       </Card>
 
-
-      {/* Quick Actions */}
+      {/* ✅ Quick Links */}
       <div className="flex space-x-4">
-        <Link href="/upload">
-          <Button>📤 Upload Resume</Button>
-        </Link>
-        <Link href="/analyze">
-          <Button>📑 Analyze Job</Button>
-        </Link>
-        <Link href="/match">
-          <Button>🔍 View Matches</Button>
-        </Link>
+        <Link href="/upload"><Button>📤 Upload Resume</Button></Link>
+        <Link href="/analyze"><Button>📑 Analyze Job</Button></Link>
+        <Link href="/match"><Button>🔍 View Matches</Button></Link>
       </div>
     </div>
   )

@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { useSession } from 'next-auth/react'
-import { getUserId } from '@/lib/auth'
+import { useUserId } from '@/hooks/useUserId'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { BACKEND_BASE_URL }  from '@/lib/env'
@@ -33,18 +33,16 @@ function ApplicationsPage() {
   const [updateStatus, setUpdateStatus] = useState<{ [key: number]: string }>({})
   const [isLoading, setIsLoading] = useState(false)
 
-  // 🔐 update it to take the login user_id
-  const userId = getUserId()
-  if (!userId) {
-    console.warn("❌ No valid user ID found.")
-    setError("⚠️ You're not logged in. Please sign in.")
-  return
-}
-
+  const userId = useUserId()
 
   useEffect(() => {
+    if (!userId) {
+      console.warn('❌ No valid user ID found.')
+      return
+    }
     fetchApplications()
-  }, [])
+  }, [userId])
+
 
   const fetchApplications = async () => {
     setIsLoading(true)
@@ -58,9 +56,9 @@ function ApplicationsPage() {
 
       setApplications(data)
     } catch (err) {
-      setError('❌ Failed to load applications. Please try again later.')
+        setError('❌ Failed to load applications. Please try again later.')
     } finally {
-      setIsLoading(false)
+        setIsLoading(false)
   }
 }
   const handleStatusUpdate = async (applicationId: number) => {
@@ -96,7 +94,7 @@ function ApplicationsPage() {
       alert("❌ Network error occurred.")
     }
   }
-
+  
   return (
     <div className="max-w-4xl mx-auto mt-10 space-y-6">
       <h1 className="text-2xl font-bold">📌 Your Job Applications</h1>

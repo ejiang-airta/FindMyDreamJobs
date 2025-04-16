@@ -11,7 +11,7 @@ import { Label } from '@/components/ui/label'
 import { useSession } from 'next-auth/react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BACKEND_BASE_URL }  from '@/lib/env'
-import { getUserId } from '@/lib/auth'
+import { useUserId } from '@/hooks/useUserId'
 
 
 // This ensures page is only accessible to authenticated users:
@@ -21,7 +21,7 @@ export default function ProtectedPage() {
     if (status === "loading") return <p>Loading...</p>
     if (!session?.user) return <p>Unauthorized</p>
   
-    const userId = getUserId()
+    const userId = useUserId()
     if (!userId) return <p>❌ No user ID found</p>
 
   return <FinalizePage userId={String(userId)} />
