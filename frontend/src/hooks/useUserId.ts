@@ -1,10 +1,10 @@
 // File: /frontend/src/hooks/useUserId.ts
-import { useSession } from 'next-auth/react'
-import { useEffect, useState } from 'react'
-import { BACKEND_BASE_URL } from '@/lib/env'
 
 'use client'
 
+import { useSession } from 'next-auth/react'
+import { useEffect, useState } from 'react'
+import { BACKEND_BASE_URL } from '@/lib/env'
 export function useUserId() {
   const { data: session, status } = useSession()
   const [userId, setUserId] = useState<string | null>(null)
