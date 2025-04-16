@@ -6,6 +6,8 @@ import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { BACKEND_BASE_URL }  from '@/lib/env'
 
+'use client'
+
 interface Props {
   onSuccess?: () => void
   isWizard?: boolean // ✅ Accept wizard prop (optional)
