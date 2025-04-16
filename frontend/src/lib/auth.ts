@@ -24,7 +24,9 @@ export const authOptions: NextAuthOptions = {
               password: credentials?.password,
             }),
           })
-
+          console.log("ENV →", process.env.NODE_ENV)
+          console.log("BASE_URL →", BACKEND_BASE_URL)
+          
           const user = await response.json()
           if (response.ok && user) {
             // ✅ Save token and user_id for later use
