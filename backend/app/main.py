@@ -9,6 +9,11 @@ import os
 from datetime import datetime
 from app.config.settings import PROJECT_ROOT
 from dotenv import load_dotenv
+import os
+import httpx
+import asyncio
+from 
+
 load_dotenv()
 
 # Root logger configuration
@@ -51,6 +56,16 @@ async def startup_event():
     app_logger.info("✅ Registered Routes:")
     for route in app.routes:
         app_logger.info(f"{route.path} → {route.methods}")
+
+    # 🚀 Only ping in production
+    if os.getenv("ENVIRONMENT") == "production":
+        await asyncio.sleep(3)
+        try:
+            async with httpx.AsyncClient() as client:
+                res = await client.get("https://findmydreamjobs-service.onrender.com")
+                app_logger.info(f"🌐 Self-ping OK: {res.status_code}")
+        except Exception as e:
+            app_logger.warning(f"🚫 Failed self-ping: {e}")
 
 
 # Register API routes
