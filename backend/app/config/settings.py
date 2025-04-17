@@ -1,3 +1,4 @@
+# File: /backend/app/config/settings.py
 from dotenv import load_dotenv
 import os
 import os
@@ -31,4 +32,4 @@ password = os.getenv("POSTGRES_PASSWORD", "password")
 DATABASE_URL = os.getenv("DATABASE_URL", f"postgresql+psycopg2://{username}:{password}@localhost/job_db")
 
 # debugging print the DATABASE_URL:
-# print(f"DATABASE_URL: {DATABASE_URL}")
+print(f"DATABASE_URL: {DATABASE_URL}")
