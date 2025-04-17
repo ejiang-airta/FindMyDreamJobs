@@ -71,7 +71,7 @@ async def startup_event():
 app.include_router(ai_optimization.router)  # ✅ AI Resume Optimization API
 app.include_router(application.router)
 app.include_router(ats.router)              # ✅ New ATS API
-app.include_router(auth.router)
+app.include_router(auth.router, prefix="/auth", tags=["auth"]) # adding a prefix
 app.include_router(dashboard.router)             # ✅ Dashboard API
 app.include_router(job.router)
 app.include_router(match.router)
