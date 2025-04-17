@@ -3,7 +3,9 @@
 // It dynamically sets the backend and frontend base URLs based on the environment in PROD or Dev.
 //
 
-const IS_PROD = process.env.NODE_ENV === 'production'
+const IS_PROD =
+  process.env.NODE_ENV === 'production' ||
+  process.env.NEXT_PUBLIC_ENV === 'production'
 
 
 export const BACKEND_BASE_URL = IS_PROD

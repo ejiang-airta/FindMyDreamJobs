@@ -23,32 +23,38 @@ export const authOptions: NextAuthOptions = {
               email: credentials?.email,
               password: credentials?.password,
             }),
+            credentials: 'include' // ✅ Needed for cross-origin cookies
           })
           console.log("ENV →", process.env.NODE_ENV)
           console.log("BASE_URL →", BACKEND_BASE_URL)
           
+          if (!response.ok) {
+            const text = await response.text()
+            console.error('❌ Login failed:', text)
+            return null
+          }
+
           const user = await response.json()
-          if (response.ok && user) {
-            // ✅ Save token and user_id for later use
-            if (typeof window !== "undefined") {
-              localStorage.setItem("token", user.token)
-              localStorage.setItem("user_id", user.user_id?.toString() || "")
+          if (user && user.user_id) {
+            if (typeof window !== 'undefined') {
+              localStorage.setItem('user_id', user.user_id.toString())
             }
             return user
           }
+
           return null
         } catch (err) {
-          console.error("❌ Login error:", err)
+          console.error('❌ Login error:', err)
           return null
         }
-      },
+      }
     }),
 
 
     // 🔐 Google login
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!
     }),
   ],
 

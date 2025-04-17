@@ -1,3 +1,5 @@
+# File: /backend/app/main.py
+# Main entry point for the FastAPI application
 from fastapi import FastAPI
 from app.routes import user, job, resume, application, match, auth, ai_optimization, ats, dashboard
 from fastapi.middleware.cors import CORSMiddleware
@@ -40,14 +42,16 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,  # Allow all origins during dev
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["*"],      # or list specific methods like ["POST", "GET"]
+    allow_headers=["*"],      # or explicitly allow ["Authorization", "Content-Type"]
 )
+
 @app.on_event("startup")
 async def startup_event():
     app_logger.info("✅ Registered Routes:")
     for route in app.routes:
         app_logger.info(f"{route.path} → {route.methods}")
+
 
 # Register API routes
 app.include_router(ai_optimization.router)  # ✅ AI Resume Optimization API
