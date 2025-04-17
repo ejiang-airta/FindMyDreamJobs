@@ -11,8 +11,7 @@ from app.config.settings import PROJECT_ROOT
 from dotenv import load_dotenv
 import os
 import httpx
-import asyncio
-from 
+import asyncio 
 
 load_dotenv()
 
