@@ -27,6 +27,8 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess, us
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
+    if (!userId) return  // 🛑 Don't fetch unless userId is available
+
     const fetchDropdowns = async () => {
       try {
         const [res1, res2] = await Promise.all([
