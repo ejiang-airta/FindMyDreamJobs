@@ -9,7 +9,7 @@ const IS_PROD =
 
 
 export const BACKEND_BASE_URL = IS_PROD
-  ? 'https://findmydreamjobs-service.onrender.com'
+  ? 'https://findmydreamjobs.onrender.com'
   : 'http://127.0.0.1:8000'
 
 export const FRONTEND_BASE_URL = IS_PROD
