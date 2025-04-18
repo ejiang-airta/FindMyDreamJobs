@@ -81,11 +81,8 @@ async def parse_job_description(job: JobInput, db: Session = Depends(get_db)):
         "company_name": company,
         "location": location,
     }
-# Get all jobs
-@router.get("/jobs/all")
-def get_all_jobs(db: Session = Depends(get_db)):
-    jobs = db.query(Job).order_by(Job.created_at.desc()).all()
-    return jobs
+# Get all jobs (removed for security reason)
+
 
 # ✅ Get jobs by user_id
 @router.get("/jobs/{job_id}", tags=["Jobs"])
