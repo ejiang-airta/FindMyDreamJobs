@@ -2,11 +2,12 @@
 // This component is for uploading resumes.
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef  } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { BACKEND_BASE_URL }  from '@/lib/env'
+import { toast } from 'sonner'
 
 
 interface Props {
@@ -18,14 +19,14 @@ const UploadResume: React.FC<Props> = ({ onSuccess, isWizard }) => {
   const [file, setFile] = useState<File | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [isUploading, setIsUploading] = useState(false)
-
   const [userId, setUserId] = useState<string | null>(null)
-  
-    useEffect(() => {
-      // Only runs in the browser
-      const id = localStorage.getItem('user_id')
-      setUserId(id)
-    }, [])
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  useEffect(() => {
+    // Only runs in the browser
+    const id = localStorage.getItem('user_id')
+    setUserId(id)
+  }, [])
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files.length > 0) {
@@ -61,6 +62,14 @@ const UploadResume: React.FC<Props> = ({ onSuccess, isWizard }) => {
       if (!response.ok) {
         setError(data.detail || "Upload failed.")
       } else {
+        // notify the successfully upload:
+        toast.success('✅ Resume uploaded successfully!')
+        // if it's in Top Nav, we allow user to upload multiple times:
+        if (!isWizard) {
+          setFile(null)
+          if (fileInputRef.current) fileInputRef.current.value = ''
+        }
+
         // ✅ Success: notify parent if in wizard mode
         if (onSuccess) onSuccess()
       }
@@ -74,8 +83,24 @@ const UploadResume: React.FC<Props> = ({ onSuccess, isWizard }) => {
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow space-y-4">
       <h2 className="text-2xl font-semibold">Upload Your Resume</h2>
-      <Input type="file" accept=".pdf,.docx,.txt" onChange={handleFileChange} />
-      <Button className="w-full" onClick={handleUpload} disabled={isUploading}>
+      <label className="font-bold" htmlFor="resume-upload">Select a file:</label>
+      <Input
+        id="resume-upload"
+        ref={fileInputRef}
+        type="file"
+        accept=".pdf,.docx,.txt"
+        onChange={handleFileChange}
+        className="cursor-pointer"
+      />
+
+      {!file && !isWizard && (
+        <p className="text-sm text-muted-foreground">📎 Click above to choose a resume file (.pdf,.docx,.txt)</p>
+      )}
+
+      {file && !isWizard && (
+        <p className="text-sm text-green-700">✅ Selected: {file.name}</p>
+      )}
+      <Button className="w-full" onClick={handleUpload} disabled={isUploading} >
         {isUploading ? 'Uploading...' : 'Upload Resume'}
       </Button>
       {error && (

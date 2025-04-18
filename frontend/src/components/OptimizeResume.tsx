@@ -34,6 +34,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
   const [response, setResponse] = useState<any>(null)
   const [error, setError] = useState('')
   const [optimizedText, setOptimizedText] = useState<string | null>(null)
+  const [isOptimizing, setIsOptimizing] = useState(false)
 
   useEffect(() => {
     const fetchDropdowns = async () => {
@@ -105,6 +106,8 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
       return
     }
 
+    setIsOptimizing(true)
+
     try {
       const res = await fetch(`${BACKEND_BASE_URL}/optimize-resume`, {
         method: 'POST',
@@ -126,14 +129,17 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
       }
 
       setResponse(data)
-      toast.success("🎉 Resume optimization complete!")
+      toast.success("🎉 Resume optimized successfully!")
 
       if (isWizard && typeof onSuccess === 'function') {
         onSuccess()
       }
     } catch (err) {
-      setError('Unexpected error occurred.')
+      setError('❌ Failed to optimize resume.')
       console.error(err)
+    }
+    finally {
+      setIsOptimizing(false)
     }
   }
 
@@ -222,8 +228,11 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
             placeholder="e.g., Familiar with Docker through open-source projects"
           />
 
-          <Button onClick={handleOptimize} className="w-full">
-            ✨ Run Optimization
+          <Button
+            className="w-full"
+            onClick={handleOptimize}
+            disabled={isOptimizing || !resumeId || !jobId}           >
+            {isOptimizing ? "Optimizing..." : "✨ Run Optimization"}
           </Button>
 
           {error && (
