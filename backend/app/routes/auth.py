@@ -61,6 +61,7 @@ def signup(payload: SignupRequest, db: Session = Depends(get_db)):
 
 @router.post("/auth/login", tags=["Auth"])
 def login(payload: LoginRequest, db: Session = Depends(get_db)):
+    #print("✅ Received login request")
     user = db.query(User).filter(User.email == payload.email).first()
     if not user or not pwd_context.verify(payload.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")

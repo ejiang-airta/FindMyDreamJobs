@@ -25,6 +25,7 @@ structure.dot
 structure.txt 
 go.sh
 *results.txt
+archive/
 
 # skip the resume upload folder:
 uploads/

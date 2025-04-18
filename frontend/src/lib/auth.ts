@@ -1,4 +1,5 @@
 // ✅ File: frontend/src/lib/auth.ts
+// This file configures NextAuth for Google and credentials-based login
 import CredentialsProvider from "next-auth/providers/credentials"
 import GoogleProvider from "next-auth/providers/google"
 import type { NextAuthOptions } from "next-auth"
@@ -7,6 +8,12 @@ import { BACKEND_BASE_URL } from '@/lib/env'
 
 export const authOptions: NextAuthOptions = {
   providers: [
+    // 🔐 Google login
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID || "",
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET || "",
+    }),
+
     // 🔐 Email/Password login
     CredentialsProvider({
       name: "Credentials",
@@ -23,40 +30,40 @@ export const authOptions: NextAuthOptions = {
               email: credentials?.email,
               password: credentials?.password,
             }),
-            credentials: 'include' // ✅ Needed for cross-origin cookies
           })
-          console.log("ENV →", process.env.NODE_ENV)
-          console.log("BASE_URL →", BACKEND_BASE_URL)
-          
+
+          // ✅ Only parse JSON if the response is OK
           if (!response.ok) {
             const text = await response.text()
-            console.error('❌ Login failed:', text)
+            console.error("❌ Login failed:", text)
             return null
           }
 
           const user = await response.json()
-          if (user && user.user_id) {
-            if (typeof window !== 'undefined') {
-              localStorage.setItem('user_id', user.user_id.toString())
+          if (response.ok && user) {
+            // ✅ Save token and user_id for later use
+            if (typeof window !== "undefined") {
+              localStorage.setItem("token", user.token)
+              localStorage.setItem("user_id", user.user_id?.toString() || "")
             }
+          // ✅ Optional: store user_id in localStorage (only works client-side)
+          if (typeof window !== "undefined" && user?.user_id) {
+            localStorage.setItem("user_id", String(user.user_id))
+          }
             return user
           }
-
           return null
         } catch (err) {
-          console.error('❌ Login error:', err)
+          console.error("❌ Login error:", err)
           return null
         }
-      }
-    }),
-
-
-    // 🔐 Google login
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!
+      },
     }),
   ],
+  pages: {
+    signIn: "/login",
+    error: "/login", // redirect to login on error
+  },
 
   // 🔄 Session strategy
   session: {
@@ -66,23 +73,22 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
-        token.user = user
+        token.id = user.user_id || user.id
+        token.name = user.name
+        token.email = user.email
       }
       return token
     },
     async session({ session, token }) {
-      if (token?.user) {
-        session.user = token.user as any
+      if (token) {
+        session.user.id = token.id as string
+        session.user.name = token.name as string
+        session.user.email = token.email as string
       }
       return session
     },
   },
-
-  pages: {
-    signIn: "/login", // Redirects here when login is needed
-  },
 }
-
 
 // ✅ Check if user is authenticated
 export function isAuthenticated(): boolean {
