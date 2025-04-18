@@ -45,7 +45,7 @@ function FinalizePage({ userId }: { userId: string }) {
       try {
         const [res1, res2] = await Promise.all([
           fetch(`${BACKEND_BASE_URL}/resumes/by-user/${userId}`),
-          fetch(`${BACKEND_BASE_URL}/jobs/all`)
+          fetch(`${BACKEND_BASE_URL}/jobs/by-user/${userId}`)
         ])
         if (res1.ok) setResumes(await res1.json())
         if (res2.ok) setJobs(await res2.json())

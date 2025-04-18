@@ -81,10 +81,17 @@ async def parse_job_description(job: JobInput, db: Session = Depends(get_db)):
         "company_name": company,
         "location": location,
     }
-# Get all jobs (removed for security reason)
+# Get all jobs by user:
+@router.get("/jobs/by-user/{user_id}", tags=["Jobs"])
+def get_jobs_by_user(user_id: int, db: Session = Depends(get_db)):
+    jobs = db.query(Job).filter(Job.user_id == user_id).all()
 
+    if not jobs:
+        raise HTTPException(status_code=404, detail="No job found for this user.")
 
-# ✅ Get jobs by user_id
+    return jobs
+
+# ✅ Get jobs by job_id
 @router.get("/jobs/{job_id}", tags=["Jobs"])
 def get_job_by_id(job_id: int, db: Session = Depends(get_db)):
     job = db.query(Job).filter(Job.id == job_id).first()

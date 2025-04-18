@@ -41,7 +41,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
       try {
         const [res1, res2] = await Promise.all([
           fetch(`${BACKEND_BASE_URL}/resumes/by-user/${userId}`),
-          fetch(`${BACKEND_BASE_URL}/jobs/all`)
+          fetch(`${BACKEND_BASE_URL}/jobs/by-user/${userId}`)
         ])
 
         setResumes(await res1.json())

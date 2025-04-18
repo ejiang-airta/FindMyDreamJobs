@@ -65,7 +65,7 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
     <div className="space-y-10 max-w-2xl mx-auto">
       <h2 className="text-2xl font-bold">📄 Analyze Job Description</h2>
 
-      <div className="space-y-2">
+      {/* <div className="space-y-2">
         <label className="text-sm font-medium">Paste Job URL (Optional)</label>
         <Input
           type="text"
@@ -73,12 +73,12 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
           value={jobLink}
           onChange={(e) => setJobLink(e.target.value)}
         />
-      </div>
+      </div> */}
 
       <div className="space-y-2">
-        <label className="text-sm font-medium">Paste Job Description</label>
+        <label className="text-sm font-medium">Job Description:</label>
         <Textarea
-          placeholder="Copy and paste job description here..."
+          placeholder="Please copy and paste job description here..."
           rows={10}
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}

@@ -31,10 +31,13 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess, us
       try {
         const [res1, res2] = await Promise.all([
           fetch(`${BACKEND_BASE_URL}/resumes/by-user/${userId}`),
-          fetch(`${BACKEND_BASE_URL}/jobs/all`),
+          fetch(`${BACKEND_BASE_URL}/jobs/by-user/${userId}`),
         ])
-        setResumes(await res1.json())
-        setJobs(await res2.json())
+        const resumesData = await res1.json()
+        const jobsData = await res2.json()
+    
+        setResumes(Array.isArray(resumesData) ? resumesData : [])
+        setJobs(Array.isArray(jobsData) ? jobsData : [])  // ✅ this line prevents crash
       } catch (err) {
         console.error('❌ Error loading dropdowns:', err)
       }

@@ -77,9 +77,9 @@ const JobInput: React.FC<JobInputProps> = ({ onAnalysisComplete }) => {
       </div>
 
       <div className="space-y-2">
-        <label className="block text-sm font-medium">Paste Job Description</label>
+        <label className="block text-sm font-medium">Job Description:</label>
         <Textarea
-          placeholder="Copy and paste job description here..."
+          placeholder="Please copy and paste job description here..."
           rows={10}
           value={jobDescription}
           onChange={(e) => setJobDescription(e.target.value)}

@@ -127,13 +127,17 @@ function WizardPage() {
             {commonControls}
           </>
         )
-      case 'match':
-        return (
-          <>
-            <MatchScore isWizard onSuccess={() => setStepComplete(true)} />
-            {commonControls}
-          </>
-        )
+        case 'match':
+          return (
+            <>
+              <MatchScore
+                userId={String(userId)}
+                isWizard
+                onSuccess={() => setStepComplete(true)}
+              />
+              {commonControls}
+            </>
+          )
       case 'optimize':
         return (
           <>
