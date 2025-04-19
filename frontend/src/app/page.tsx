@@ -12,6 +12,20 @@ export default function HomePage() {
   const handleGetStarted = () => {
     router.push('/wizard') // 👉 Go to the step-by-step onboarding wizard
   }
+  const handleApplicationStatus = () => {
+    router.push('/applications') // 👉 Show user's application status
+  }
+  const handleResumeAnalysis = () => {
+    router.push('/upload') // 👉 Take user to resume analysis
+  }
+
+  const handleJobAnalysis = () => {
+    router.push('/analyze') // 👉 Take user to job analysis
+  }
+
+  const handleLearnMore = () => {
+    router.push('/about') // 👉 Take user to /about page
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-400 text-white text-center p-10">
@@ -30,7 +44,7 @@ export default function HomePage() {
         <Button onClick={handleGetStarted} className="bg-white text-blue-600 hover:bg-blue-100">
           Get Started
         </Button>
-        <Button variant="ghost" className="text-white border border-white">
+        <Button onClick={handleLearnMore} variant="ghost" className="text-white border border-white">
           Learn More
         </Button>
       </div>
@@ -42,15 +56,15 @@ export default function HomePage() {
         </p>
 
         <div className="grid md:grid-cols-3 gap-8">
-          <div className="p-4 rounded shadow-md border">
+          <div onClick={handleResumeAnalysis}  className="p-4 rounded shadow-md border">
             <h3 className="font-semibold text-lg mb-2">Smart Resume Analysis</h3>
             <p className="text-sm">Get insights about your resume and how it matches with job requirements.</p>
           </div>
-          <div className="p-4 rounded shadow-md border">
-            <h3 className="font-semibold text-lg mb-2">Automated Job Matching</h3>
+          <div onClick={handleJobAnalysis} className="p-4 rounded shadow-md border">
+            <h3 className="font-semibold text-lg mb-2">Automated Job Analysis</h3>
             <p className="text-sm">Find jobs that match your skills and experience automatically.</p>
           </div>
-          <div className="p-4 rounded shadow-md border">
+          <div onClick={handleApplicationStatus} className="p-4 rounded shadow-md border">
             <h3 className="font-semibold text-lg mb-2">Application Tracking</h3>
             <p className="text-sm">Track all your job applications in one place.</p>
           </div>

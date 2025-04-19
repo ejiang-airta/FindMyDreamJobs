@@ -14,7 +14,7 @@ import { BACKEND_BASE_URL }  from '@/lib/env'
 const navItems = [
   { href: '/', label: '🏠 Home' },
   { href: '/dashboard', label: '📊 Dashboard' },
-  { href: '/upload', label: '📤 Upload' },
+  { href: '/upload', label: '📤 Resume' },
   { href: '/analyze', label: '📑 Analyze' },
   { href: '/match', label: '🔍 Match' },
   { href: '/optimize', label: '🛠 Optimize' },
