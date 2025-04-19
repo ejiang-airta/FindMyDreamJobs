@@ -95,6 +95,7 @@ async def upload_resume(
         file_path=file_path,
         parsed_text=extracted_text,     # 👈 Store extracted tex# 👈 Now we save the actual text!
         ats_score_initial=ats_score_initial,
+        ats_score_final=None,  # ✅ explicitly set this to null
         created_at=datetime.now(timezone.utc)
     )
     db.add(new_resume)
@@ -122,7 +123,7 @@ def get_all_resumes(db: Session = Depends(get_db)):
             "is_ai_generated": r.is_ai_generated,
             "is_user_approved": r.is_user_approved,
             "ats_score_initial": r.ats_score_initial or 0,
-            "ats_score_final": r.ats_score_final or 0,
+            "ats_score_final": r.ats_score_final,
             "created_at": r.created_at.isoformat() if r.created_at else None,
             "updated_at": r.updated_at.isoformat() if r.updated_at else None,
         }

@@ -78,10 +78,7 @@ def optimize_resume(payload: dict = Body(...), db: Session = Depends(get_db)):
 
 
     # 🔍 Calculate ATS score & match score using updated optimized text
-    _, ats_score_final, _ = calculate_ats_score(optimized_text)
-
-    # 🔍 Calculate updated match score
-    match_score_final = round((len(matched_skills) / max(len(jd_keywords), 1)) * 100, 2)
+    ats_score_final,  match_score_final, _ = calculate_ats_score(optimized_text, job_text)
 
     # 🔄 Save or update match record
     existing_match = db.query(JobMatch).filter_by(resume_id=resume_id, job_id=job_id).first()
@@ -96,7 +93,7 @@ def optimize_resume(payload: dict = Body(...), db: Session = Depends(get_db)):
             resume_id=resume_id,
             job_id=job_id,
             match_score_initial=match_score_final,
-            ats_score_initial=ats_score_final,
+            ats_score_final=ats_score_final,            # since ats_score_initial only calculated at Upload, so here should be ats_score_final
             matched_skills=",".join(matched_skills),
             missing_skills=",".join(missing_skills),
             created_at=datetime.now(timezone.utc)

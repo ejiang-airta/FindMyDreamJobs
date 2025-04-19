@@ -66,7 +66,15 @@ function DashboardPage() {
               <div key={r.id} className="border p-3 rounded-md">
                 <p><strong>Resume #{r.id}:</strong> {r.resume_name}</p>
                 <p><strong>Uploaded:</strong> {new Date(r.created_at).toLocaleString()}</p>
-                <p><strong>ATS Score:</strong> {r.ats_score_initial ?? '--'} → {r.ats_score_final ?? '--'}</p>
+                {r.ats_score_initial != null && (r.ats_score_final == null || r.ats_score_final === 0) && (
+                  <p><strong>ATS Score:</strong> {r.ats_score_initial}% (initial)</p>
+                )}
+
+                {r.ats_score_initial != null && r.ats_score_final != null && r.ats_score_final > 0 && (
+                  <p>
+                    <strong>ATS Score:</strong> {r.ats_score_initial}% (initial) → {r.ats_score_final}% (latest)
+                  </p>
+                )}
               </div>
             ))
           ) : (

@@ -7,6 +7,10 @@ import random
 from app.config.skills_config import SKILL_KEYWORDS
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
+from fastapi import HTTPException
+from sqlalchemy.orm import Session
+from app.models.resume import Resume
+
 
 # ✨ Define base rules for ATS formatting check
 SECTION_KEYWORDS = ["experience", "education", "skills", "summary"]
@@ -75,3 +79,18 @@ def calculate_ats_score(resume_text: str, job_description: str = "") -> Tuple[in
     # 🚀 Future: We can add pluggable scorers here
 
     return ats_score, match_score, warnings
+
+def update_ats_score(resume_id: int, score: float, db: Session):
+    resume = db.query(Resume).filter(Resume.id == resume_id).first()
+    if not resume:
+        raise HTTPException(status_code=404, detail="Resume not found")
+
+    if resume.ats_score_initial is None:
+        resume.ats_score_initial = score
+
+    resume.ats_score_final = score
+    db.commit()
+    return {
+        "ats_score_initial": resume.ats_score_initial,
+        "ats_score_final": resume.ats_score_final
+    }
