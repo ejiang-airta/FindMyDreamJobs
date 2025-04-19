@@ -64,12 +64,30 @@ def extract_text_from_file(file_path: str) -> str:
 async def upload_resume(
     user_id: int = Form(...),  # 👈 FIXED HERE
     file: UploadFile = File(...),
+    resume_name: str = Form(None),  # ✅ add this
     db: Session = Depends(get_db)
 ):
+    # Use resume_name from frontend if provided, else fall back to file.filename
+    resume_name = resume_name or file.filename
+
+    # Check for duplication
+    existing = db.query(Resume).filter(
+        Resume.user_id == user_id,
+        Resume.resume_name == resume_name,  # 👈 Check for duplicate resume name
+    ).first()
+
+    if existing:
+        return {
+            "detail": "Duplicate resume found",
+            "existing_resume_id": existing.id,
+            "resume_name": existing.resume_name,
+            "status": "duplicate"
+        }
+
+    # Save the file using UUID filename to prevent collisions
     filename = f"{uuid.uuid4()}_{file.filename}"
     file_path = os.path.join(UPLOAD_DIR, filename)
     #file_path = os.path.join("backend/app/uploads/resumes", filename)
-
 
     os.makedirs(UPLOAD_DIR, exist_ok=True)
     with open(file_path, "wb") as f:
@@ -91,7 +109,7 @@ async def upload_resume(
     # ✅ If valid, store resume in DB
     new_resume = Resume(
         user_id=user_id,
-        resume_name=file.filename,  # 👈 Store the original filename
+        resume_name=resume_name,  # 👈 Store the original filename
         file_path=file_path,
         parsed_text=extracted_text,     # 👈 Store extracted tex# 👈 Now we save the actual text!
         ats_score_initial=ats_score_initial,
