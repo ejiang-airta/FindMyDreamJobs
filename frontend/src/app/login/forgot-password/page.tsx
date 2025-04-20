@@ -8,9 +8,6 @@ import { toast } from 'react-hot-toast'
 import { BACKEND_BASE_URL } from '@/lib/env'
 import { useRouter } from 'next/navigation'
 
-// Forcing dynamic rendering to runtime:
-export const dynamic = "force-dynamic";
-
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)

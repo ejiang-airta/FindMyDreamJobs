@@ -2,6 +2,7 @@
 // ✅ This page allows users to set a new password after clicking the link in their email
 'use client'
 
+import { Suspense } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
@@ -9,20 +10,26 @@ import { Button } from '@/components/ui/button'
 import { toast } from 'react-hot-toast'
 import { BACKEND_BASE_URL } from '@/lib/env'
 
-// Forcing dynamic rendering to runtime:
-export const dynamic = "force-dynamic";
-
+// ✅ Page must be default export
 export default function ResetPasswordPage() {
-  const router = useRouter()
-  const searchParams = useSearchParams()
-  const token = searchParams.get('token')
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ResetPasswordForm />
+    </Suspense>
+  )
+}
 
+// ✅ Actual logic moved here
+function ResetPasswordForm() {
+  const searchParams = useSearchParams()
+  const token = searchParams?.get('token') ?? ''
+  const router = useRouter()
   const [password, setPassword] = useState('')
   const [confirm, setConfirm] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleReset = async () => {
-    if (!token) return toast.error('Invalid or missing token.')
+    if (!token) return toast.error('Missing reset token.')
     if (password.length < 8) return toast.error('Password must be at least 8 characters.')
     if (password !== confirm) return toast.error("Passwords don't match.")
 

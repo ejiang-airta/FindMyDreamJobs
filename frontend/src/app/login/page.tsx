@@ -10,9 +10,6 @@ import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
 import Link from 'next/link'
 
-// Forcing dynamic rendering to runtime:
-export const dynamic = "force-dynamic";
-
 export default function LoginPage() {
   const { data: session } = useSession()
   const router = useRouter()
