@@ -178,11 +178,15 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
               <SelectValue placeholder="Choose your resume" />
             </SelectTrigger>
             <SelectContent>
-              {resumes.map(r => (
-                <SelectItem key={r.id} value={String(r.id)}>
-                  {`Resume #${r.id}`} - {r.resume_name}
-                </SelectItem>
-              ))}
+              {Array.isArray(resumes) && resumes.length > 0 ? (
+                resumes.map(r => (
+                  <SelectItem key={r.id} value={String(r.id)}>
+                    {`Resume #${r.id}`} - {r.resume_name}
+                  </SelectItem>
+                ))
+              ) : (
+                <p className="text-sm text-gray-500 px-2">Not found. Please upload a resume.</p>
+              )}
             </SelectContent>
           </Select>
 
@@ -192,11 +196,15 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
               <SelectValue placeholder="Choose a job" />
             </SelectTrigger>
             <SelectContent>
-              {jobs.map(j => (
-                <SelectItem key={j.id} value={String(j.id)}>
-                  {`Job #${j.id}`} – {j.job_title} @ {j.company_name || 'Unknown'}
-                </SelectItem>
-              ))}
+              {Array.isArray(jobs) && jobs.length > 0 ? (
+                  jobs.map(j => (
+                    <SelectItem key={j.id} value={String(j.id)}>
+                      {`Job #${j.id}`} – {j.job_title} @ {j.company_name || 'Unknown'}
+                    </SelectItem>
+                  ))
+                ) : (
+                  <p className="text-sm text-gray-500 px-2">No found. Please input a job.</p>
+                )}
             </SelectContent>
           </Select>
 

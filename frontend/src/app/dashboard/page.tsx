@@ -40,10 +40,22 @@ function DashboardPage() {
       fetch(`${BACKEND_BASE_URL}/applications/${userId}`)
     ])
       .then(async ([resumeRes, matchRes, appRes]) => {
-        if (!resumeRes.ok || !matchRes.ok || !appRes.ok) throw new Error('Fetching failed')
-        setResumes(await resumeRes.json())
-        setMatches(await matchRes.json())
-        setApplications(await appRes.json())
+        const resumeData = resumeRes.ok ? await resumeRes.json() : []
+        const matchData = matchRes.ok ? await matchRes.json() : []
+        const appData = appRes.ok ? await appRes.json() : []
+
+        setResumes(resumeData)
+        setMatches(matchData)
+        setApplications(appData)
+
+
+        if (
+          resumeData.length === 0 &&
+          matchData.length === 0 &&
+          appData.length === 0
+        ) {
+          setError("No data available yet — upload your first resume to get started.")
+        }
       })
       .catch((err) => {
         console.error("Error fetching data:", err)
@@ -54,8 +66,14 @@ function DashboardPage() {
   return (
     <div className="max-w-4xl mx-auto mt-10 space-y-6">
       <h1 className="text-3xl font-bold">📊 Dashboard</h1>
-      {error && <Alert variant="destructive"><AlertDescription>{error}</AlertDescription></Alert>}
-      
+      {error && (
+        <Alert variant="default">
+          <AlertDescription>
+          ℹ️ {error}
+          </AlertDescription>
+        </Alert>
+      )}
+
       {/* Display resumes, matches, applications */}
       {/* ✅ Resumes */}
       <Card>
@@ -78,7 +96,7 @@ function DashboardPage() {
               </div>
             ))
           ) : (
-            <p className="text-muted-foreground">No resumes uploaded yet.</p>
+            <p className="text-muted-foreground">No resumes uploaded yet. Click on Resume tab to get started.</p>
           )}
           <Link href="/upload"><Button>📤 Upload New Resume</Button></Link>
         </CardContent>
