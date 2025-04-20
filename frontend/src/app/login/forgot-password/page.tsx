@@ -6,11 +6,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { toast } from 'react-hot-toast'
 import { BACKEND_BASE_URL } from '@/lib/env'
+import { useRouter } from 'next/navigation'
 
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const router = useRouter()
 
   const handleSubmit = async () => {
     setIsSubmitting(true)
@@ -22,7 +24,10 @@ export default function ForgotPasswordPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.detail || 'Something went wrong.')
-      toast.success('📩 Password reset email sent!')
+        toast.success('📩 Password reset email sent! Redirecting...')
+        setTimeout(() => {
+          router.push('/')  // or '/login' if you'd rather send them there
+        }, 2000)
     } catch (err: any) {
       toast.error(err.message)
     } finally {
