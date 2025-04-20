@@ -19,3 +19,4 @@ openai
 pydantic
 alembic     # database migration
 pydantic[email] # email validation
+itsdangerous    # for creating tokens
