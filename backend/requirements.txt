@@ -18,3 +18,4 @@ bcrypt
 openai
 pydantic
 alembic     # database migration
+pydantic[email] # email validation

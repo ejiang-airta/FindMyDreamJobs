@@ -6,7 +6,9 @@ import { Inter } from 'next/font/google'
 import NavBar from '@/components/NavBar'  // ✅ import your new NavBar
 import { ReactNode } from 'react' 
 import SessionWrapper from '@/components/SessionWrapper' // ✅ integrate the NextAuth session provider
-import ToasterComponent from "@/components/ui/toaster" // ✅ Import at top
+import { Toaster } from 'react-hot-toast'
+
+
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,9 +23,9 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className={inter.className}>
         <SessionWrapper>
           <NavBar />
+          <Toaster position="top-center" />
           {children}
         </SessionWrapper>
-        <ToasterComponent /> {/* ✅ Add Toaster component here */}
       </body>
     </html>
   )

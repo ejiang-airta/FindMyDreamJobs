@@ -8,6 +8,8 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 import React, { useEffect, useState } from 'react'
+import Link from 'next/link'
+
 
 export default function LoginPage() {
   const { data: session } = useSession()
@@ -42,6 +44,7 @@ export default function LoginPage() {
         Don’t have an account?{' '}
         <a href="/signup" className="text-blue-600 hover:underline">Create one</a>
       </p>
+      
 
       <div className="space-y-4">
         <Input
@@ -50,12 +53,20 @@ export default function LoginPage() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
+        
         <Input
           type="password"
           placeholder="Your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-        />
+        />    
+        {/* Added a link to the forgot password page: */}
+        <div className="text-sm text-right">
+          <Link href="login/forgot-password" className="font-medium text-blue-600 hover:text-blue-500">
+            Forgot your password?
+          </Link>
+        </div>
+
         <Button className="w-full" onClick={handleLogin}>
           Sign In
         </Button>
