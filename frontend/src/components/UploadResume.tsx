@@ -3,6 +3,7 @@
 'use client'
 
 import React, { useState, useEffect, useRef  } from 'react'
+import { useSession } from 'next-auth/react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Alert, AlertDescription } from '@/components/ui/alert'
@@ -21,6 +22,7 @@ const UploadResume: React.FC<Props> = ({ onSuccess, isWizard }) => {
   const [isUploading, setIsUploading] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
+  const { data: session, status } = useSession() as { data: { status?: string; resume_name?: string } | null; status: string }
 
   useEffect(() => {
     // Only runs in the browser
@@ -43,14 +45,13 @@ const UploadResume: React.FC<Props> = ({ onSuccess, isWizard }) => {
       setError("User not found in session. Please log in again.")
       return
     }
-
     setIsUploading(true)
     setError(null)
-
+    
     const formData = new FormData()
     formData.append("file", file)
     formData.append("user_id", userId)
-
+ 
     try {
       const response = await fetch(`${BACKEND_BASE_URL}/upload-resume`, {
         method: "POST",
@@ -59,6 +60,39 @@ const UploadResume: React.FC<Props> = ({ onSuccess, isWizard }) => {
 
       const data = await response.json()
 
+   // ✅ Check for duplicate resume from backend response:
+   if (data.status === "duplicate") {
+    toast.warning(`You've already uploaded "${data.resume_name}".`)
+    const confirmUpload = window.confirm("The resume already exists. Do you want to upload a new version of this resume?")
+    if (!confirmUpload) return
+
+    // Append timestamp to filename and retry
+    const timestamp = new Date().toISOString().replace(/[:.]/g, '-')
+    const newFilename = `${file.name.replace(/\.[^/.]+$/, "")}_${timestamp}${file.name.slice(file.name.lastIndexOf("."))}`
+
+    const retryFormData = new FormData()
+    retryFormData.append("file", file)
+    retryFormData.append("user_id", userId)
+    retryFormData.append("resume_name", newFilename)
+
+    const retryRes = await fetch(`${BACKEND_BASE_URL}/upload-resume`, {
+      method: "POST",
+      body: retryFormData,
+    })
+
+    const retryData = await retryRes.json()
+
+    if (!retryRes.ok) {
+      setError(retryData.detail || "Upload failed.")
+      return
+    }
+
+    toast.success(`✅ Resume uploaded successfully as ${newFilename} (new version)!`)
+    if (onSuccess) onSuccess()
+    return
+  }
+
+  // Normal upload path
       if (!response.ok) {
         setError(data.detail || "Upload failed.")
       } else {

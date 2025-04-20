@@ -2,6 +2,7 @@
   "dependencies": {
     "framer-motion": "^12.6.3",
     "next-auth": "^4.24.11",
+    "react-hot-toast": "^2.5.2",
     "sonner": "^2.0.3"
   }
 }
