@@ -8,7 +8,7 @@ from os import getenv
 
 SMTP_USER = getenv("SMTP_USER")
 SMTP_PASS = getenv("SMTP_PASS")
-SMTP_HOST = getenv("SMTP_HOST", "smtp.gmail.com")
+SMTP_HOST = getenv("SMTP_HOST", "smtp.mailersend.net")
 SMTP_PORT = int(getenv("SMTP_PORT", "587"))
 
 def send_password_reset_email(email: str, token: str):
