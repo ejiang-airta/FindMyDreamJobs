@@ -130,7 +130,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
       }
 
       setResponse(data)
-      toast.success("🎉 Resume optimized successfully!")
+      toast.success("Resume optimized successfully!", { icon: '✨' })
 
       if (isWizard && typeof onSuccess === 'function') {
         onSuccess()
@@ -154,7 +154,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
 
       const data = await response.json()
       if (response.ok) {
-        toast.success(data.message || "✅ Resume approved!")
+        toast.success(data.message || "Resume approved!", { icon: '✅' })
       } else {
         alert(data.detail || "❌ Failed to approve resume.")
       }

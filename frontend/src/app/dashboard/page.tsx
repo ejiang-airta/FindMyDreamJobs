@@ -4,7 +4,7 @@
 
 import React, { useEffect, useState } from 'react'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
+import { AppButton } from '@/components/ui/AppButton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
@@ -98,7 +98,7 @@ function DashboardPage() {
           ) : (
             <p className="text-muted-foreground">No resumes uploaded yet. Click on Resume tab to get started.</p>
           )}
-          <Link href="/upload"><Button>📤 Upload New Resume</Button></Link>
+          <Link href="/upload"><AppButton>📤 Upload New Resume</AppButton></Link>
         </CardContent>
       </Card>
 
@@ -131,9 +131,9 @@ function DashboardPage() {
                 <p><strong>Resume #{app.resume_id}:</strong> {app.resume_name || 'Unnamed'}</p>
                 <p><strong>Applied On:</strong> {new Date(app.applied_date).toLocaleString()}</p>
                 <a href={app.application_url} target="_blank" className="text-blue-600 underline text-sm">🔗 View Application</a>
-                <Button variant="outline" onClick={() => window.open(`${BACKEND_BASE_URL}/download-resume/${app.resume_id}`, '_blank')}>
+                <AppButton variant="outline" onClick={() => window.open(`${BACKEND_BASE_URL}/download-resume/${app.resume_id}`, '_blank')}>
                   ⬇️ Download Resume
-                </Button>
+                </AppButton>
               </div>
             ))
           ) : (
@@ -144,9 +144,9 @@ function DashboardPage() {
 
       {/* ✅ Quick Links */}
       <div className="flex space-x-4">
-        <Link href="/upload"><Button>📤 Upload Resume</Button></Link>
-        <Link href="/analyze"><Button>📑 Analyze Job</Button></Link>
-        <Link href="/match"><Button>🔍 View Matches</Button></Link>
+        <Link href="/upload"><AppButton>📤 Upload Resume</AppButton></Link>
+        <Link href="/analyze"><AppButton>📑 Analyze Job</AppButton></Link>
+        <Link href="/match"><AppButton>🔍 View Matches</AppButton></Link>
       </div>
     </div>
   )

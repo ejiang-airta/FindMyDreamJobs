@@ -72,7 +72,7 @@ const ApplyJob: React.FC<ApplyJobProps> = ({ userId, isWizard = false, onSuccess
       setResumeId('')
       setJobId('')
       setApplicationUrl('')
-      toast.success('🎉 Application submitted!')
+      toast.success('Application submitted!', { icon: '🎉' })
 
       if (isWizard && typeof onSuccess === 'function') {
         onSuccess()

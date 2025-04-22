@@ -51,7 +51,7 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
 
       if (response.ok) {
         setParsedData(result)
-        toast.success("✅ Job description parsed successfully!")
+        toast.success("Job description parsed successfully!", { icon: "✅" } )
         if (onSuccess) onSuccess()
       } else {
         setError(`❌ Error: ${result.detail || 'Failed to parse job description'}`)
