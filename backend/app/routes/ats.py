@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.database.connection import SessionLocal
 from app.models.resume import Resume
 from app.models.match import JobMatch
-from app.services.ats_scoring import calculate_ats_score  # ✅ Use service helper
+from backend.app.services.score_calc import calculate_ats_score  # ✅ Use service helper
 from datetime import datetime, timezone
 
 

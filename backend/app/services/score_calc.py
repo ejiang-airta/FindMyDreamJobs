@@ -78,7 +78,7 @@ def calculate_ats_score(resume_text: str, job_description: str = "") -> Tuple[in
 
     # 🚀 Future: We can add pluggable scorers here
 
-    return ats_score, match_score, warnings
+    return float(ats_score), float(match_score), warnings
 
 def update_ats_score(resume_id: int, score: float, db: Session):
     resume = db.query(Resume).filter(Resume.id == resume_id).first()
@@ -94,3 +94,8 @@ def update_ats_score(resume_id: int, score: float, db: Session):
         "ats_score_initial": resume.ats_score_initial,
         "ats_score_final": resume.ats_score_final
     }
+def calculate_skill_match_score(resume_text: str, jd_keywords: List[str]) -> float:
+    resume_text = resume_text.lower()
+    matched = [kw for kw in jd_keywords if kw in resume_text]
+    score = round((len(matched) / max(len(jd_keywords), 1)) * 100, 2)
+    return float(score)
