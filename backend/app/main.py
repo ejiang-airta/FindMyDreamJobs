@@ -61,7 +61,7 @@ async def startup_event():
         await asyncio.sleep(3)
         try:
             async with httpx.AsyncClient() as client:
-                res = await client.get("https://findmydreamjobs-service.onrender.com")
+                res = await client.get("https://findmydreamjobs.onrender.com")
                 app_logger.info(f"🌐 Self-ping OK: {res.status_code}")
         except Exception as e:
             app_logger.warning(f"🚫 Failed self-ping: {e}")
