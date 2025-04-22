@@ -8,7 +8,7 @@ from app.models.resume import Resume
 from app.models.match import JobMatch
 from app.models.job import Job
 from app.services.resume_optimizer import optimize_resume_with_skills_service
-from backend.app.services.score_calc import calculate_ats_score
+from app.services.score_calc import calculate_ats_score
 from app.utils.job_extraction import extract_skills_with_frequency
 from typing import List
 import logging

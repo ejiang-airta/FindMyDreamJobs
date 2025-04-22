@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pydantic import BaseModel
 from app.utils.job_extraction import extract_skills_with_frequency
 from app.config.skills_config import SKILL_KEYWORDS
-from backend.app.services.score_calc import calculate_ats_score, calculate_skill_match_score
+from app.services.score_calc import calculate_ats_score, calculate_skill_match_score
 
 
 router = APIRouter()
