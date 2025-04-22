@@ -23,7 +23,7 @@ export default function ForgotPasswordPage() {
       })
       const data = await res.json()
       if (!res.ok) throw new Error(data.detail || 'Something went wrong.')
-        toast.success('Password reset email sent! Redirecting to Home...', { icon: "✅"})
+        toast.success('Password reset email sent! Redirecting to Home...', { icon: "✅", duration: 6000 })
         setTimeout(() => {
           router.push('/')  // or '/login' if you'd rather send them there
         }, 2000)
