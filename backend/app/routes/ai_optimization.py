@@ -8,7 +8,7 @@ from app.models.resume import Resume
 from app.models.match import JobMatch
 from app.models.job import Job
 from app.services.resume_optimizer import optimize_resume_with_skills_service
-from app.services.score_calc import calculate_ats_score
+from app.services.score_calc import calculate_scores
 from app.utils.job_extraction import extract_skills_with_frequency
 from typing import List
 import logging
@@ -54,6 +54,8 @@ def optimize_resume(payload: dict = Body(...), db: Session = Depends(get_db)):
     # ✅ Extract keywords from JD
     jd_keywords = extract_skills_with_frequency(job_text)
     resume_keywords = set(resume_text.lower().split())
+    # Extract the list of skill names from jd_keywords
+    skill_list = [skill_entry["skill"] for skill_entry in jd_keywords["skills"]]
 
     # ✅ Matched skills = those present in both resume and JD
     matched_skills = [skill for skill in jd_keywords if skill.lower() in resume_keywords]
@@ -78,7 +80,7 @@ def optimize_resume(payload: dict = Body(...), db: Session = Depends(get_db)):
 
 
     # 🔍 Calculate ATS score & match score using updated optimized text
-    ats_score_final,  match_score_final, _ = calculate_ats_score(optimized_text, job_text)
+    ats_score_final,  match_score_final, _ = calculate_scores(optimized_text, job_text, skill_list)
 
     # 🔄 Save or update match record
     existing_match = db.query(JobMatch).filter_by(resume_id=resume_id, job_id=job_id).first()

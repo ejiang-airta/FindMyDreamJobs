@@ -10,7 +10,7 @@ from datetime import datetime, timezone
 from pydantic import BaseModel
 from app.utils.job_extraction import extract_skills_with_frequency
 from app.config.skills_config import SKILL_KEYWORDS
-from app.services.score_calc import calculate_ats_score, calculate_skill_match_score
+from app.services.score_calc import calculate_scores
 
 
 router = APIRouter()
@@ -41,6 +41,7 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
 
     # ✅ Extract structured skills from job.extracted_skills JSONB
     extracted = job.extracted_skills or {}
+    job_description = job.job_description.lower()
     jd_keywords = set()
     skill_map = {}
 
@@ -54,13 +55,11 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
     missing_skills = [skill_map[kw] for kw in jd_keywords if kw not in resume_text]
 
     # ✅ Compute scores
-    match_score = calculate_skill_match_score(resume_text, list(jd_keywords))
-    ats_score_before, ats_score_after, _ = calculate_ats_score(resume_text)
+    ats_score_after,match_score, _  = calculate_scores(resume_text,job_description, list(jd_keywords))
 
     # ✅ Cast to Python float to avoid psycopg2 schema error
     match_score = match_score
     ats_score_after = ats_score_after
-
 
     # ✅ Find or create JobMatch
     match = db.query(JobMatch).filter(
@@ -73,8 +72,9 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
             user_id=resume.user_id,
             job_id=job.id,
             resume_id=resume.id,
-            match_score_initial=match_score,
-            ats_score_initial=ats_score_before,
+            match_score_initial=match_score,            
+            ats_score_final=ats_score_after,
+            #ats_score_initial=ats_score_before,    # since ats_score_initial is calculated only at Upload Resume stage no need here
             matched_skills=",".join(matched_skills),
             missing_skills=",".join(missing_skills),
             created_at=datetime.now(timezone.utc),

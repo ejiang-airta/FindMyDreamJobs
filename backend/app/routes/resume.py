@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from app.config.settings import UPLOAD_DIR
 from fastapi.responses import FileResponse
 from app.services.file_utils import generate_resume_file, cleanup_file
-from app.services.score_calc import calculate_ats_score  # 👈 Import ATS scoring function
+from app.services.score_calc import calculate_scores  # 👈 Import ATS scoring function
 
 
 router = APIRouter()
@@ -97,7 +97,7 @@ async def upload_resume(
     extracted_text = extract_text_from_file(file_path)
 
     # right after extraction, call the ATS scoring engine:
-    formatting_score, _, _ = calculate_ats_score(extracted_text)
+    formatting_score, _, _ = calculate_scores(extracted_text)
     ats_score_initial = formatting_score  # 👈 only store the numeric score
 
 

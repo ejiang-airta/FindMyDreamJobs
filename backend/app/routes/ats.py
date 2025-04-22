@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from app.database.connection import SessionLocal
 from app.models.resume import Resume
 from app.models.match import JobMatch
-from app.services.score_calc import calculate_ats_score  # ✅ Use service helper
+from app.services.score_calc import calculate_scores  # ✅ Use service helper
 from datetime import datetime, timezone
 
 
@@ -25,7 +25,7 @@ def ats_score(resume_id: int, db: Session = Depends(get_db)):
     if not resume:
         raise HTTPException(status_code=404, detail="Resume not found.")
 
-    before_score, after_score = calculate_ats_score(resume.parsed_text)  # ✅ Move logic to services
+    before_score, after_score = calculate_scores(resume.parsed_text)  # ✅ Move logic to services
     
     # Debugging Print:
     print("ATS Score Before:", before_score)
