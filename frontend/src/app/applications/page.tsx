@@ -19,7 +19,7 @@ export default function ProtectedPage() {
   const { data: session, status } = useSession()
 
   if (status === 'loading') return <Skeleton className="h-6 w-40" />
-  if (!session) return <p>Unauthorized. Please sign in.</p>
+  if (!session) return <p>Unauthorized. Please log in.</p>
 
   return <ApplicationsPage />
 }

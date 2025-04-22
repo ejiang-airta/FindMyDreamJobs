@@ -14,7 +14,7 @@ export default function MatchPageProtected() {
   const { data: session, status } = useSession()
 
   if (status === 'loading') return <p>Loading...</p>
-  if (!session?.user) return <p>Unauthorized</p>
+  if (!session?.user) return <p>Unauthorized. Please log in.</p>
 
   return <MatchPage />
 }

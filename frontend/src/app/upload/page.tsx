@@ -6,11 +6,13 @@
 import UploadResume from '@/components/UploadResume'
 import { useSession } from 'next-auth/react'
 
+
+
 export default function UploadPageProtected() {
   const { data: session, status } = useSession()
 
   if (status === 'loading') return <p>Loading...</p>
-  if (!session?.user) return <p>Unauthorized</p>
+  if (!session?.user) return <p>Unauthorized. Please log in.</p>
 
   return <UploadPage />
 }

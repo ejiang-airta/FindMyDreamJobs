@@ -9,7 +9,7 @@ export default function ProtectedPage() {
   const isWizard = typeof window !== 'undefined' && window.location.pathname.startsWith('/wizard')
 
   if (status === 'loading') return <p>Loading...</p>
-  if (!session) return <p>Unauthorized. Please sign in.</p>
+  if (!session) return <p>Unauthorized. Please log in.</p>
 
   const [userId, setUserId] = useState<string | null>(null)
   

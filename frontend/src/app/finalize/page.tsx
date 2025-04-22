@@ -19,7 +19,7 @@ export default function ProtectedPage() {
   const { data: session, status } = useSession()
   
     if (status === "loading") return <p>Loading...</p>
-    if (!session?.user) return <p>Unauthorized</p>
+    if (!session?.user) return <p>Unauthorized. Please log in.</p>
   
     const userId = useUserId()
     if (!userId) return <p>❌ No user ID found</p>

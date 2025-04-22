@@ -24,7 +24,7 @@ export default function ProtectedPage() {
   const userId = useUserId()
 
     if (status === "loading") return <p>Loading...</p>
-    if (!session?.user || !userId) return <p>Unauthorized or user ID missing</p>
+    if (!session?.user || !userId) return <p>Unauthorized or user ID missing. Please log in.</p>
 
     return <WizardPage />
   }
