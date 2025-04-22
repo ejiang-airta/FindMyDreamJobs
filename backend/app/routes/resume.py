@@ -12,7 +12,7 @@ from datetime import datetime, timezone
 from app.config.settings import UPLOAD_DIR
 from fastapi.responses import FileResponse
 from app.services.file_utils import generate_resume_file, cleanup_file
-from app.services.ats_scoring import calculate_ats_score  # 👈 Import ATS scoring function
+from backend.app.services.score_calc import calculate_ats_score  # 👈 Import ATS scoring function
 
 
 router = APIRouter()

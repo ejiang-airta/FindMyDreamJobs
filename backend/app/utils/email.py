@@ -12,7 +12,7 @@ SMTP_HOST = getenv("SMTP_HOST", "smtp.mailersend.net")
 SMTP_PORT = int(getenv("SMTP_PORT", "587"))
 
 def send_password_reset_email(email: str, token: str):
-    FRONTEND_URL = getenv("FRONTEND_URL", "http://localhost:3000")
+    FRONTEND_URL = getenv("FRONTEND_BASE_URL")      # This should be set to the base URL of your frontend application
     reset_url = f"{FRONTEND_URL}/login/reset-password?token={token}"
 
 
