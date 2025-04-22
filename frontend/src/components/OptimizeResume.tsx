@@ -8,6 +8,7 @@
 import React, { useState, useEffect } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { AppButton } from '@/components/ui/AppButton'
 import { Textarea } from '@/components/ui/textarea'
 import { Button } from '@/components/ui/button'
 import { Label } from '@/components/ui/label'
@@ -236,12 +237,12 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
             placeholder="e.g., Familiar with Docker through open-source projects"
           />
 
-          <Button
+          <AppButton
             className="w-full"
             onClick={handleOptimize}
             disabled={isOptimizing || !resumeId || !jobId}           >
             {isOptimizing ? "Optimizing..." : "✨ Run Optimization"}
-          </Button>
+          </AppButton>
 
           {error && (
             <Alert variant="destructive">

@@ -7,7 +7,7 @@ import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import { Button } from '@/components/ui/button'
+import { AppButton } from '@/components/ui/AppButton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { BACKEND_BASE_URL }  from '@/lib/env'
 
@@ -119,9 +119,9 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess, us
           </SelectContent>
         </Select>
 
-        <Button className="mt-4 w-full" onClick={handleMatchScore}>
+        <AppButton className="mt-4 w-full" onClick={handleMatchScore}>
           Calculate Match Score
-        </Button>
+        </AppButton>
 
         {error && (
           <Alert variant="destructive" className="mt-3">

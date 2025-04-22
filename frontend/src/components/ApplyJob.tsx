@@ -4,7 +4,7 @@
 import React, { useEffect, useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
-import { Button } from '@/components/ui/button'
+import { AppButton } from '@/components/ui/AppButton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
@@ -135,7 +135,7 @@ const ApplyJob: React.FC<ApplyJobProps> = ({ userId, isWizard = false, onSuccess
             />
           </div>
 
-          <Button onClick={handleSubmit}>Submit Application</Button>
+          <AppButton onClick={handleSubmit}>Submit Application</AppButton>
 
           {error && (
             <Alert variant="destructive">
