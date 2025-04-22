@@ -130,10 +130,7 @@ function DashboardPage() {
                 <p><strong>Status:</strong> {app.application_status}</p>
                 <p><strong>Resume #{app.resume_id}:</strong> {app.resume_name || 'Unnamed'}</p>
                 <p><strong>Applied On:</strong> {new Date(app.applied_date).toLocaleString()}</p>
-                <a href={app.application_url} target="_blank" className="text-blue-600 underline text-sm">🔗 View Application</a>
-                <AppButton variant="outline" onClick={() => window.open(`${BACKEND_BASE_URL}/download-resume/${app.resume_id}`, '_blank')}>
-                  ⬇️ Download Resume
-                </AppButton>
+                <a href={app.application_url} target="_blank" className="text-blue-600 underline text-sm">🔗 View Application</a>              ``
               </div>
             ))
           ) : (
