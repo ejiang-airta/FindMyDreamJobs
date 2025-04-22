@@ -29,9 +29,9 @@ function ResetPasswordForm() {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const handleReset = async () => {
-    if (!token) return toast.error('Missing reset token.')
-    if (password.length < 8) return toast.error('Password must be at least 8 characters.')
-    if (password !== confirm) return toast.error("Passwords don't match.")
+    if (!token) return toast.error('Missing reset token.', { icon: '❌' })
+    if (password.length < 8) return toast.error('Password must be at least 8 characters.', { icon: '❌' })
+    if (password !== confirm) return toast.error("Passwords don't match.", { icon: '❌' })
 
     setIsSubmitting(true)
     try {
@@ -44,10 +44,10 @@ function ResetPasswordForm() {
       const data = await res.json()
       if (!res.ok) throw new Error(data.detail || 'Something went wrong.')
 
-      toast.success('✅ Password reset successful!')
+      toast.success('Password reset successful!', { icon: '✅' })
       router.push('/login')
     } catch (err: any) {
-      toast.error(err.message)
+      toast.error(err.message, { icon: '❌' })
     } finally {
       setIsSubmitting(false)
     }
