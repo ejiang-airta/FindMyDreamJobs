@@ -10,7 +10,8 @@ from datetime import datetime, timezone
 from pydantic import BaseModel
 from app.utils.job_extraction import extract_skills_with_frequency
 from app.config.skills_config import SKILL_KEYWORDS
-from app.services.ats_scoring import calculate_ats_score
+from backend.app.services.score_calc import calculate_ats_score, calculate_skill_match_score
+
 
 router = APIRouter()
 
@@ -53,8 +54,13 @@ def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
     missing_skills = [skill_map[kw] for kw in jd_keywords if kw not in resume_text]
 
     # ✅ Compute scores
-    match_score = round((len(matched_skills) / max(len(jd_keywords), 1)) * 100, 2)
+    match_score = calculate_skill_match_score(resume_text, list(jd_keywords))
     ats_score_before, ats_score_after, _ = calculate_ats_score(resume_text)
+
+    # ✅ Cast to Python float to avoid psycopg2 schema error
+    match_score = match_score
+    ats_score_after = ats_score_after
+
 
     # ✅ Find or create JobMatch
     match = db.query(JobMatch).filter(
