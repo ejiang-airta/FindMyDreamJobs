@@ -1,4 +1,5 @@
-// File: /frontend/src/hooks/useUserId.ts
+// ✅ File: frontend/src/hooks/useUserId.ts
+// This hook fetches the user ID from the backend based on the user's email.
 
 'use client'
 
