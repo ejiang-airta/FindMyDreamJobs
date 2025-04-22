@@ -7,7 +7,7 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { useState } from 'react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import { toast } from 'react-hot-toast'
+import { toast } from 'sonner'
 import { BACKEND_BASE_URL } from '@/lib/env'
 
 // ✅ Page must be default export
