@@ -4,13 +4,19 @@ import React, { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import OptimizeResume from '@/components/OptimizeResume'
 import { useUserId } from '@/hooks/useUserId'
+import { Protected } from '@/components/Protected'
 
+// This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
-  const { data: session, status } = useSession()
+  return (
+    <Protected>
+      <OptimizePage />
+    </Protected>
+  )
+}
 
-  if (status === 'loading') return <p>Loading...</p>
-  if (!session) return <p>Unauthorized. Please log in.</p>
 
+function OptimizePage() {
   const userId = useUserId()
     if (!userId) return <p>❌ No user ID found</p>
 

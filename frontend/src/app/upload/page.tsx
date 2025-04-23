@@ -5,16 +5,15 @@
 
 import UploadResume from '@/components/UploadResume'
 import { useSession } from 'next-auth/react'
+import { Protected } from '@/components/Protected'
 
-
-
-export default function UploadPageProtected() {
-  const { data: session, status } = useSession()
-
-  if (status === 'loading') return <p>Loading...</p>
-  if (!session?.user) return <p>Unauthorized. Please log in.</p>
-
-  return <UploadPage />
+// This ensures page is only accessible to authenticated users:
+export default function ProtectedPage() {
+  return (
+    <Protected>
+      <UploadPage />
+    </Protected>
+  )
 }
 
 function UploadPage() {

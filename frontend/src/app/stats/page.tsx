@@ -10,17 +10,16 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useSession } from 'next-auth/react'
 import { useUserId } from '@/hooks/useUserId'
 import { BACKEND_BASE_URL }  from '@/lib/env'
+import { Protected } from '@/components/Protected'
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
-  const { data: session, status } = useSession()
-
-  if (status === 'loading') return <p>Loading...</p>
-  if (!session) return <p>Unauthorized. Please log in.</p>
-
-  return <StatsPage />
+  return (
+    <Protected>
+      <StatsPage />
+    </Protected>
+  )
 }
-
 // This component is the main page for displaying application stats.
 // It fetches the application data from the backend and displays it in a bar chart:
 function StatsPage() {

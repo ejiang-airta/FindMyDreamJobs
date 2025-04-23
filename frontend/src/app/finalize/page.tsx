@@ -12,7 +12,16 @@ import { useSession } from 'next-auth/react'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { BACKEND_BASE_URL }  from '@/lib/env'
 import { useUserId } from '@/hooks/useUserId'
+import { Protected } from '@/components/Protected'
 
+// This ensures page is only accessible to authenticated users:
+export default function ProtectedPage() {
+  return (
+    <Protected>
+      <FinalizePage />
+    </Protected>
+  )
+}
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {

@@ -16,20 +16,19 @@ import { Loader } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useUserId } from '@/hooks/useUserId'
 import { WizardProvider } from '@/context/WizardContext'
-
+import { Protected } from '@/components/Protected'
 
 const steps = ['upload', 'analyze', 'match', 'optimize', 'apply']
 const stepLabels = ['Upload Resume', 'Analyze Job', 'Match Score', 'Optimize Resume', 'Apply Job']
 
+// This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
-  const { data: session, status } = useSession()
-  const userId = useUserId()
-
-    if (status === "loading") return <p>Loading...</p>
-    if (!session?.user || !userId) return <p>Unauthorized or user ID missing. Please log in.</p>
-
-    return <WizardPage />
-  }
+  return (
+    <Protected>
+      <WizardPage />
+    </Protected>
+  )
+}
 
 function WizardPage() {
   const [currentStep, setCurrentStep] = useState<string | null>(null)

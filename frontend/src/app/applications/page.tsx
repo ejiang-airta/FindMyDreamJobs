@@ -8,23 +8,20 @@ import { Button } from '@/components/ui/button'
 import { AppButton } from '@/components/ui/AppButton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
-import { useSession } from 'next-auth/react'
 import { useUserId } from '@/hooks/useUserId'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { BACKEND_BASE_URL }  from '@/lib/env'
-
+import { Protected } from '@/components/Protected'
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
-  const { data: session, status } = useSession()
-
-  if (status === 'loading') return <Skeleton className="h-6 w-40" />
-  if (!session) return <p>Unauthorized. Please log in.</p>
-
-  return <ApplicationsPage />
+  return (
+    <Protected>
+      <ApplicationsPage />
+    </Protected>
+  )
 }
-
 
 // This component is the main page for displaying all the job applications made by the user:
 // It fetches the applications from the backend and allows the user to update the status of each application.
