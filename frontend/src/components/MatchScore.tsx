@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { AppButton } from '@/components/ui/AppButton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { BACKEND_BASE_URL }  from '@/lib/env'
+import { useWizardState } from '@/context/WizardContext'
 
 interface MatchScoreProps {
   isWizard?: boolean
@@ -18,13 +19,28 @@ interface MatchScoreProps {
 }
 
 const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess, userId }) => {
-  const [resumeId, setResumeId] = useState('')
-  const [jobId, setJobId] = useState('')
   const [resumes, setResumes] = useState<any[]>([])
   const [jobs, setJobs] = useState<any[]>([])
   const [matchScore, setMatchScore] = useState<number | null>(null)
   const [keywords, setKeywords] = useState<string[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [resumeIdLocal, setResumeIdLocal] = useState('')
+  const [jobIdLocal, setJobIdLocal] = useState('')
+
+  // If isWizard is true, use the wizard state for job description:
+  let resumeId = resumeIdLocal
+  let setResumeId = setResumeIdLocal
+  let jobId = jobIdLocal
+  let setJobId = setJobIdLocal
+
+  // Override with wizard state if applicable
+  if (isWizard) {
+    const wizardState = useWizardState()
+    resumeId = wizardState.resumeId
+    setResumeId = wizardState.setResumeId
+    jobId = wizardState.jobId
+    setJobId = wizardState.setJobId
+  }
 
   useEffect(() => {
     if (!userId) return  // 🛑 Don't fetch unless userId is available
@@ -90,7 +106,7 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess, us
         <h2 className="text-lg font-bold">🔍 Resume & Job Match Score</h2>
 
         <Label>Select Resume</Label>
-        <Select onValueChange={setResumeId}>
+        <Select value={resumeId} onValueChange={setResumeId}>
           <SelectTrigger>
             <SelectValue placeholder="Choose your resume" />
           </SelectTrigger>
@@ -106,7 +122,7 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess, us
         </Select>
 
         <Label className="mt-4">Select Job</Label>
-        <Select onValueChange={setJobId}>
+        <Select value={jobId} onValueChange={setJobId}>
           <SelectTrigger>
             <SelectValue placeholder="Choose a job" />
           </SelectTrigger>

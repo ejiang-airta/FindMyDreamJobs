@@ -17,6 +17,7 @@ import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@
 import { toast } from "sonner"
 import { motion } from "framer-motion"
 import { BACKEND_BASE_URL }  from '@/lib/env'
+import { useWizardState } from '@/context/WizardContext'
 
 interface OptimizeProps {
   userId: string
@@ -25,17 +26,39 @@ interface OptimizeProps {
 }
 
 const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onSuccess }) => {
-  const [resumeId, setResumeId] = useState('')
-  const [jobId, setJobId] = useState('')
   const [resumes, setResumes] = useState<any[]>([])
   const [jobs, setJobs] = useState<any[]>([])
   const [emphasized, setEmphasized] = useState('')
   const [missing, setMissing] = useState('')
-  const [justification, setJustification] = useState('')
   const [response, setResponse] = useState<any>(null)
   const [error, setError] = useState('')
   const [optimizedText, setOptimizedText] = useState<string | null>(null)
   const [isOptimizing, setIsOptimizing] = useState(false)
+
+
+  // Always define local states
+  const [resumeIdLocal, setResumeIdLocal] = useState('')
+  const [jobIdLocal, setJobIdLocal] = useState('')
+  const [justificationLocal, setJustificationLocal] = useState('')
+
+  // Declare final references to use
+  let resumeId = resumeIdLocal
+  let setResumeId = setResumeIdLocal
+  let jobId = jobIdLocal
+  let setJobId = setJobIdLocal
+  let justification = justificationLocal
+  let setJustification = setJustificationLocal
+
+  // Override with wizard state if applicable
+  if (isWizard) {
+    const wizardState = useWizardState()
+    resumeId = wizardState.resumeId
+    setResumeId = wizardState.setResumeId
+    jobId = wizardState.jobId
+    setJobId = wizardState.setJobId
+    justification = wizardState.justification
+    setJustification = wizardState.setJustification
+  }
 
   useEffect(() => {
     const fetchDropdowns = async () => {
@@ -174,7 +197,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
       <Card>
         <CardContent className="space-y-6 p-4 sm:p-6">
           <Label>Select Resume</Label>
-          <Select onValueChange={setResumeId}>
+          <Select value={resumeId} onValueChange={setResumeId}>
             <SelectTrigger>
               <SelectValue placeholder="Choose your resume" />
             </SelectTrigger>
@@ -192,7 +215,7 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
           </Select>
 
           <Label>Select Job</Label>
-          <Select onValueChange={setJobId}>
+          <Select value={jobId} onValueChange={setJobId}>
             <SelectTrigger>
               <SelectValue placeholder="Choose a job" />
             </SelectTrigger>

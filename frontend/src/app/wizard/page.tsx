@@ -15,6 +15,8 @@ import { useRouter } from 'next/navigation'
 import { Loader } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useUserId } from '@/hooks/useUserId'
+import { WizardProvider } from '@/context/WizardContext'
+
 
 const steps = ['upload', 'analyze', 'match', 'optimize', 'apply']
 const stepLabels = ['Upload Resume', 'Analyze Job', 'Match Score', 'Optimize Resume', 'Apply Job']
@@ -38,6 +40,9 @@ function WizardPage() {
 
   const email = session?.user?.email || ''
   const userId = useUserId()
+
+  const [stepCompletion, setStepCompletion] = useState<Record<string, { completed: boolean; dirty: boolean }>>({}) //
+
 
   useEffect(() => {
     if (!email || !userId) return
@@ -180,25 +185,27 @@ function WizardPage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto mt-8">
-      <h1 className="text-3xl font-bold text-center mb-6">🚀 Smart Job Application Wizard</h1>
-      <div className="flex justify-between items-center mb-6">
-        {stepLabels.map((label, i) => (
-          <div
-            key={label}
-            className={`text-sm text-center w-full px-1 py-2 rounded-md font-medium ${
-              steps[i] === currentStep
-                ? 'bg-blue-600 text-white'
-                : steps.indexOf(steps[i]) < steps.indexOf(currentStep || '')
-                ? 'bg-green-500 text-white'
-                : 'bg-gray-200 text-gray-600'
-            }`}
-          >
-            {label}
-          </div>
-        ))}
+    <WizardProvider>
+      <div className="max-w-3xl mx-auto mt-8">
+        <h1 className="text-3xl font-bold text-center mb-6">🚀 Smart Job Application Wizard</h1>
+        <div className="flex justify-between items-center mb-6">
+          {stepLabels.map((label, i) => (
+            <div
+              key={label}
+              className={`text-sm text-center w-full px-1 py-2 rounded-md font-medium ${
+                steps[i] === currentStep
+                  ? 'bg-blue-600 text-white'
+                  : steps.indexOf(steps[i]) < steps.indexOf(currentStep || '')
+                  ? 'bg-green-500 text-white'
+                  : 'bg-gray-200 text-gray-600'
+              }`}
+            >
+              {label}
+            </div>
+          ))}
+        </div>
+        <div className="bg-white shadow-md rounded-md p-6">{renderStep()}</div>
       </div>
-      <div className="bg-white shadow-md rounded-md p-6">{renderStep()}</div>
-    </div>
+    </WizardProvider>
   )
 }

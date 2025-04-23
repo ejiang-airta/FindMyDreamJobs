@@ -9,6 +9,7 @@ import { Button } from '@/components/ui/button'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { toast } from 'sonner'
 import { BACKEND_BASE_URL }  from '@/lib/env'
+import { useWizardState } from '@/context/WizardContext'
 
 interface AnalyzeJobProps {
   isWizard?: boolean
@@ -16,11 +17,23 @@ interface AnalyzeJobProps {
 }
 
 const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) => {
-  const [jobLink, setJobLink] = useState('')
-  const [jobDescription, setJobDescription] = useState('')
   const [parsedData, setParsedData] = useState<any>(null)
   const [error, setError] = useState<string | null>(null)
   const [userId, setUserId] = useState<string | null>(null)
+  const [isDirty, setIsDirty] = useState(false)
+  const [jobLink, setJobLink] = useState('')
+  const [jobDescriptionLocal, setJobDescriptionLocal] = useState('')
+
+  // If isWizard is true, use the wizard state for job description
+  // Otherwise, use local state
+  let jobDescription = jobDescriptionLocal
+  let setJobDescription = setJobDescriptionLocal
+
+  if (isWizard) {
+    const wizardState = useWizardState()
+    jobDescription = wizardState.jobDescription
+    setJobDescription = wizardState.setJobDescription
+  }
   
     useEffect(() => {
       // Only runs in the browser
@@ -81,7 +94,11 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
           placeholder="Please copy and paste job description here..."
           rows={10}
           value={jobDescription}
-          onChange={(e) => setJobDescription(e.target.value)}
+          onChange={(e) => {
+            setJobDescription(e.target.value)
+            setIsDirty(true)
+            }            
+          }
           className="resize-y"
         />
       </div>
