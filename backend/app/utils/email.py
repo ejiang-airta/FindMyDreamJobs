@@ -9,7 +9,7 @@ SMTP_USER = getenv("SMTP_USER")  # e.g., MS_xxx@findmydreamjobs.com
 SMTP_PASS = getenv("SMTP_PASS")
 SMTP_HOST = getenv("SMTP_HOST", "smtp.mailersend.net")
 SMTP_PORT = int(getenv("SMTP_PORT", "587"))
-FRONTEND_URL = getenv("FRONTEND_BASE_URL", "https://findmydreamjobs-frontend.onrender.com")  # Fallback for safety
+FRONTEND_URL = getenv("FRONTEND_BASE_URL", "https://findmydreamjobs.com")  # Fallback for safety
 
 # Custom sender display name (used even if on Hobby plan)
 DISPLAY_NAME = "Findmydreamjobs Team"

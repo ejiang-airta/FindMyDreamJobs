@@ -13,5 +13,5 @@ export const BACKEND_BASE_URL = IS_PROD
   : 'http://127.0.0.1:8000'
 
 export const FRONTEND_BASE_URL = IS_PROD
-  ? 'https://findmydreamjobs-frontend.onrender.com'
+  ? 'https://findmydreamjobs.com'
   : 'http://127.0.0.1:3000'
