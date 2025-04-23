@@ -26,6 +26,8 @@ structure.txt
 go.sh
 *results.txt
 archive/
+*.zip
+favicon/
 
 # skip the resume upload folder:
 uploads/
