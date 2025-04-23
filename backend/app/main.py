@@ -35,6 +35,8 @@ origins = [
     "http://127.0.0.1:3000",       # ✅ Alternate dev address
     "https://findmydreamjobs-frontend.onrender.com",  # ✅ Render frontend prod
     "https://www.findmydreamjobs.com",  # ✅ optional: custom domain
+    "https://findmydreamjobs.com",  # ✅ Render frontend staging
+    "https://www.findmydreamjobs.com",  # ✅ Render frontend staging
 ]
 
 # Optional: Create a reusable logger for your app
