@@ -5,6 +5,7 @@
 import React, { useEffect, useState } from 'react'
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
+import { AppButton } from '@/components/ui/AppButton'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { Input } from '@/components/ui/input'
 import { useSession } from 'next-auth/react'
@@ -156,7 +157,7 @@ function ApplicationsPage() {
                     value={updateStatus[app.application_id] || ''}
                     onChange={(e) => setUpdateStatus(prev => ({ ...prev, [app.application_id]: e.target.value }))}
                   />
-                  <Button
+                  <AppButton
                     size="sm"
                     className="mt-2"
                     onClick={() => {
@@ -165,7 +166,7 @@ function ApplicationsPage() {
                   }}
                   >
                     🔄 Update
-                  </Button>
+                  </AppButton>
                 </p>
               </div>
             ))
