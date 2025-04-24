@@ -313,10 +313,10 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
                   <Button
                     variant="secondary"
                     onClick={() => {
-                      window.open(`${BACKEND_BASE_URL}/download-resume/${resumeId}`, "_blank")
+                      window.open(`${BACKEND_BASE_URL}/download-optimized-resume/${resumeId}`, "_blank")
                     }}
                   >
-                    📥 Download Resume
+                    ⬇️ Export to Word (.docx)
                   </Button>
                 </div>
               </div>

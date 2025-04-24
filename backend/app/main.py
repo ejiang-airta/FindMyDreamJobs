@@ -1,7 +1,7 @@
 # File: /backend/app/main.py
 # Main entry point for the FastAPI application
 from fastapi import FastAPI
-from app.routes import user, job, resume, application, match, auth, ai_optimization, ats, dashboard
+from app.routes import user, job, resume, application, match, auth, ai_optimization, ats, dashboard, download
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 import sys
@@ -78,6 +78,7 @@ app.include_router(dashboard.router)             # ✅ Dashboard API
 app.include_router(job.router)
 app.include_router(match.router)
 app.include_router(resume.router)
+app.include_router(download.router)
 
 
 
