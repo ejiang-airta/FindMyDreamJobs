@@ -184,7 +184,7 @@ def optimize_resume_for_job(resume_text: str, job_skills: List[str], emphasized_
 
     for skill in sorted_skills:
         if skill.lower() in resume_text.lower():
-            replacement = f"**{skill.upper()}**" if skill in emphasized_skills else f"*{skill}*"
+            replacement = f"{skill.upper()}" if skill in emphasized_skills else f"{skill}"
             highlighted_resume = re.sub(rf"\b{re.escape(skill)}\b", replacement, highlighted_resume, flags=re.IGNORECASE)
 
     return highlighted_resume

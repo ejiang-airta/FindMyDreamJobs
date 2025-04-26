@@ -6,7 +6,7 @@ from typing import List, Tuple, Dict
 import re
 import random
 from typing import List, Tuple
-from app.config.skills_config import SKILL_KEYWORDS, ATS_KEYWORDS
+from app.config.skills_config import SKILL_KEYWORDS, SECTION_KEYWORDS
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 from fastapi import HTTPException
@@ -16,7 +16,7 @@ from app.models.resume import Resume
 
 
 # ✨ Define base rules for ATS formatting check
-SECTION_KEYWORDS = ["experience", "education", "skills", "summary"]
+
 # ✨ Define keywords for ATS scoring from config.skills_config:
 ATS_KEYWORDS = SKILL_KEYWORDS
 
