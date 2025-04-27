@@ -73,6 +73,16 @@ def generate_formatted_resume_docx(resume_text: str, is_user_approved: bool) -> 
     run.font.size = Pt(10)
     p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
+    # Set up a different header for pages after the first
+    section = doc.sections[0]
+    section.different_first_page_header_footer = True
+    hdr = section.header
+    # add header paragraph for page 2+
+    hdr_para = hdr.add_paragraph()
+    hdr_para.alignment = WD_PARAGRAPH_ALIGNMENT.RIGHT
+    hdr_run = hdr_para.add_run(f"Resume of {name}")
+    hdr_run.font.size = Pt(9)
+
     #doc.add_paragraph(" ")
     #doc.add_picture(image_path, width=None, height=None)
 
