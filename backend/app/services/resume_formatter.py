@@ -98,18 +98,73 @@ def generate_formatted_resume_docx(resume_text: str, is_user_approved: bool) -> 
             continue
 
         if is_company_location(line):
+            # split company and location, bold only the company
             p = doc.add_paragraph()
-            run = p.add_run(line)
-            run.bold = True
-            run.font.size = Pt(11)
+            if '|' in line:
+                # pipe separator: Company | Location
+                parts_pipe = line.split('|', 1)
+                company = parts_pipe[0].strip()
+                location = parts_pipe[1].strip()
+                # bold company
+                run = p.add_run(company)
+                run.bold = True
+                run.font.size = Pt(11)
+                # non-bold separator + location
+                run2 = p.add_run(' | ' + location)
+                run2.bold = False
+                run2.font.size = Pt(11)
+            else:
+                # comma separator: Company, Location
+                parts = line.split(',', 1)
+                company = parts[0].strip()
+                location = parts[1].strip() if len(parts) > 1 else ''
+                run = p.add_run(company)
+                run.bold = True
+                run.font.size = Pt(11)
+                if location:
+                    run2 = p.add_run(', ' + location)
+                    run2.bold = False
+                    run2.font.size = Pt(11)
             inside_company_block = True
             continue
 
         if inside_company_block and is_job_title_date(line):
+            # split job title and dates, bold only the title
             p = doc.add_paragraph()
-            run = p.add_run(line)
-            run.bold = False
-            run.font.size = Pt(11)
+            if '|' in line:
+                # pipe separator: Title | Dates
+                parts_pipe = line.split('|', 1)
+                title = parts_pipe[0].strip()
+                dates = parts_pipe[1].strip()
+                # bold title
+                run = p.add_run(title)
+                run.bold = True
+                run.font.size = Pt(11)
+                # non-bold separator + dates
+                run2 = p.add_run(' | ' + dates)
+                run2.bold = False
+                run2.font.size = Pt(11)
+            else:
+                # find where the date portion begins
+                m = re.search(r'\d{1,2}/\d{4}', line)
+                idx = m.start() if m else line.lower().find('present')
+                if idx is not None and idx >= 0:
+                    # split into title and date, stripping trailing separators
+                    title = line[:idx].rstrip(' -–—')
+                    dates = line[idx:].strip()
+                    # bold title
+                    run = p.add_run(title)
+                    run.bold = True
+                    run.font.size = Pt(11)
+                    # non-bold space + dates
+                    run2 = p.add_run(' ' + dates)
+                    run2.bold = False
+                    run2.font.size = Pt(11)
+                else:
+                    # fallback: whole line normal
+                    run = p.add_run(line)
+                    run.bold = False
+                    run.font.size = Pt(11)
             inside_company_block = False
             continue
 
