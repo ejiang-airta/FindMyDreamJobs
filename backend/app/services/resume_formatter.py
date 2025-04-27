@@ -4,136 +4,136 @@
 #
 
 from docx import Document
-from docx.shared import Pt,Inches
+from docx.shared import Pt
 from docx.enum.text import WD_PARAGRAPH_ALIGNMENT
 from io import BytesIO
 from datetime import datetime
 import os
 import re
-from app.config.skills_config import SECTION_KEYWORDS  # ✅ load ATS section keywords
+from app.config.skills_config import SECTION_KEYWORDS
 
-# Convert SECTION_KEYWORDS to UPPERCASE
-SECTION_KEYWORDS = [keyword.upper() for keyword in SECTION_KEYWORDS]
+def clean_text(raw_text: str) -> str:
+    # Collapse multiple blank lines, trim spaces
+    cleaned = re.sub(r'\n{2,}', '\n', raw_text.strip())
+    return cleaned
+
+def parse_contact_block(lines):
+    name = ""
+    contact_lines = []
+    linked_in = ""
+    
+    if lines:
+        name = lines.pop(0).strip()
+    
+    while lines and ("@" in lines[0] or any(char.isdigit() for char in lines[0]) or "linkedin.com" in lines[0].lower()):
+        contact_lines.append(lines.pop(0).strip())
+    
+    contact_info = " | ".join(contact_lines)
+    return name, contact_info, lines
+
+def is_section_title(line: str) -> bool:
+    if not line.strip():
+        return False
+    words = line.strip().split()
+    if len(words) > 5:
+        return False
+    return any(keyword.lower() in line.lower() for keyword in SECTION_KEYWORDS)
+
+def is_company_location(line: str) -> bool:
+    return bool(re.search(r',\s*\w+', line)) and not any(c in line for c in [":", "-", "/"])
+
+def is_job_title_date(line: str) -> bool:
+    return bool(re.search(r'\d{2}/\d{4}', line)) or ("present" in line.lower())
 
 def generate_formatted_resume_docx(resume_text: str, is_user_approved: bool) -> BytesIO:
     doc = Document()
     output = BytesIO()
-    lines = resume_text.strip().split('\n')
-
-    # Set global font
     style = doc.styles['Normal']
     font = style.font
     font.name = 'Segoe UI'
-    font.size = Pt(10)
 
-    # Load horizontal line
     current_dir = os.path.dirname(os.path.abspath(__file__))
-    image_path = os.path.join(current_dir, "resource", "horizontal_line.png")
+    image_dir = os.path.join(current_dir, "resource")
+    image_path = os.path.join(image_dir, "horizontal_line.png")
 
-    # Add horizontal line to separate sections:
-    def add_horizontal_line():
-        if os.path.exists(image_path):
-            doc.add_picture(image_path, width=Inches(6.0))
+    lines = clean_text(resume_text).split('\n')
 
-    def is_section_header(line: str) -> bool:
-        clean = line.strip("*:- ").strip()
-        return clean.upper() in SECTION_KEYWORDS or (clean.isupper() and len(clean.split()) <= 5)
-    
-    def is_company_line(line: str) -> bool:
-        return "**" in line and "," in line and line.startswith("**")
+    name, contact_info, lines = parse_contact_block(lines)
 
-    def is_title_duration_line(line: str) -> bool:
-        return "*" in line and any(x in line for x in ["MM/YYYY", "Present", "20", "–", "-"])
-
-    def parse_contact_block(lines):
-        name = lines[0].strip() if len(lines) > 0 else ''
-        contact_line = lines[1].strip() if len(lines) > 1 else ''
-        linkedin_line = lines[2].strip() if len(lines) > 2 else ''
-        return name, contact_line, linkedin_line
-
-    # Parse contact block (up to first section header)
-    name, contact_line, linkedin_line = "", "", ""
-    section_start_idx = 0
-    for idx, line in enumerate(lines):
-        if is_section_header(line):
-            section_start_idx = idx
-            break
-    name, contact_line, linkedin_line = parse_contact_block(lines[:section_start_idx])
-
-    # Header formatting
+    # Header: Name
     p = doc.add_paragraph()
     run = p.add_run(name.upper())
     run.bold = True
     run.font.size = Pt(14)
     p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
-    if contact_line:
-        p = doc.add_paragraph(contact_line)
-        p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-    if linkedin_line:
-        p = doc.add_paragraph(linkedin_line)
-        p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
-    
-    add_horizontal_line()
+    # Header: Contact Info
+    p = doc.add_paragraph()
+    run = p.add_run(contact_info)
+    run.font.size = Pt(10)
+    p.alignment = WD_PARAGRAPH_ALIGNMENT.CENTER
 
-    is_summary = False
-    for i in range(section_start_idx, len(lines)):
-        line = lines[i].strip()
+    #doc.add_paragraph(" ")
+    #doc.add_picture(image_path, width=None, height=None)
+
+    IS_Summary = False
+    inside_company_block = False
+
+    for i, line in enumerate(lines):
+        line = line.strip()
         if not line:
             continue
 
-        # Section title
-        if is_section_header(line):
-            is_summary = "summary" in line.lower()
-            add_horizontal_line()
+        if is_section_title(line):
+            inside_company_block = False
+            IS_Summary = 'SUMMARY' in line.upper()
+
+            #doc.add_paragraph(" ")
+            doc.add_picture(image_path, width=None, height=None)
+
             p = doc.add_paragraph()
-            run = p.add_run(line.strip("* "))
+            run = p.add_run(line.upper())
             run.bold = True
             run.font.size = Pt(12)
             continue
 
-        # Company line
-        if is_company_line(line):
+        if is_company_location(line):
             p = doc.add_paragraph()
-            run = p.add_run(line.strip("*"))
+            run = p.add_run(line)
             run.bold = True
+            run.font.size = Pt(11)
+            inside_company_block = True
             continue
 
-        # Title + duration
-        if is_title_duration_line(line):
-            parts = re.split(r"\s{2,}|\|", line.strip("*"))
-            if len(parts) >= 2:
-                p = doc.add_paragraph()
-                run = p.add_run(parts[0].strip())
-                run.bold = True
-                run.font.size = Pt(11)
-                run = p.add_run(f" | {parts[1].strip()}")
-                run.font.size = Pt(11)
+        if inside_company_block and is_job_title_date(line):
+            p = doc.add_paragraph()
+            run = p.add_run(line)
+            run.bold = False
+            run.font.size = Pt(11)
+            inside_company_block = False
             continue
 
-        # ✅ Bullet points (Skills or Experience)
         if line.startswith("-"):
-            clean_line = line.lstrip("-• ").strip()
-            if clean_line:
-                doc.add_paragraph(clean_line, style='List Bullet')
+            p = doc.add_paragraph(line[1:].strip(), style='List Bullet')
         else:
-            if is_summary:
-                doc.add_paragraph(line)  # Normal paragraph for Summary
+            p = doc.add_paragraph()
+            run = p.add_run(line)
+            if IS_Summary:
+                run.font.size = Pt(11)
             else:
-                doc.add_paragraph(line)  # Normal bullet for regular content
+                run.font.size = Pt(10)
 
-
-    # ✅ Footer watermark if resume is not approved
+    # Footer
     if not is_user_approved:
         section = doc.sections[0]
-        footer = section.footer.paragraphs[0]
-        run = footer.add_run("Generated by FindMyDreamJobs.com — Not yet user approved.")
+        footer = section.footer
+        p = footer.paragraphs[0]
+        run = p.add_run("Generated by FindMyDreamJobs.com – Not yet user approved.")
         run.font.size = Pt(8)
 
     doc.save(output)
     output.seek(0)
     return output
 
-
-# ✅ Expose
+# Reference
 resume_formatter_reference = generate_formatted_resume_docx
