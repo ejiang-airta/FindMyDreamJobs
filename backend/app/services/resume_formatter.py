@@ -71,8 +71,8 @@ def parse_contact_block(lines):
         txt = lines[0].strip()
         if email_re.search(txt) or phone_re.search(txt) or url_re.search(txt) or 'linkedin.com' in txt.lower():
             item_line = lines.pop(0).strip()
-            # split on pipe separators into distinct contact segments
-            segments = [seg.strip() for seg in re.split(r'\s*\|\s*', item_line) if seg.strip()]
+            # split on pipe or bullet separators into distinct contact segments
+            segments = [seg.strip() for seg in re.split(r'\s*(?:\||•)\s*', item_line) if seg.strip()]
             for seg in segments:
                 # classify each segment
                 if email_re.search(seg):
