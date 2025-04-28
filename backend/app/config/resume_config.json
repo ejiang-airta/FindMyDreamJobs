@@ -1,0 +1,36 @@
+{
+  "template_path": null,
+  "font_name": "Segoe UI",
+  "font_size": {
+    "name": 16,
+    "contact": 10,
+    "section": 12,
+    "company": 12,
+    "job": 12,
+    "bullet": 11,
+    "text": 11,
+    "summary": 11,
+    "footer": 8,
+    "header": 8
+  },
+  "styles": {
+    "bullet": "List Bullet"
+  },
+  "image_path": "resource/horizontal_line.png",
+  "header_text": "Resume of {name}",
+  "job_title_keywords": [
+    "Manager",
+    "Leader",
+    "Director",
+    "Engineer",
+    "Analyst",
+    "Developer",
+    "Officer",
+    "Executive",
+    "Architect",
+    "Consultant",
+    "Coordinator",
+    "Specialist",
+    "Administrator"
+  ]
+}
