@@ -5,38 +5,55 @@ import datetime
 import json
 import time
 import os
+from backend.app.config.settings import PROJECT_ROOT
+import unicodedata  # Required for Unicode normalization
+import logging  # For debugging Unicode issues
+
+# Setup logging for Unicode character debugging
+logging.basicConfig(filename='unicode_processing.log', level=logging.DEBUG)
 
 # RapidAPI instance
 rapid_api_host = 'jsearch.p.rapidapi.com'
 rapid_api_key = os.getenv("RAPIDAPI_KEY")
-API_URL = f"https://{rapid_api_host}/search?query=director%20quality%20engineering%20in%20Vancouver%20Canada&page=1&num_pages=1&country=ca&date_posted=all"
 
+# Root for storing found jobs: 
+logger_dir  = os.path.join(PROJECT_ROOT, "dev_tracking", "jobs")
+filename = f"{logger_dir}/app_{datetime.datetime.now().strftime('%Y%m%d_%H%M%S')}.docx"
+
+os.makedirs(logger_dir , exist_ok=True)
 def fetch_jobs():
     job_postings = []
+    API_URL = f"https://{rapid_api_host}/search"    #jsearch API URL
+
     
     # jsearch API
     headers = {
         'x-rapidapi-host': rapid_api_host.encode("ascii", "ignore").decode(),
         'x-rapidapi-key': rapid_api_key.encode("ascii", "ignore").decode()
         }
-    # params = {'query': 
-    #     'director%20quality%20engineering%20jobs%20in%20Vancouver&page=1&num_pages=9&country=CA'}
-
+    # API parameters
     params = {
-        'query': 'director of engineering in Vancouver Canada',
-        'page': 1,
-        'num_pages': 9,
-        'job_country': 'ca',
-        'date_posted': 'all'
+            "query":"director engineering jobs in Vancouver, BC",
+            "page":"1",
+            "num_pages":"9",
+            "country":"ca",
+            "date_posted":"all",
+            "work_from_home":"true"
     }
-    response = requests.get(API_URL, headers=headers,params=params)
-
-    data = response.json()
+    
+    # Make the API request:
+    # response = requests.get(API_URL, headers=headers,params=params)
+    # data = response.json()
+    # Mock up the API response:
+    with open('jobs_list_1.json', 'r') as file:
+        data = json.load(file)
+    
     #job_postings.extend(data['results'])
     job_postings = data.get("data")
 
-    with open('job_output.json', 'w') as file1:
-        json.dump(data, file1, indent=4)  # Pretty-print
+    # Save raw response for debugging
+    with open('job_output.json', 'w', encoding='utf-8') as file1:
+        json.dump(data, file1, indent=4, ensure_ascii=False) # Pretty-print
         print("✅ Job information have been written to job_output.json")
 
     return job_postings
@@ -71,7 +88,10 @@ jobs = fetch_jobs()
 def parse_date(dt_str):
     """Parse an ISO datetime string into a naive datetime in UTC for sorting."""
     try:
-        # Parse RFC3339-like with 'Z' suffix as UTC
+        if not dt_str:
+            return datetime.datetime.min
+       
+       # Parse RFC3339-like with 'Z' suffix as UTC
         dt = datetime.datetime.fromisoformat(dt_str.replace('Z', '+00:00'))
         # Convert to UTC and drop tzinfo to produce naive datetime
         if dt.tzinfo is not None:
@@ -80,7 +100,8 @@ def parse_date(dt_str):
     except Exception:
         # Fallback minimal datetime
         return datetime.datetime.min
-
+    
+# Sort jobs by post date descending
 jobs = sorted(
     jobs,
     key=lambda j: parse_date(j.get('job_posted_at_datetime_utc', '') or ''),
@@ -140,7 +161,8 @@ def save_jobs_to_html(jobs, filename='job_output.html'):
     print(f"✅ Job information saved to {filename}")
 
 save_jobs_to_html(jobs)
-# Attempt to export to DOCX if python-docx is available
+
+# Unicode-safe DOCX export
 try:
     from docx import Document
     from docx.oxml import OxmlElement
@@ -149,10 +171,57 @@ try:
 except ImportError:
     print("⚠️  python-docx not installed. Skipping DOCX export. Install with `pip install python-docx` to enable this feature.")
 else:
+    def normalize_string(text):
+        """
+        Unicode-safe string normalization with fallback handling
+        Fixes issues with invalid surrogate pairs and compatibility characters
+        """
+        if not isinstance(text, str):
+            return str(text)
+            
+        # Normalize to NFKC form to handle compatibility characters
+        text = unicodedata.normalize('NFKC', text)
+        
+        # Special character replacements needed for DOCX
+        replacements = {
+            '\u200b': '',  # Zero-width space
+            '\ufeff': '',   # Byte order mark
+            '\u202a': '',   # Left-to-right embedding
+            '\u202c': '',   # Pop directional formatting
+        }
+        
+        # Apply replacements
+        for old, new in replacements.items():
+            text = text.replace(old, new)
+            
+        # Additional check to handle invalid surrogate pairs
+        try:
+            # Try to encode using utf-16 to catch invalid surrogates
+            return text.encode('utf-16', 'surrogatepass').decode('utf-16')
+        except UnicodeDecodeError:
+            # Fallback for problematic cases
+            logging.warning("Failed to handle surrogate pairs in text")
+            return text.encode('utf-8', 'replace').decode('utf-8', 'replace')
+            
+    def find_invalid_chars(text):
+        """For debugging: identify problematic Unicode characters"""
+        if not isinstance(text, str):
+            return []
+        invalid_chars = []
+        for char in set(text):
+            try:
+                char.encode('utf-16', 'surrogatepass')
+            except UnicodeEncodeError:
+                invalid_chars.append(repr(char))
+        return invalid_chars    
+    
     def add_hyperlink(paragraph, text, url):
         """Add a hyperlink to a python-docx paragraph."""
+        processed_text = normalize_string(text)
+        processed_url = normalize_string(url)
+
         part = paragraph.part
-        r_id = part.relate_to(url, RELATIONSHIP_TYPE.HYPERLINK, is_external=True)
+        r_id = part.relate_to(processed_url, RELATIONSHIP_TYPE.HYPERLINK, is_external=True)
         hyperlink = OxmlElement('w:hyperlink')
         hyperlink.set(qn('r:id'), r_id)
         new_run = OxmlElement('w:r')
@@ -161,28 +230,47 @@ else:
         u = OxmlElement('w:u');    u.set(qn('w:val'), 'single')
         rPr.append(c); rPr.append(u)
         new_run.append(rPr)
-        text_el = OxmlElement('w:t'); text_el.text = text
+        text_el = OxmlElement('w:t'); text_el.text = processed_text
         new_run.append(text_el)
         hyperlink.append(new_run)
         paragraph._p.append(hyperlink)
         return hyperlink
 
-    def save_jobs_to_docx(jobs, filename='job_output.docx'):
-        """Generate a DOCX file from job postings with formatted headers and bullet points."""
+    def save_jobs_to_docx(jobs, filename):
+        """Generate a DOCX file from job postings with formatted headers and bullet points and with Unicode-safe formatting."""
+        print(f"Docx export file name: {filename}")
         doc = Document()
+        
+        # Set compatibility mode for better Unicode handling
+        doc._element.set(
+            '{http://schemas.openxmlformats.org/wordprocessingml/2006/main}compatibilityMode', 
+            '15'
+        )
         doc.add_heading('Job Postings', level=1)
         total = len(jobs)
         for idx, job in enumerate(jobs, start=1):
-            title = job.get('job_title', 'N/A')
-            company = job.get('employer_name', 'N/A')
-            location = job.get('job_location', 'N/A')
-            posted = job.get('job_posted_at_datetime_utc', 'N/A')
-            salary = job.get('job_salary', 'N/A')
-            min_salary = job.get('job_min_salary', 'N/A')
-            max_salary = job.get('job_max_salary', 'N/A')
+        # Process job fields with Unicode normalization
+            title = normalize_string(job.get('job_title', 'N/A'))
+            company = normalize_string(job.get('employer_name', 'N/A'))
+            location = normalize_string(job.get('job_location', 'N/A'))
+            posted = normalize_string(job.get('job_posted_at_datetime_utc', 'N/A'))
+            salary = normalize_string(job.get('job_salary', 'N/A'))
+            min_salary = normalize_string(job.get('job_min_salary', 'N/A'))
+            max_salary = normalize_string(job.get('job_max_salary', 'N/A'))
             description = job.get('job_description', '')
-            link = job.get('job_google_link', '#')
-
+            link = normalize_string(job.get('job_google_link', '#'))
+            
+            # Log invalid characters for debugging
+            for field_name, field_value in [
+                ('title', title),
+                ('company', company),
+                ('link', link)
+            ]:
+                invalid_chars = find_invalid_chars(field_value)
+                if invalid_chars:
+                    logging.debug(f"Invalid chars in job {idx} {field_name}: {', '.join(invalid_chars)}")
+            
+            # Add heading with normalized text
             doc.add_heading(f'Job {idx}: {title}', level=2)
             for label, value in [
                 ('Company', company),
@@ -195,25 +283,30 @@ else:
                 p = doc.add_paragraph(style='List Bullet')
                 p.add_run(f'{label}: {value}')
 
+            # Process description with line-by-line normalization
             if description:
                 desc_para = doc.add_paragraph()
                 desc_run = desc_para.add_run('Description:')
                 desc_run.bold = True
+                
                 for line in description.split('\n'):
                     if line.strip():
-                        doc.add_paragraph(line)
+                        processed_line = normalize_string(line)
+                        doc.add_paragraph(processed_line)
 
+            # Add hyperlink with normalized text
             link_para = doc.add_paragraph()
             link_para.add_run('Apply at: ')
             add_hyperlink(link_para, 'Click here to apply', link)
 
+            # Add page break between jobs except for last one
             if idx < total:
                 doc.add_page_break()
 
         doc.save(filename)
         print(f"✅ Job information saved to {filename}")
 
-    save_jobs_to_docx(jobs)
+    save_jobs_to_docx(jobs,filename=filename)
 # def main():
 #     schedule.every(1).day.at("11:36").do(fetch_jobs)  # Run daily at 8 AM
 #     while True:
