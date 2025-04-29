@@ -23,9 +23,9 @@ def fetch_jobs():
     #     'director%20quality%20engineering%20jobs%20in%20Vancouver&page=1&num_pages=9&country=CA'}
 
     params = {
-        'query': 'director engineering in Vancouver Canada',
+        'query': 'director of engineering in Vancouver Canada',
         'page': 1,
-        'num_pages': 8,
+        'num_pages': 9,
         'job_country': 'ca',
         'date_posted': 'all'
     }
@@ -69,9 +69,16 @@ jobs = fetch_jobs()
 
 # Sort jobs by post date descending
 def parse_date(dt_str):
+    """Parse an ISO datetime string into a naive datetime in UTC for sorting."""
     try:
-        return datetime.datetime.fromisoformat(dt_str.replace('Z', '+00:00'))
+        # Parse RFC3339-like with 'Z' suffix as UTC
+        dt = datetime.datetime.fromisoformat(dt_str.replace('Z', '+00:00'))
+        # Convert to UTC and drop tzinfo to produce naive datetime
+        if dt.tzinfo is not None:
+            dt = dt.astimezone(datetime.timezone.utc).replace(tzinfo=None)
+        return dt
     except Exception:
+        # Fallback minimal datetime
         return datetime.datetime.min
 
 jobs = sorted(
