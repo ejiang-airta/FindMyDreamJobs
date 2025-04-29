@@ -174,14 +174,22 @@ else:
     def normalize_string(text):
         """
         Unicode-safe string normalization with fallback handling
-        Fixes issues with invalid surrogate pairs and compatibility characters
+        Fixes issues with literal unicode escapes (e.g., \uD83D\uDC76) and invalid surrogate pairs
         """
         if not isinstance(text, str):
             return str(text)
-            
+
+        # Decode literal unicode escape sequences (e.g., \uXXXX or \UXXXXXXXX) into actual characters
+        if '\\u' in text or '\\U' in text:
+            try:
+                # operate on utf-8 bytes to use unicode_escape codec
+                text = text.encode('utf-8').decode('unicode_escape')
+            except Exception:
+                logging.debug("normalize_string: failed to decode unicode escapes")
+
         # Normalize to NFKC form to handle compatibility characters
         text = unicodedata.normalize('NFKC', text)
-        
+
         # Special character replacements needed for DOCX
         replacements = {
             '\u200b': '',  # Zero-width space
@@ -189,18 +197,17 @@ else:
             '\u202a': '',   # Left-to-right embedding
             '\u202c': '',   # Pop directional formatting
         }
-        
         # Apply replacements
         for old, new in replacements.items():
             text = text.replace(old, new)
-            
+
         # Additional check to handle invalid surrogate pairs
         try:
             # Try to encode using utf-16 to catch invalid surrogates
             return text.encode('utf-16', 'surrogatepass').decode('utf-16')
         except UnicodeDecodeError:
-            # Fallback for problematic cases
             logging.warning("Failed to handle surrogate pairs in text")
+            # Fallback for problematic cases
             return text.encode('utf-8', 'replace').decode('utf-8', 'replace')
             
     def find_invalid_chars(text):
