@@ -53,9 +53,13 @@ const MatchScore: React.FC<MatchScoreProps> = ({ isWizard = false, onSuccess, us
         ])
         const resumesData = await res1.json()
         const jobsData = await res2.json()
+        
+        setResumes(resumesData.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()))
+        setJobs(jobsData.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()))
+
     
-        setResumes(Array.isArray(resumesData) ? resumesData : [])
-        setJobs(Array.isArray(jobsData) ? jobsData : [])  // ✅ this line prevents crash
+        //setResumes(Array.isArray(resumesData) ? resumesData : [])
+        //setJobs(Array.isArray(jobsData) ? jobsData : [])  // ✅ this line prevents crash
       } catch (err) {
         console.error('❌ Error loading dropdowns:', err)
       }
