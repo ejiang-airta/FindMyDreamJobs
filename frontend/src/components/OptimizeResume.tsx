@@ -68,8 +68,11 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
           fetch(`${BACKEND_BASE_URL}/jobs/by-user/${userId}`)
         ])
 
-        setResumes(await res1.json())
-        setJobs(await res2.json())
+        const resumesData = await res1.json()
+        const jobsData = await res2.json()
+
+        setResumes(resumesData.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()))
+        setJobs(jobsData.sort((a: any, b: any) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime()))
       } catch (err) {
         console.error('❌ Failed to fetch dropdowns', err)
       }
@@ -100,9 +103,10 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
       const matchData = await matchRes.json()
       setMissing(matchData.missing_skills?.join(', ') || '')
 
-      if (!emphasized.trim()) {
-        setEmphasized(matchData.matched_skills?.join(', ') || '')
-      }
+      //This is a bug where it uses matched_skills as emphasized_skills
+      // if (!emphasized.trim()) {
+      //   setEmphasized(matchData.matched_skills?.join(', ') || '')
+      // }
     } catch (err) {
       console.error("❌ Error ensuring match data:", err)
       setError("Failed to prepare matching info.")
