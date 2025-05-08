@@ -26,8 +26,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className={inter.className}>
         <SessionWrapper>
           <NavBar />
-          <Toaster position="top-center" />
           {children}
+          <Toaster 
+          position="top-center"          
+          toastOptions={{
+            duration: 2000, // Set the global duration to 3 seconds
+            style: {
+              marginTop: '2rem', // Adjust this value to move the toaster lower
+            },
+          }} />
         </SessionWrapper>
       </body>
     </html>
