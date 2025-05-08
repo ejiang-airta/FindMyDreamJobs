@@ -131,6 +131,7 @@ def get_user_matches(user_id: int, db: Session = Depends(get_db)):
             Job.job_title,
             Job.company_name,
             JobMatch.resume_id,
+            Resume.resume_name,
             JobMatch.match_score_initial,
             JobMatch.match_score_final,
             JobMatch.ats_score_initial,
