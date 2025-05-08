@@ -49,7 +49,7 @@ function DashboardPage() {
         setResumes(resumeData)
         setMatches(matchData)
         setApplications(appData)
-
+ 
 
         if (
           resumeData.length === 0 &&
@@ -75,6 +75,44 @@ function DashboardPage() {
           </AlertDescription>
         </Alert>
       )}
+
+      {/* ✅ Applications */}
+      <Card>
+        <CardHeader><h2 className="text-xl font-bold">📋 Tracked Applications</h2></CardHeader>
+        <CardContent className="space-y-4">
+          {applications.length > 0 ? (
+            applications.map((app: any) => (
+              <div key={`app-${app.application_id}`} className="border p-3 rounded-md">
+                <p><strong>Job #{app.application_id}:</strong> {app.job_title} @ {app.company_name}</p>
+                <p><strong>Status:</strong> {app.application_status}</p>
+                <p><strong>Resume #{app.resume_id}:</strong> {app.resume_name || 'Unnamed'}</p>
+                <p><strong>Applied On:</strong> {new Date(app.applied_date).toLocaleString()}</p>
+                <a href={app.application_url} target="_blank" className="text-blue-600 underline text-sm">🔗 View Application</a>              ``
+              </div>
+            ))
+          ) : (
+            <p className="text-muted-foreground">No applications tracked yet.</p>
+          )}
+        </CardContent>
+      </Card>
+
+      {/* ✅ Matches */}
+      <Card>
+        <CardHeader><h2 className="text-xl font-bold">🔍 Job Matches</h2></CardHeader>
+        <CardContent className="space-y-4">
+          {matches.length > 0 ? (
+            matches.map((match: any) => (
+              <div key={`match-${match.job_id}-${match.resume_id}`} className="border p-3 rounded-md">
+                <p><strong>Job #{match.job_id}:</strong> {match.job_title} - {match.company_name}</p>
+                <p><strong>Resume #{match.resume_id}:</strong> {match.resume_name || 'Unnamed'}</p>
+                <p><strong>Match Score:</strong> {match.match_score_final ?? match.match_score_initial ?? '--'}%</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-muted-foreground">No job matches found yet.</p>
+          )}
+        </CardContent>
+      </Card>
 
       {/* Display resumes, matches, applications */}
       {/* ✅ Resumes */}
@@ -104,42 +142,6 @@ function DashboardPage() {
         </CardContent>
       </Card>
 
-      {/* ✅ Matches */}
-      <Card>
-        <CardHeader><h2 className="text-xl font-bold">🔍 Job Matches</h2></CardHeader>
-        <CardContent className="space-y-4">
-          {matches.length > 0 ? (
-            matches.map((match: any) => (
-              <div key={`match-${match.job_id}-${match.resume_id}`} className="border p-3 rounded-md">
-                <p><strong>Job #{match.job_id}:</strong> {match.job_title} - {match.company_name}</p>
-                <p><strong>Match Score:</strong> {match.match_score_final ?? match.match_score_initial ?? '--'}%</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-muted-foreground">No job matches found yet.</p>
-          )}
-        </CardContent>
-      </Card>
-
-      {/* ✅ Applications */}
-      <Card>
-        <CardHeader><h2 className="text-xl font-bold">📋 Tracked Applications</h2></CardHeader>
-        <CardContent className="space-y-4">
-          {applications.length > 0 ? (
-            applications.map((app: any) => (
-              <div key={`app-${app.application_id}`} className="border p-3 rounded-md">
-                <p><strong>Job #{app.application_id}:</strong> {app.job_title} @ {app.company_name}</p>
-                <p><strong>Status:</strong> {app.application_status}</p>
-                <p><strong>Resume #{app.resume_id}:</strong> {app.resume_name || 'Unnamed'}</p>
-                <p><strong>Applied On:</strong> {new Date(app.applied_date).toLocaleString()}</p>
-                <a href={app.application_url} target="_blank" className="text-blue-600 underline text-sm">🔗 View Application</a>              ``
-              </div>
-            ))
-          ) : (
-            <p className="text-muted-foreground">No applications tracked yet.</p>
-          )}
-        </CardContent>
-      </Card>
 
       {/* ✅ Quick Links */}
       <div className="flex space-x-4">
