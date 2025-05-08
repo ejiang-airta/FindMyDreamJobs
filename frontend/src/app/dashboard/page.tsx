@@ -138,7 +138,6 @@ function DashboardPage() {
           ) : (
             <p className="text-muted-foreground">No resumes uploaded yet. Click on Resume tab to get started.</p>
           )}
-          <Link href="/upload"><AppButton>📤 Upload New Resume</AppButton></Link>
         </CardContent>
       </Card>
 
