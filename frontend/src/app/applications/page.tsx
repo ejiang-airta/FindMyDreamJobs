@@ -116,9 +116,9 @@ function ApplicationsPage() {
           ) : applications.length > 0 ? (
             applications.map((app: any) => (
               <div key={app.application_id} className="border p-4 rounded-md">
-                <p><strong>📄 Job Title:</strong> {app.job_title}</p>
+                <p><strong>📄 Job #:</strong>{app.job_id}: {app.job_title}</p>
                 <p><strong>🏢 Company:</strong> {app.company_name}</p>
-                <p><strong>📝 Resume #</strong>{app.resume_id} – {app.resume_name || 'Unnamed'}  
+                <p><strong>📝 Resume #</strong>{app.resume_id}: {app.resume_name || 'Unnamed'}  
                 <Button
                     className="ml-8"  // <-- adds left margin (space)
                     variant="outline"
