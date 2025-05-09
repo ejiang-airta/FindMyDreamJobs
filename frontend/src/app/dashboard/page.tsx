@@ -83,7 +83,7 @@ function DashboardPage() {
           {applications.length > 0 ? (
             applications.map((app: any) => (
               <div key={`app-${app.application_id}`} className="border p-3 rounded-md">
-                <p><strong>Job #{app.application_id}:</strong> {app.job_title} @ {app.company_name}</p>
+                <p><strong>Job #{app.job_id}:</strong> {app.job_title} @ {app.company_name}</p>
                 <p><strong>Status:</strong> {app.application_status}</p>
                 <p><strong>Resume #{app.resume_id}:</strong> {app.resume_name || 'Unnamed'}</p>
                 <p><strong>Applied On:</strong> {new Date(app.applied_date).toLocaleString()}</p>
