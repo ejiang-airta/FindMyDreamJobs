@@ -1,10 +1,10 @@
 {
   "template_path": null,
-  "font_name": "Segoe UI",
+  "font_name": "Calibri",
   "font_size": {
-    "name": 16,
+    "name": 24,
     "contact": 10,
-    "section": 12,
+    "section": 14,
     "company": 12,
     "job": 12,
     "bullet": 11,

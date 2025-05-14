@@ -28,6 +28,12 @@ go.sh
 archive/
 *.zip
 favicon/
+*optimized.txt
+*.docx 
+job*.html
+job_output.json
+jobs_list_*.json
+out*.txt
 
 # skip the resume upload folder:
 uploads/

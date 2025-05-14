@@ -1,0 +1,6 @@
+# Resume frontend at 5AM PST (13:00 UTC) - Monday through Friday
+0 13 * * 1-5 /Users/e_jiang/Projects/Job_App/render_schedule.sh resume >> ~/render_cron.log 2>&1
+
+# Suspend frontend at 6PM PST (02:00 UTC next day) - Monday through Friday
+0 2 * * 2-6 /Users/e_jiang/Projects/Job_App/render_schedule.sh suspend >> ~/render_cron.log 2>&1
+0 10  * * * /Users/e_jiang/Projects/Job_App/backup_postgres.sh >> /Users/e_jiang/Projects/Job_App/dev_tracking/db_backups/backup.log 2>&1

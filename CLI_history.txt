@@ -1,0 +1,1353 @@
+source venv/bin/activate && cd FridgeSmart
+npm run ios
+source venv/bin/activate
+cd ..
+source venv/bin/activate && echo "Virtual environment activated"
+npm run ios
+cd src
+ls
+go
+gopdb
+source venv/bin/activate && cd /Users/e_jiang/Projects/fridgesmart_app && npm install expo-linear-gradient
+source venv/bin/activate && cd /Users/e_jiang/Projects/fridgesmart_app/FridgeSmart && npx expo start --ios
+source venv/bin/activate && cd /Users/e_jiang/Projects/fridgesmart_app/FridgeSmart && npx expo start --ios --no-dev
+pwd && ls -la
+cd .. && source venv/bin/activate && cd FridgeSmart && npx expo start --ios
+cd .. && source venv/bin/activate && cd FridgeSmart && npx expo start --offline --ios
+cd .. && source venv/bin/activate && cd FridgeSmart && npx expo start --offline --ios
+cd /Users/e_jiang/Projects/fridgesmart_app && source venv/bin/activate && cd FridgeSmart && npx expo start --offline --ios
+cd .. && source venv/bin/activate && cd FridgeSmart && npx expo start --ios --offline --local-ip
+cd .. && source venv/bin/activate && cd FridgeSmart && npx expo start --offline
+cd /Users/e_jiang/Projects/fridgesmart_app && npx expo start --ios
+cd /Users/e_jiang/Projects/fridgesmart_app && yarn add expo
+cd /Users/e_jiang/Projects/fridgesmart_app && npm install expo
+source venv/bin/activate && cd FridgeSmart && npx expo start --ios
+source ../venv/bin/activate && npx expo start --offline --ios
+open -a Simulator
+cd FridgeSmart && source ../venv/bin/activate && npx expo start --offline
+source venv/bin/activate
+cd ..
+cd ..
+source venv/bin/activate
+cd frid*
+cd fridgesmart
+cd fridgesmart_app
+cd src
+npm run ios
+npx expo start --clear --ios
+npx expo start --clear --ios
+cd ..
+npx expo start --clear --ios
+cd FridgeSmart && npx expo start --clear --ios
+/usr/bin/python3 /Users/e_jiang/.cursor/extensions/ms-python.python-2024.12.3-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.cursor/extensions/ms-python.python-2024.12.3-darwin-x64/python_files/deactivate/zsh/envVars.txt
+go
+/Users/e_jiang/Projects/Job_App/../job_env/bin/python3.12
+nano ~./zshrc
+nano ~./zshrc
+nano ~./zshrc
+nano ~/.zshrc
+nano ~/.zshrc
+nano ~/.zshrc
+source ~/.zshrc
+sbe
+sfe
+cat ~/.zshrc
+sfe
+cd frontend
+npm run dev
+go
+<svg viewBox="0 0 375 812" xmlns="http://www.w3.org/2000/svg">\
+  <!-- Phone frame -->\
+  <rect width="375" height="812" rx="40" ry="40" fill="#f8fafb" />\
+  \
+  <!-- Status bar -->\
+  <rect x="0" y="0" width="375" height="44" rx="40" ry="40" fill="#f0f5f9" />\
+  <text x="30" y="27" font-family="Arial" font-size="14" font-weight="600" fill="#2c506e">2:54</text>\
+  <rect x="145" y="10" width="85" height="24" rx="12" ry="12" fill="#000000" />\
+  <text x="320" y="27" font-family="Arial" font-size="14" fill="#2c506e">ô€ƒ«ƒ² ô€ƒª»</text>\
+  \
+  <!-- Header -->\
+  <rect x="0" y="44" width="375" height="60" fill="#e1eaf1" opacity="0.85" />\
+  <text x="187.5" y="80" font-family="Arial" font-size="18" font-weight="600" fill="#2c506e" text-anchor="middle">Home</text>\
+  \
+  <!-- Welcome banner with frosted effect -->\
+  <rect x="20" y="120" width="335" height="120" rx="20" ry="20" fill="url(#blueGradient)" />\
+  <rect x="20" y="120" width="335" height="120" rx="20" ry="20" fill="#e1eaf1" opacity="0.2" />\
+  \
+  <!-- Welcome text -->\
+  <text x="40" y="150" font-family="Arial" font-size="16" fill="#ffffff">Welcome to</text>\
+  <text x="40" y="185" font-family="Arial" font-size="28" font-weight="bold" fill="#ffffff">FridgeSmart</text>\
+  <text x="40" y="215" font-family="Arial" font-size="16" fill="#ffffff">Never waste food again</text>\
+  \
+  <!-- Stats card with frosted effect -->\
+  <rect x="20" y="260" width="335" height="120" rx="20" ry="20" fill="#ffffff" />\
+  <rect x="20" y="260" width="335" height="120" rx="20" ry="20" fill="#e1eaf1" opacity="0.7" />\
+  <rect x="20" y="260" width="335" height="40" rx="20" ry="20" fill="#e1eaf1" opacity="0.5" />\
+  \
+  <text x="40" y="285" font-family="Arial" font-size="16" font-weight="600" fill="#2c506e">Fridge Stats</text>\
+  \
+  <!-- Stats icons and numbers -->\
+  <rect x="40" y="300" width="80" height="70" rx="10" ry="10" fill="#e1eaf1" opacity="0.5" />\
+  <text x="80" y="330" font-family="Arial" font-size="24" font-weight="bold" fill="#4b88bf" text-anchor="middle">9</text>\
+  <text x="80" y="355" font-family="Arial" font-size="12" fill="#8fa3b3" text-anchor="middle">Total Items</text>\
+  <rect x="65" y="305" wid
+go
+go
+clear
+cd ..
+cd ..
+go
+cd projects*
+ls
+go
+cd job_app
+go
+clear
+sfe
+sfe
+clear
+gopdb
+cat ~/.zshrc
+gopdb
+bash gopdb
+clear
+gopdb
+source ~/.zshrc
+gopdb
+go
+sfe
+sfe
+cd ..
+sfe
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+go
+nano ~/.zshrc
+cat ~/.zshrc
+source ~/.zshrc
+godb
+go
+clear
+cd FridgeSmart && npm start
+/usr/bin/python3 /Users/e_jiang/.cursor/extensions/ms-python.python-2024.12.3-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.cursor/extensions/ms-python.python-2024.12.3-darwin-x64/python_files/deactivate/zsh/envVars.txt
+deactivate
+clear
+source ~/.zshrc
+clear
+sbe
+nano ~/.zshrc
+nano ~/.zshrc
+source ~/.zshrc
+source ~/.zshrc
+nano ~/.zshrc
+source ~/.zshrc
+list -l ~/.zshrc
+ls -l ~/.zshrc*
+ls -a | grep ".git"
+nano ~/.zshrc
+source ~/.zshrc
+nano ~/.zshrc
+source ~/.zshrc
+clear
+deactivate
+sfe
+sbe
+cd /Users/e_jiang/Projects/Job_App/
+cd /Users/e_jiang/Projects/Job_App/backend
+cd Users/e_jiang/Projects/Job_App/backend
+deactivte
+deactivate
+source ~/.zshrc
+clear
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+deactivate
+go
+deactivate
+source ~/.zshrc
+clear
+gopdb
+source ~/.zshrc
+deactivate
+godb
+source ~/.zshrc
+deactivate
+deactivate
+sfe
+deactivate
+source /Users/e_jiang/Projects/job_env/bin/activate
+deactivate
+source ~/.zshrc
+clear
+deactivate
+go
+go
+go
+nano ~/.zshrc
+source ~/.zshrc
+source ~/.zshrc
+npx expo start --ios
+npm install
+cd FridgeSmart && npm run ios
+npx expo start --offline --ios
+npm run ios
+npm run ios
+ls
+go
+clear
+codex
+go
+pip install openai
+nano ~/.zshrc
+nano ~/.codexrc
+cat ~/.codexrc
+codex
+cd FridgeSmart && npx expo start --clear
+npm install @expo/vector-icons
+go
+npm install -g @openai/codex-cli
+brew npm install -g @openai/codex-cli
+cat /Users/e_jiang/.npm/_logs/2025-04-28T04_32_33_578Z-debug-0.log
+cat ~/.codexrc
+source ~/.codexrc
+deactivate
+go
+sfe
+sfe
+sfe
+go
+deactivate
+go
+nano ~/.zshrc
+go
+source ~/.zshrc
+go
+sbe
+sbe
+sbe
+sbe
+sbe
+go
+clear
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+go 
+clear
+npm install -g @openai/codex-cli\
+
+npm i -g @openai/codex-cli\
+
+npm i -g @openai/codex
+codex --model gpt-3.5-turbo-instruct
+go
+codex
+codex
+deactivate
+gopdb
+go
+gopdb
+deactivate
+go
+nano ~/.zshrc
+godb
+nano ~/.zshrc
+go
+deactivate
+nano ~/.zshrc
+source ~/.zshrc
+go
+nano ~/.zshenv
+cd FridgeSmart && npm uninstall react-native-vector-icons
+npx expo start --clear
+ping -c 3 expo.dev
+npm cache clean --force && rm -rf node_modules && npm install
+npm install
+npm install @react-navigation/native
+npm config set strict-ssl false
+npm install @react-navigation/native
+cd FridgeSmart && npx expo start --clear
+npm config set registry http://registry.npmjs.org/
+npm install -g expo-cli && npx expo start --clear
+npx expo start --offline
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+ls
+ls ../mvp_env
+ls job_f*
+python3 job_find.py
+/Users/e_jiang/Projects/Job_App/../job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/job_find.py
+/Users/e_jiang/Projects/Job_App/../job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/job_find.py
+/Users/e_jiang/Projects/Job_App/../job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/job_find.py
+git apply restore_job_find.patch
+ls retore*
+git apply restore_job_find.patch
+ls res*
+git apply restore_job_find.patch
+/Users/e_jiang/Projects/Job_App/../job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/job_find.py
+/Users/e_jiang/Projects/Job_App/../job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/job_find.py
+/Users/e_jiang/Projects/Job_App/../job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/job_find.py
+godb
+codex
+clear
+nano ~/.zshrc
+source ~/.zshrc
+nano ~/.zshrc
+source ~/.zshrc
+clear
+icodex
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+sfe
+codex
+codex
+sbe
+gopdb
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+/usr/local/Cellar/python@3.12/3.12.9/Frameworks/Python.framework/Versions/3.12/bin/python3.12 /Users/e_jiang/Projects/smart-flights-find/flight-app/testing.py
+streamlite flight_app.py
+streamlit flight_app.py
+streamlit run flight_app.py
+pip install streamlit
+source ..\..\mvp_env
+ls ..\..\\
+
+ls ..\\
+
+cd ..
+ls *env
+source mvp_env\bin\activate
+cd ..
+ls *env
+source mvp_env\bin\activate
+ls
+source mvp_env\bin\activate
+source .\mvp_env\bin\activate
+source mvp_env\bin\activate
+ls mvp_env
+source mvp_env\bin\ 
+ls mvp_env\bin
+clear
+ls
+source mvp_env/bin/activate  
+streamlit --version
+streamlit run flight_app.py
+cd smart*
+cd projects\smart*
+cd projects/smart*
+ls f*
+streamlit run flight_app.py
+ls flight*
+streamlit run flights_app.py
+streamlit run flights_app.py
+streamlit run flight-app/flights_app.py
+deactivate
+ls ../mvp_env
+cd ..
+ls
+cd ..
+ls 
+ls *env
+source mvp_env/bin/activate
+clear
+cd smar&
+cd smar*
+ls sm*
+cd projects/sm*
+ls
+python auth.py\
+
+which python
+python3 auth.py\
+
+which python
+python3 auth.py\
+
+ls
+python3  auth-service/auth.py\
+
+ls re*
+cd auth*
+pip install requirements.txt
+pip install -r requirements.txt
+pip install --upgrade pip
+pip install -r requirements.txt
+clear
+python auth.pyt
+python auth.py
+python auth.py
+source ..\..\mvp_env\bin\activate
+godb
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+sbe
+sfe
+npm install @react-navigation/bottom-tabs @react-navigation/native-stack react-native-screens react-native-safe-area-context
+cd FridgeSmart && npx expo start --offline
+cls
+clear
+npm install -g @openai/codex-cli
+cd \\
+
+cd /Users/e_jiang/projects/job_app//backend/app/services/resume_formatter.py    
+cd /Users/e_jiang/projects/job_app//backend/app/services
+ls
+cd ..
+cd ..
+cd ..
+cd \\
+
+ls
+cd projects
+grep -r --include="*.py" "https://jsearch.p.rapidapi.com" .
+grep -r --include="*.py" "RAPIDAPI_KEY" .
+grep -r --include="*.py" "jsearch" .
+python auth.py
+ls
+python auth-services.py
+ls
+python auth-service.py
+python auth-service/auth.py
+ls
+streamlit run flight_app
+streamlit run flight_app.py
+streamlit run flight-app\flights_app.py
+streamlit run flight-app/flights_app.py
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+npm uninstall react-native-vector-icons
+npx expo start --ios
+npm install
+npm install --legacy-peer-deps
+npx expo start --ios
+NODE_TLS_REJECT_UNAUTHORIZED=0 npx expo start --ios
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+npx expo start --offline
+cd FridgeSmart
+rm -rf node_modules && rm package-lock.json && npm cache clean --force
+npm install --legacy-peer-deps
+npx expo start --ios
+npx expo start --offline
+cd FridgeSmart && rm -rf node_modules && rm package-lock.json && npm install && npx expo start --clear
+npx expo prebuild --platform ios && npx expo run:ios
+npx expo start --offline
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+git init && git add . && git status
+git reset && rm -rf src App.tsx app.json package.json package-lock.json tsconfig.json && git add .
+git status
+git commit -m "Initial commit: FridgeSmart app with basic structure and UI components"
+git remote add origin https://github.com/ejiang-airta/fridgesmart.git
+git add README.md LICENSE && git commit -m "Add README and LICENSE files"
+git push -u origin master
+git init
+go
+pwd
+cd \\
+
+go
+npm install @react-native-picker/picker @react-native-community/datetimepicker
+npm install
+npx expo start --ios
+mkdir -p assets
+npx expo start --ios
+export NODE_TLS_REJECT_UNAUTHORIZED=0 && npx expo start --ios
+rm -rf node_modules && npm install
+npx expo start --ios
+export NODE_TLS_REJECT_UNAUTHORIZED=0 && npx expo start --ios
+ulimit -n 10240 && npx expo start --ios
+npx expo start --ios
+npm install @react-native-community/datetimepicker@7.7.0
+mkdir -p assets
+rm -rf node_modules && npm cache clean --force && watchman watch-del-all 2>/dev/null || true && npm install
+echo kern.maxfiles=65536 | sudo tee -a /etc/sysctl.conf && echo kern.maxfilesperproc=65536 | sudo tee -a /etc/sysctl.conf && sudo sysctl -w kern.maxfiles=65536 && sudo sysctl -w kern.maxfilesperproc=65536 && ulimit -n 65536
+npx expo start --ios --clear
+npx expo start --clear && rm -rf $TMPDIR/metro-* && rm -rf $TMPDIR/haste-*
+npm config set registry https://registry.npmjs.org/ && npm install -g expo-cli && expo doctor --fix-dependencies
+npx expo-doctor && npx expo start --ios --clear
+npm config set strict-ssl false && npx expo install --check
+npx expo prebuild -p ios && npx expo run:ios
+export NODE_TLS_REJECT_UNAUTHORIZED=0 && npm install -g node-dev && node-dev --notify=false ./node_modules/expo/AppEntry.js
+cd .. && npx create-expo-app@latest fridgesmart_new --template
+cd fridgesmart_new && npm install @react-native-async-storage/async-storage @react-native-community/datetimepicker@7.7.0 @react-native-picker/picker @react-navigation/bottom-tabs @react-navigation/native @react-navigation/native-stack date-fns expo-camera expo-file-system expo-notifications @expo/vector-icons
+mkdir -p src/components src/services src/context src/types && cp -r ../fridgesmart_app/FridgeSmart/components/* src/components/ && cp -r ../fridgesmart_app/FridgeSmart/services/* src/services/ && cp -r ../fridgesmart_app/FridgeSmart/context/* src/context/ && cp -r ../fridgesmart_app/FridgeSmart/types/* src/types/ && cp ../fridgesmart_app/FridgeSmart/theme/theme.ts src/theme.ts
+rm App.tsx && touch App.tsx
+rm ./App.js && touch ./App.tsx
+ls -la
+mkdir -p src/screens
+ls -la src/components/
+npx expo start --ios --clear
+rm -rf node_modules && rm -f package-lock.json yarn.lock && expo start -c
+cd ../fridgesmart_new && rm -rf node_modules && rm -f package-lock.json yarn.lock && npm install && npx expo start -c
+npx expo run:ios
+node -v
+nvm install 18 && nvm use 18 && node -v
+brew install nvm && mkdir -p ~/.nvm && export NVM_DIR="$HOME/.nvm" && source $(brew --prefix nvm)/nvm.sh && nvm install 18 && nvm use 18 && node -v
+rm -rf node_modules && rm -f package-lock.json yarn.lock && npm install
+npx expo start -c
+npx expo run:ios
+killall node || true && killall expo || true && pkill -f "react-native" || true
+cd ../fridgesmart_new && npx expo run:ios
+curl https://registry.npmjs.org/expo
+rm -rf ios android
+npx expo run:ios
+npm install -g expo-cli && npm install expo@latest --save && npm install
+npx expo run:ios
+cd ../fridgesmart_new && npx expo start -c
+yes
+npm run i0s
+npx expo start -c
+npm install
+npx expo start
+export NODE_TLS_REJECT_UNAUTHORIZED=0 && npx expo start
+ulimit -n 10240 && npx expo start
+xcrun simctl list devices | grep -i "iphone"
+npx expo run:ios
+npx expo start --clear
+sudo launchctl limit maxfiles 65536 200000 && ulimit -n 65536 && npx expo start --clear
+watchman watch-del-all && npx expo start --clear
+brew install watchman && watchman watch-del-all && npx expo start --clear
+npx expo ios
+npx expo start
+ls
+cd fridgesmart
+ls
+npx expo start
+rm -rf node_modules && rm -rf .expo && npm cache clean --force && npm install && npx expo start --clear
+mkdir -p src/screens src/components src/navigation src/context src/services src/theme src/types
+npx expo start --clear
+npm config set strict-ssl false && npx expo start --clear
+npx expo prebuild && npx expo run:ios
+pwd
+source ../venv/bin/activate
+npm cache clean --force
+ls package.json
+pwd
+ls *.json
+cd ..
+ls *.json
+pwd
+ls
+cd venv
+ls *.json
+cd ..
+pwd
+ls *.json
+source venv/bin/activate
+source ../venv/bin/activate
+clear
+codex
+pwd
+source ../../venv/bin/activate
+git ls-tree -r main --name-only
+git ls-tree -r master --name-only
+mv /Users/e_jiang/Projects/fridgesmart/FridgeSmart/FridgeSmart/* /Users/e_jiang/Projects/fridgesmart/
+npm view babel-preset-expo versions
+ls
+ls ..
+ls ..\\
+
+lst ..\..\\
+
+ls ..\..\\
+
+pwd
+cd ..
+pwd
+python3 -m venv venv
+source venv/bin/activate
+npm install
+cd fr*
+ls
+pwd
+cd fridge
+pwd
+npm install
+ls *.json
+npm install
+clear
+clear
+npm install
+pwd
+npm install
+cd ..
+pwd
+ls -l
+ls -a
+ls -l package.json
+find . -name "package.json"
+pwd
+cd frid*
+pwd
+ls *.json
+ls -l
+ls -a
+find . -name "package.json"
+cd ..
+cd ..
+find . -name "package.json"
+ls fr*
+cd fridgesmart
+find . -name "package.json"
+pwd
+cd Frid*
+ls -l 
+npm install ./fridgesmart/FridgeSmart/package.json
+npm install /Users/e_jiang/Projects/fridgesmart/FridgeSmart/package.json
+npm help
+ls -la /Users/e_jiang/Projects/fridgesmart
+ls -la /Users/e_jiang/Projects/fridgesmart/fridgesmart
+ls -la /Users/e_jiang/Projects/fridgesmart/FridgeSmart
+ls -la /Users/e_jiang/Projects/fridgesmart/FridgeSmart/FridgeSmart
+ls -la /Users/e_jiang/Projects/fridgesmart/FridgeSmart/FridgeSmart
+source venv/bin/activate
+npm ls @babel/plugin-proposal-class-properties
+npm update
+npm ls @babel/plugin-proposal-class-properties
+history
+source venv/bin/activate
+npm install @react-native-async-storage/async-storage@1.23.1 && \
+npm install expo-camera@~16.0.18 && \
+npm install react-native-safe-area-context@4.12.0 && \
+npm install react-native-screens@~4.4.0 && \
+npm install babel-preset-expo@~12.0.0
+codex
+python3 -m venv venv
+source venv/bin/activate
+ls
+cd fridgesmart/FridgeSmart
+ls
+npm install
+npm install
+ls
+npm install
+npm run ios
+npm install react-native-gesture-handler
+npm run ios
+npm install babel-preset-expo@~12.0.0
+npm install react-native-screens@~~4.4.0
+npm install react-native-screens@~4.4.0
+npm install react-native-safe-area-context@4.12.0
+npm install react-native-gesture-handler@~2.20.2
+npm install expo-camera@~16.0.18
+npm install @react-native-async-storage/async-storage@1.23.1
+history
+npm run ios
+npm install @react-native/babel-preset --save-dev
+find --help
+find name --help
+find . -name The warnings in #terminalSelection indicate that the `@react-native/babel-preset` is not properly configured in your Babel setup. To resolve this, ensure your Babel configuration file (`babel.config.js`) includes the preset. Here's how you can fix it:\
+\
+1. Open the `babel.config.js` file in your project directory.\
+2. Ensure it contains the following configuration:\
+\
+```javascript\
+module.exports = {\
+  presets: ['module:metro-react-native-babel-preset', '@react-native/babel-preset'],\
+};\
+```\
+\
+3. Save the file and restart your development server:\
+\
+```bash\
+npm start --reset-cache\
+```\
+\
+This should resolve the warnings related to `Codegen` not running. Let me know if you encounter further issues!
+find . -name babel.config.js
+npm start --reset-cache
+npm run ios
+npm start --reset-cache
+history
+rm -rf node_modules package-lock.json
+npm install
+npm start --reset-cache
+npm install react-native-async-storage/async-storage@1.23.1
+ls
+npm install @react-native-async-storage/async-storage@1.23.1
+npm install react-native-safe-area-context@4.12.0
+npm install
+npm start --reset-cache
+npm run ios
+npm start --reset-cache
+npm start --reset-cache
+npm start --reset-cache
+npm start --reset-cache
+npm start --reset-cache
+npm start --reset-cache
+sfe
+sbe
+sbe
+godb
+gopdb
+gopdb
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+pwd
+cd ..
+pwd
+find . -name "*folder*"
+find . -name "*folder*.py"
+find . -name "*structure*.py"
+/Users/e_jiang/Projects/job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/dev_tracking/create_folder_structure.py
+/Users/e_jiang/Projects/job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/dev_tracking/create_folder_structure.py
+/Users/e_jiang/Projects/job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/dev_tracking/create_folder_structure.py
+/Users/e_jiang/Projects/job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/dev_tracking/create_folder_structure.py
+cd b*
+pip install pytest
+/Users/e_jiang/Projects/job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/backend/tests/unit/test_resume_formatter.py
+cd tests
+cd unit
+/Users/e_jiang/Projects/job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/backend/tests/unit/test_resume_formatter.py
+/Users/e_jiang/Projects/job_env/bin/python3.12 /Users/e_jiang/Projects/Job_App/backend/tests/unit/test_resume_formatter.py
+pytest backend/tests/unit/test_resume_formatter.py
+pytest backend/tests/unit/test_resume_formatter.py
+cd ..
+cd ..
+pytest backend/tests/unit/test_resume_formatter.py
+pytest /Users/e_jiang/projects/job_app/backend/tests/unit/test_resume_formatter.py
+pytest /Users/e_jiang/Projects/job_app/backend/tests/unit/test_resume_formatter.py
+pytest tests/unit/test_resume_formatter.py
+pip install pytest
+cd ..
+PYTHONPATH=backend pytest backend/tests/unit/test_resume_formatter.py
+cd b*
+pytest
+cd ..
+pytest
+cd b*
+pytest
+pytest
+pwd
+cd job_*
+cd ..
+cd job_app
+pytest
+pytest test_resume_optimizer.py
+pytest backend/tests/unit/
+pytest backend/tests/unit/
+pytest backend/tests/unit/
+pytest backend/tests/unit/
+pytest backend/tests/unit/
+pytest backend/tests/unit/
+clear
+pytest backend/tests/unit/
+pytest backend/tests/unit/
+pytest backend/tests/unit/
+pytest backend/tests/unit/
+pytest backend/tests/unit/
+pytest backend/tests/unit/
+pytest backend/tests/unit/
+pytest backend/tests/unit/
+pwd
+find . -name "output_file.txt"
+ls out*
+cat output_file.txt
+cat output_file.txt
+nano ~/.zshrc
+source ~/.zshrc
+govenv
+ls
+pwd
+nano ~/.zshrc
+source ~/.zshrc
+govenv
+pwd
+cd ..
+cd ..
+govenv
+clear
+codex
+clear
+govenv
+pwd
+source ~/.zshrc
+govenv
+clear
+govenv
+clear
+npm run ios
+cd f*/F*
+clear
+npm run ios
+npm run ios
+xcrun simctl shutdown all && xcrun simctl boot {simulator_udid} && npm run ios
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm run ios
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm run ios
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm run ios
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm run ios
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm run ios
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm run ios
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm run ios
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm run ios
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm run ios
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm start
+sbe
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+gopdb
+gopdb
+pwd
+govenv
+ls v*
+pwd
+ls b*
+ls
+govenv
+source venv/bin/activate
+sfe
+govenv
+govenv
+gopdb
+gopdb
+govenv
+gopdb
+govenv
+codex
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+govenv
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm start
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm start
+echo $ANDROID_HOME
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm start
+govenv
+cd ..\..\\
+
+pwd
+cd ..\..\..
+cd ..\..\..\\
+
+cd ..\\
+
+cd ..\..\\
+
+cd ../../\
+
+ls fr*
+cd fri*app
+cd fridge_app
+govenv
+cd fridgesmart/FridgeSmart
+ls
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm start
+npm install react-native-gesture-handler
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm start
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm start
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm start
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm start
+xcrun simctl shutdown all && xcrun simctl boot 5705A250-AEBB-4DA9-A7F0-56A051ADDED4 && npm start
+clear
+keytool -genkey -v -keystore my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000
+npm install -g expo-cli\
+
+expo login
+npm i -g expo-cli
+expo login
+expo login
+;2C
+npx expo login
+npx expo login
+npx expo login
+expo start
+npx expo start
+npm install -g eas-cli
+eas build:configure
+eas build -p android --profile preview\
+
+govenv
+echo $ANDROID_HOME
+cd ..
+find . -name "sql_result.txt"
+cd fridge_app
+find . -name "sql_results.txt"
+find . -name "sql_results.txt"
+which expo
+git --version
+ls
+ls fridge_app
+mkdir fridge_app
+cd fridge_app
+git clone https://github.com/ejiang-airta/fridgesmart.git
+ls
+cd fridgesmart
+ls
+cd FridgeSmart
+ls
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+govenv
+cd ..
+cd ..
+govenv
+eas build:configure --scan
+eas build -p android --profile preview --local\
+
+npx install-expo-modules\
+
+sudo gem install cocoapods\
+
+sudo rm /usr/local/bin/xcodeproj\
+
+sudo gem install cocoapods\
+
+gem install securerandom -v 0.3.2
+sudo gem install securerandom -v 0.3.2
+sudo gem install cocoapods\
+
+sudo gem install drb -v 2.0.6
+pd --version
+pod --version
+sudo gem install cocoapods
+sudo gem install activesupport -v 6.1.7.10
+ sudo gem install zeitwerk -v 2.6.18
+sudo gem install activesupport -v 6.1.7.10
+sudo gem install cocoapods
+npx install-expo-modules 
+sudo npx install-expo-modules 
+gopdb
+which pod
+nano ~/.zshrc
+echo 'export PATH="$HOME/.gem/ruby/3.0.0/bin:/opt/homebrew/lib/ruby/gems/3.x.x/bin:$PATH"' >> ~/.zshrc
+cat ~/.zshrc
+source ~/.zshrc
+govenv
+ruby -v
+govenv
+clear
+govenv
+govenv
+pod --version\
+
+which pod
+clear
+pod --version
+ruby --version
+ruby --version
+which ruby
+ruby -v
+ruby --version
+ruby -v
+deactivate
+govenv
+ruby -v
+nano ~/.zshrc
+source ~/.zshrc
+source ~/.zshrc
+which ruby
+ruby -v
+sudo gem install cocoapods\
+
+pod --version
+which ruby
+ruby -v
+sudo rm /usr/local/bin/pod
+sudo gem install cocoapods\
+
+which pod
+ls /usr/local/lib/ruby/gems/3.4.0/bin\
+
+ls /usr/local/lib/ruby/gems/3.4.0/bin/pod
+ls /usr/local/lib/ruby/gems/3.4.0/bin/pod/
+ls /usr/local/lib/ruby/gems/3.4.0/bin/pod
+ls /usr/local/lib/ruby/gems/3.4.3/bin/pod
+/usr/local/lib/ruby/gems/3.4.0/bin\
+
+echo 'export PATH="/usr/local/lib/ruby/gems/3.4.0/bin:$PATH"' >> ~/.zshrc\
+&& source ~/.zshrc\
+
+echo 'export PATH="/usr/local/lib/ruby/gems/3.4.0/bin:$PATH"' >> ~/.zshrc && source ~/.zshrc\
+
+which pod
+pod --version
+npx install-expo-modules\
+
+sudo ln -s /usr/local/lib/ruby/gems/3.4.0/bin/pod /usr/local/bin/pod
+which pod
+pod --version
+ls -l /usr/local/bin/pod
+npx install-expo-modules\
+
+sudo nano /usr/local/bin/pod
+sudo chmod +x /usr/local/bin/pod
+which pod
+govenv
+which pod
+pod --version
+cat /usr/local/bin/pod
+sudo rm /usr/local/lib/ruby/gems/3.4.0/bin/pod\
+
+sudo nano /usr/local/bin/pod\
+
+cat /usr/local/bin/pod\
+
+sudo chmod +x /usr/local/bin/pod\
+
+which pod
+pod --version
+sudo rm /usr/local/bin/pod\
+
+sudo ln -s /usr/local/lib/ruby/gems/3.4.0/gems/cocoapods-1.16.2/bin/pod /usr/local/bin/pod\
+
+which pod
+pod --version
+sudo rm /usr/local/bin/pod && \
+sudo rm /usr/local/lib/ruby/gems/3.4.0/bin/pod\
+
+sudo nano /usr/local/bin/pod\
+
+sudo chmod +x /usr/local/bin/pod
+which pod
+pod --version
+sudo rm /usr/local/bin/pod\
+
+sudo nano /usr/local/bin/pod\
+
+sudo chmod +x /usr/local/bin/pod\
+
+which pod && \
+pod --version\
+
+sudo gem uninstall cocoapods
+brew install cocoapods\
+
+brew reinstall cocoapods
+which pod
+pod --version
+sudo rm /usr/local/bin/pod\
+
+brew --prefix cocoapods\
+
+sudo rm -f /usr/local/bin/pod\
+
+which pod
+brew link cocoapods --force\
+
+rm '/usr/local/bin/xcodeproj'
+rm '/usr/local/bin/xcodeproj'
+rm '/usr/local/bin/xcodeproj'
+brew link --overwrite cocoapods
+brew link --overwrite cocoapods --dry-run
+which pod && pod --version\
+
+npx install-expo-modules\
+
+echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.bash_profile
+echo 'export PATH="/usr/local/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+source ~/.zshrc
+source ~/.zshrc
+env | grep pod && which pod && pod --version\
+
+env | grep pod
+which pod && pod --version
+cd ios
+npx expo prebuild\
+
+cd ios
+pod install --repo-update
+cd ..
+npx install-expo-modules\
+
+eas build:configure
+find . -name "eas.json"
+eas build -p android --profile preview\
+
+find . -name "App.tsx"
+find . -name "App.tsx"
+cd /fridgesmart/FridgeSmart/
+cd ./fridgesmart/FridgeSmart
+clear
+eas build -p android --profile preview
+npm install
+eas build -p android --profile preview\
+
+npx install-expo-modules
+rm -rf ios/
+npx install-expo-modules
+which pod
+PATH="/usr/local/bin:$PATH" npx install-expo-modules\
+
+EXPO_DEBUG=1 PATH="/usr/local/bin:$PATH" npx install-expo-modules\
+
+sudo nano /usr/local/bin/pod\
+
+sudo chmod +x /usr/local/bin/pod\
+
+env -i PATH="/usr/local/bin:/usr/bin:/bin" /usr/local/bin/pod --version\
+
+govenv
+which pod
+ls -l /usr/local/opt/cocoapods/bin/pod\
+
+govenv
+java --version
+brew install openjdk@17\
+
+which java
+java --version
+echo 'export JAVA_HOME="/usr/local/opt/openjdk@17"' >> ~/.zshrc
+ls /usr/local/opt/openjdk@17
+echo 'export PATH="$JAVA_HOME/bin:$PATH"' >> ~/.zshrc
+source ~/.zshrc
+java --version
+cd ios
+npx expo prebuild\
+
+cd ios
+pod install --repo-update
+gopdb
+govenv
+npx install --repo-update
+cd ios
+npx install --repo-update
+cd ios && \
+pod install --repo-update\
+
+cd ios
+pod install --repo-update\
+
+ipconfig
+ipconfig getsummary
+ipconfig getsummary localhost
+ipconfig getsummary wifi68f
+ipconfig getsummary wifi-68f8
+ping localhost
+ruby --version
+brew install ruby\
+
+ruby --version
+which ruby
+brew reinstall ruby
+which ruby
+ruby --version
+brew --prefix ruby\
+
+ls /usr/local/opt/ruby
+ls /opt/homebrew/opt/ruby/bin/ruby\
+
+ls /opt/homebrew/
+ls /opt
+ls /usr/local/opt/ruby
+nano ~/.zshrc
+nano ~/.zshrc
+cat ~/.zshrc
+source ~/.zshrc
+which ruby
+ruby -v
+sudo gem install cocoapods\
+
+pod --version
+sudo rm /usr/local/bin/pod
+which ruby
+ruby -v
+sudo gem install cocoapods
+which pod
+pod --version
+sfe
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.4.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+pg_dump -Fc --no-acl --no-owner -h PcTBO3PexsMm9j64KKHPre5l9tFKz7bx@dpg-cvstcla4d50c73d8llig-a.oregon-postgres.render.com -U job_db_y0wt_user -d job_db_y0wt -f render_backup.dump\
+
+brew upgrade postgresql\
+
+psql --version
+pg_dump --version\
+
+brew install postgresql@16\
+
+pg_dump --version\
+
+cat ~/.zshrc
+echo 'export PATH="/usr/local/opt/postgresql@16/bin:$PATH"' >> /Users/e_jiang/.zshrc
+cat ~/.zshrc
+pg_dump --version\
+
+source ~/.zshrc
+pg_dump --version\
+
+/opt/homebrew/Cellar/postgresql@16/bin/pg_dump -U your_user -d your_database > backup.sql\
+
+;2C
+/opt/homebrew/Cellar/postgresql@16/bin/pg_dum
+/opt/homebrew/Cellar/postgresql@16/bin/pg_dump
+/opt/homebrew/Cellar/postgresql@16/bin/pg_dump -Fc --no-acl --no-owner -h PcTBO3PexsMm9j64KKHPre5l9tFKz7bx@dpg-cvstcla4d50c73d8llig-a.oregon-postgres.render.com -U job_db_y0wt_user -d job_db_y0wt -f render_backup.dump\
+
+/usr/local/opt/postgresql@16/bin/pg_dump --version
+/usr/local/opt/postgresql@16/bin/pg_dump --version
+/usr/local/opt/postgresql@16/bin/pg_dump -Fc --no-acl --no-owner -h PcTBO3PexsMm9j64KKHPre5l9tFKz7bx@dpg-cvstcla4d50c73d8llig-a.oregon-postgres.render.com -U job_db_y0wt_user -d job_db_y0wt -f render_backup.dump\
+
+ls *.dump
+postgresql://neondb_owner:npg_4LZ7nyxiPNqp@ep-summer-scene-a47a0hm9-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require
+pg_restore --verbose --clean --no-acl --no-owner -h <neon_host> -U <neon_user> -d <neon_db> render_backup.dump\
+
+/usr/local/opt/postgresql@16/bin/pg_restore --verbose --clean --no-acl --no-owner -h npg_4LZ7nyxiPNqp@ep-summer-scene-a47a0hm9-pooler.us-east-1.aws.neon.tech -U neondb_owner -d neondb render_backup.dump\
+
+/usr/local/opt/postgresql@16/bin/pg_restore --verbose --clean --no-acl --no-owner -h postgresql://neondb_owner:npg_4LZ7nyxiPNqp@ep-summer-scene-a47a0hm9-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require -U neondb_owner -d neondb render_backup.dump\
+
+/usr/local/opt/postgresql@16/bin/pg_restore --verbose --clean --no-acl --no-owner -h postgresql://neondb_owner:npg_4LZ7nyxiPNqp@ep-summer-scene-a47a0hm9-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require -U neondb_owner -d neondb render_backup.dump\
+
+/usr/local/opt/postgresql@16/bin/pg_restore --verbose --clean --no-acl --no-owner -h ep-summer-scene-a47a0hm9-pooler.us-east-1.aws.neon.tech -U neondb_owner -d neondb render_backup.dump\
+
+export PGPASSWORD='npg_4LZ7nyxiPNqp'
+sbe
+govenv
+rm -rf ~/Library/Caches/CocoaPods\
+ && rm -rf ~/.cocoapods\
+ && pod cache clean --all
+rm -rf ~/Library/Caches/CocoaPods
+rm -rf ~/.cocoapods
+pod cache clean --all
+pkill -f pod || true\
+
+rm -rf ~/Library/Caches/CocoaPods
+rm -rf ~/.cocoapods
+rm -rf ~/.cocoapods/repos
+brew uninstall cocoapods
+cocoapods --version
+sudo gem uninstall cocoapods -aIx
+brew install cocoapods
+brew link cocoapods --overwrite
+cocoapods --version
+which cocoapods
+pod --version
+which pod
+source 'https://cdn.cocoapods.org/'
+ls
+cd frid*
+cd Fri*
+npm run ios
+nano ios/Podfile
+cd ios
+pod install
+cd .\\
+
+cd \\
+
+pwd
+find . -name "node_modules"
+find . -name "cocoapods.rb"
+nano ios/Podfile
+cd projects/fridge_app/fri*
+cd Fri&
+cd Fri*
+clear
+nano ios/Podfile
+cat ios/podfile
+cd ios
+pod install
+govenv
+gopdb
+govenv
+cd \\
+
+cd fridge_app
+ls frid*
+cd projects\fridge_app
+cd projects/fridge_app
+govenv
+clear
+java --version
+cd ios
+pod install --repo-update
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.6.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.6.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+pwd
+rm -rf node_modules_old && rm -rf node_modules && rm -rf .expo && npm install && npx expo install
+export NODE_TLS_REJECT_UNAUTHORIZED=0 && npx expo install && npx expo prebuild --platform ios --clean
+npx expo run:ios --device
+xcrun simctl list devices
+xcodebuild -downloadPlatform iOS
+npx expo start --ios
+rm -rf node_modules ios android .expo && rm -rf node_modules_old
+npm install
+npx expo prebuild --clean
+npx expo start --clear
+export NODE_TLS_REJECT_UNAUTHORIZED=0 && npx expo start --clear
+nano ~/.zshrc
+cat ~/.zshrc
+source ~/.zshrc
+find . -name "render_schedule.sh"
+mv ./backend/app/config/render_schedule.sh .
+curl -X POST https://api.render.com/v1/services/{FRONTEND_SERVICE_ID}/suspend \\
+     -H "Authorization: Bearer {RENDER_API_KEY}"
+curl -X POST https://api.render.com/v1/services/${FRONTEND_SERVICE_ID}/suspend \\
+     -H "Authorization: Bearer ${RENDER_API_KEY}"
+curl -X POST https://api.render.com/v1/services/${FRONTEND_SERVICE_ID}/resume \\
+     -H "Authorization: Bearer ${RENDER_API_KEY}"
+curl -X POST https://api.render.com/v1/services/${FRONTEND_SERVICE_ID}/start \\
+     -H "Authorization: Bearer ${RENDER_API_KEY}"
+crontab -e
+crontab -e
+clear
+crontab -e
+crontab -e
+crontab -l
+crontab -l > mycron.txt
+nano mycron.txt
+ls | grep render_schedule.sh
+ls
+ls rend*
+pwd
+nano mycron.txt
+crontab mycron.txt
+cat mycron.txt
+corntab -e
+crontab -e
+ls | grep "node_modules"
+ls | grep "job"
+find . -name "node_modules"
+find . -name "jobs"
+find . -name "job"
+find . -name "job*"
+history
+history -all
+history | grep "pg_dump"
+history | grep "find"
+rcat ~/.bash_history
+cat ~/.bash_history
+cat ~/.zsh_history\
+
+cat ~/.local/share/fish/fish_history\
+
+grep "pg_" |  ~/.zsh_history\
+
+cat ~/.zsh_history\
+
+grep "keyword" ~/.zsh_history
+grep "pg" |  ~/.zsh_history\
+
+grep "keyword" ~/.zsh_history
+grep "pg_*" ~/.zsh_history
+grep "pg_restore" ~/.zsh_history
+lear
+clear
+grep "pg_restore" ~/.zsh_history
+crontab -l
+clear
+crontab -l
+grep "grep" ~/.zsh_history
+grep "ls " ~/.zsh_history
+find . -type d -name "test"
+find . -type d -name "*test*"
+find . -type d -name "*test*" -not -path "*/node_modules/*"
+find . -type d -name "*test*" -not -path "*/node_modules/*"
+find . -type d -name "*test*" -not -path "*/node_modules/*" not -path "*/archive/*"
+find . -type d -name "*test*" -not -path "*/node_modules/*" not -path "*/archive/*"
+find . -type d -name "*test*" -not -path "*/node_modules/*" -not -path "*/archive/*" -not -path "*/archive2/*"
+find . -type d -name "test*" -not -path "*/node_modules/*" -not -path "*/archive/*" -not -path "*/archive2/*"
+find . -type d -name "test*" -not -path "*/node_modules/*" -not -path "*/archive/*"
+find . -type d -name "*test*" -not -path "*/node_modules/*" not -path "*/archive/*"
+find . -type d -name "*test*" -not -path "*/node_modules/*" -not -path "*/archive/*"
+find . -type d -name "test*" -not -path "*/node_modules/*" -not -path "*/archive/*"
+ls ./backend/tests
+ls ./backend/tests/unit
+cd front*
+ls
+npm install '@playwright/test
+npm install '@playwright/test'
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.6.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.6.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
+govenv
+nano ~/.zshrc
+source ~/.zshrc
+source ~/.zshrc
+nano ~/.zshrc
+cat ~/.zshrc
+export SSL_CERT_FILE=$(python3 -m certifi)
+export SSL_CERT_FILE=$(python3 -m certifi\
+exit
+pip install certifi
+python3 -m pip install certifi
+which python
+python -m pip install certifi
+python3 install certifi
+python3 -m pip install certifi
+clear
+govenv
+gopdb
+/usr/bin/python3 /Users/e_jiang/.vscode/extensions/ms-python.python-2025.6.0-darwin-x64/python_files/printEnvVariablesToFile.py /Users/e_jiang/.vscode/extensions/ms-python.python-2025.6.0-darwin-x64/python_files/deactivate/zsh/envVars.txt
