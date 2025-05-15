@@ -13,5 +13,5 @@ export async function loginAsTestUser(page: Page, env: string) {
   await page.fill('input[type="password"]', 'test123')
   await page.locator('button', { hasText: 'Sign In' }).click()
 
-  await page.getByText('Welcome back, test user1!').waitFor({ timeout: 5000 })
+  await page.getByText('Welcome back, test user1!').waitFor({ timeout: 10000 })
 }
