@@ -1,7 +1,54 @@
+# .gitlab-ci.yml
+
 stages:
   - test
+  - deploy
 
-test:
+variables:
+  PYTHONPATH: "$CI_PROJECT_DIR/backend"
+
+before_script:
+  - echo "Running CI pipeline..."
+
+# -------------------
+# 🔍 Backend Tests
+# -------------------
+backend_tests:
   stage: test
+  image: python:3.11
   script:
-    - echo "Tests will run here soon."
+    - cd backend
+    - pip install -r requirements.txt
+    - pytest
+  only:
+    - dev
+
+# -------------------
+# 🧪 Frontend Tests (UI)
+# -------------------
+frontend_tests:
+  stage: test
+  image: mcr.microsoft.com/playwright/python:v1.39.0-focal
+  script:
+    - cd frontend
+    - npm install
+    - npx playwright install
+    - npx playwright test
+  only:
+    - dev
+
+# -------------------
+# 🚀 Deploy to Render (only on main)
+# -------------------
+deploy_to_render:
+  stage: deploy
+  image: curlimages/curl:latest
+  script:
+    - echo "Triggering Render frontend deployment..."
+    - curl -X POST "https://api.render.com/v1/services/${FRONTEND_SERVICE_ID}/deploy" \
+        -H "Authorization: Bearer ${RENDER_API_KEY}"
+    - echo "Triggering Render backend deployment..."
+    - curl -X POST "https://api.render.com/v1/services/${BACKEND_SERVICE_ID}/deploy" \
+        -H "Authorization: Bearer ${RENDER_API_KEY}"
+  only:
+    - main
