@@ -30,6 +30,7 @@ archive/
 favicon/
 *optimized.txt
 *.docx 
+!example.docx
 job*.html
 job_output.json
 jobs_list_*.json
