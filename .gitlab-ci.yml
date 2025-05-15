@@ -28,7 +28,7 @@ backend_tests:
 # -------------------
 frontend_tests:
   stage: test
-  image: mcr.microsoft.com/playwright/python:v1.39.0-focal
+  image: mcr.microsoft.com/playwright:v1.39.0-focal
   script:
     - cd frontend
     - npm install
