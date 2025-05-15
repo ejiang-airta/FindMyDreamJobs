@@ -45,10 +45,8 @@ deploy_to_render:
   image: curlimages/curl:latest
   script:
     - echo "Triggering Render frontend deployment..."
-    - curl -X POST "https://api.render.com/v1/services/${FRONTEND_SERVICE_ID}/deploy" \
-        -H "Authorization: Bearer ${RENDER_API_KEY}"
+    - curl -X GET "https://api.render.com/deploy/${FRONTEND_SERVICE_ID}?key=${FRONTEND_HOOK}"
     - echo "Triggering Render backend deployment..."
-    - curl -X POST "https://api.render.com/v1/services/${BACKEND_SERVICE_ID}/deploy" \
-        -H "Authorization: Bearer ${RENDER_API_KEY}"
+    - curl -X GET "https://api.render.com/deploy/${BACKEND_SERVICE_ID}?key=${BACKEND_HOOK}"
   only:
     - main
