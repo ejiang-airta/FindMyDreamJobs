@@ -126,6 +126,8 @@ def generate_formatted_resume_docx(resume_text: str, is_user_approved: bool) -> 
         pass
     # shorthand access to font sizes
     fs = CONF.get('font_size', {})
+    # list of job-title keywords for classification
+    job_keywords = [kw.lower() for kw in CONF.get('job_title_keywords', [])]
     # bullet list style name from config
     bullet_style = CONF.get('styles', {}).get('bullet', 'List Bullet')
     # determine separator image path via config
@@ -189,6 +191,8 @@ def generate_formatted_resume_docx(resume_text: str, is_user_approved: bool) -> 
         if not line:
             continue
 
+        # Section headings
+        # Detect section headings
         if is_section_title(line):
             inside_company_block = False
             IS_Summary = 'SUMMARY' in line.upper()
@@ -204,6 +208,85 @@ def generate_formatted_resume_docx(resume_text: str, is_user_approved: bool) -> 
             run.font.size = Pt(fs.get('section', 12))  # configured section heading size
             continue
 
+        # Single-line company/location block
+        # Handle multi-part lines separated by |, •, or /, classifying each segment
+        if any(sep in line for sep in ['|', '•', '/']):
+            # split and classify each piece
+            # split into logical segments by pipe, bullet, or slash
+            # split on pipe, bullet, or spaced slash separators
+            segments = [seg.strip() for seg in re.split(r"\s*\|\s*|\s*•\s*|\s+/\s+", line) if seg.strip()]
+            p = doc.add_paragraph()
+            # Handle two-segment patterns first
+            if len(segments) == 2:
+                first, second = segments
+                # Job Title | Date
+                if is_job_title_date(second):
+                    run = p.add_run(first)
+                    run.bold = True
+                    run.font.size = Pt(fs.get('job', 11))
+                    sep = p.add_run(' | ' + second)
+                    sep.bold = False
+                    sep.font.size = Pt(fs.get('job', 11))
+                    inside_company_block = False
+                    continue
+                # Title or Company with Company/Location
+                if is_company_location(second):
+                    # determine if first is job title by keyword
+                    is_job_first = any(kw in first.lower() for kw in job_keywords)
+                    # render first segment
+                    run = p.add_run(first)
+                    run.bold = True
+                    run.font.size = Pt(fs.get('job' if is_job_first else 'company', 11))
+                    # separator
+                    sep = p.add_run(' | ')
+                    sep.font.size = Pt(fs.get('company', 11))
+                    # split second into company vs location
+                    comp, _, loc = second.partition(',')
+                    comp = comp.strip(); loc = loc.strip()
+                    run2 = p.add_run(comp)
+                    run2.bold = True
+                    run2.font.size = Pt(fs.get('company', 11))
+                    if loc:
+                        run3 = p.add_run(', ' + loc)
+                        run3.bold = False
+                        run3.font.size = Pt(fs.get('company', 11))
+                    # if it was job first, expect date next (e.g. next line date); else not
+                    inside_company_block = is_job_first
+                    continue
+            # fallback for multi-part: bold all except date or last segment (assumed location)
+            dates = [is_job_title_date(seg) for seg in segments]
+            seg_count = len(segments)
+            for j, seg in enumerate(segments):
+                lower = seg.lower()
+                # date segments
+                if dates[j]:
+                    run = p.add_run(seg)
+                    run.bold = False
+                    run.font.size = Pt(fs.get('job', 11))
+                # last segment assumed location
+                elif j == seg_count - 1:
+                    run = p.add_run(seg)
+                    run.bold = False
+                    run.font.size = Pt(fs.get('company', 11))
+                else:
+                    # classify either job title or company by keywords
+                    if any(kw in lower for kw in job_keywords):
+                        # likely a job title
+                        run = p.add_run(seg)
+                        run.bold = True
+                        run.font.size = Pt(fs.get('job', 11))
+                    else:
+                        # treat as company name
+                        run = p.add_run(seg)
+                        run.bold = True
+                        run.font.size = Pt(fs.get('company', 11))
+                # separator between multi-part segments
+                if j < seg_count - 1:
+                    sep = p.add_run(' | ')
+                    sep.font.size = Pt(fs.get('text', 10))
+            inside_company_block = False
+            continue
+        # Single-line company/location
         if is_company_location(line):
             # split company and location, bold only the company
             p = doc.add_paragraph()
@@ -235,7 +318,8 @@ def generate_formatted_resume_docx(resume_text: str, is_user_approved: bool) -> 
             inside_company_block = True
             continue
 
-        if inside_company_block and is_job_title_date(line):
+        # Single-line job title/date block
+        if inside_company_block and is_job_title_date(line) and '|' not in line and '•' not in line:
             # split job title and dates, bold only the title
             p = doc.add_paragraph()
             if '|' in line:
@@ -275,9 +359,11 @@ def generate_formatted_resume_docx(resume_text: str, is_user_approved: bool) -> 
             inside_company_block = False
             continue
 
+        # Bulleted list
         if line.startswith("-"):
             # Bulleted list line using configured bullet style
             p = doc.add_paragraph(line[1:].strip(), style=bullet_style)
+        # Free text
         else:
             p = doc.add_paragraph()
             run = p.add_run(line)

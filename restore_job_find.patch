@@ -1,0 +1,145 @@
+diff --git a/job_find.py b/job_find.py
+        index 0000000..0000000 100644
+        --- a/job_find.py
+        +++ b/job_find.py
+        @@ -1,6 +1,9 @@
+         import requests
+         from bs4 import BeautifulSoup
+        +import datetime
+         import schedule
+         import time
+         import os
+        +import json
+
+         # RapidAPI instance
+         rapid_api_host = 'jsearch.p.rapidapi.com'
+        @@ -38,9 +41,21 @@ def fetch_jobs():
+             with open('job_output.json', 'w') as file1:
+                 json.dump(data, file1, indent=4)
+                 print("✅ Job information have been written to job_output.json")
+        -
+             return job_postings
+
+        -def display_jobs(jobs):
+        +# Display helper
+        +def display_jobs(jobs):
+             print("*****Printing Job posting*****")
+             for i, job in enumerate(jobs, start=1):
+                 print(f"***Found job Number: {i}***")
+        @@ -45,7 +60,7 @@ def display_jobs(jobs):
+                 print(f"**Location: {job.get('job_location', 'N/A')}**")
+                 print(f"**Company: {job.get('employer_name', 'N/A')}**")
+                 print("-"*30)
+        -        print(f"***Job Description: {job.get('job_description', 'N/A')}***")
+        +        print(f"***Job Description: {job.get('job_description', 'N/A')}***")
+                 print("-"*30)
+                 print(f"**Posted at: {job.get('job_posted_at_datetime_utc', 'N/A')}**")
+                 print(f"**Salary: {job.get('job_salary', 'N/A')}**")
+        @@ -55,6 +70,28 @@ def display_jobs(jobs):
+                 print("-"*60)
+
+         # Fetch & sort jobs
+        -jobs = fetch_jobs()
+        +jobs = fetch_jobs()
+        +
+        +# Sort by UTC post date (newest first)
+        +def _parse_date(dt_str):
+        +    try:
+        +        # convert trailing 'Z' into '+00:00' for fromisoformat
+        +        return datetime.datetime.fromisoformat(dt_str.replace('Z', '+00:00'))
+        +    except Exception:
+        +        return datetime.datetime.min
+        +
+        +jobs = sorted(
+        +    jobs,
+        +    key=lambda j: _parse_date(j.get('job_posted_at_datetime_utc', '') or ''),
+        +    reverse=True
+        +)
+
+        -display_jobs(jobs)
+        +# Show in console
+        +display_jobs(jobs)
+
+        +# HTML export (bullet lists, paragraphs, clickable links)
+        +def save_jobs_to_html(jobs, filename='job_output.html'):
+        +    html = [
+        +        '<!DOCTYPE html>',
+        +        '<html lang="en">',
+        +        '<head><meta charset="UTF-8"><title>Job Postings</title></head>',
+        +        '<body><h1>Job Postings</h1>'
+        +    ]
+        +    for idx, job in enumerate(jobs, 1):
+        +        title    = job.get('job_title','N/A')
+        +        company  = job.get('employer_name','N/A')
+        +        location = job.get('job_location','N/A')
+        +        posted   = job.get('job_posted_at_datetime_utc','N/A')
+        +        salary   = job.get('job_salary','N/A')
+        +        min_sal  = job.get('job_min_salary','N/A')
+        +        max_sal  = job.get('job_max_salary','N/A')
+        +        desc     = job.get('job_description','').split('\\n')
+        +        link     = job.get('job_google_link','#')
+        +
+        +        html.append(f'<h2>Job {idx}: {title}</h2>')
+        +        html.append('<ul>')
+        +        for lbl,val in [('Company',company),('Location',location),('Posted at',posted),
+        +                        ('Salary',salary),('Min Salary',min_sal),('Max Salary',max_sal)]:
+        +            html.append(f'<li><strong>{lbl}:</strong> {val}</li>')
+        +        html.append('</ul>')
+        +        html.append('<h3>Description:</h3>')
+        +        for line in desc:
+        +            if line.strip():
+        +                html.append(f'<p>{line}</p>')
+        +        html.append(f'<p><strong>Apply at:</strong> '
+        +                    f'<a href="{link}" target="_blank">Click here to apply</a></p>')
+        +        html.append('<hr>')
+        +    html.append('</body></html>')
+        +    with open(filename, 'w', encoding='utf-8') as f:
+        +        f.write('\n'.join(html))
+        +    print(f"✅ Job information saved to {filename}")
+        +
+        +# Write out HTML
+        +save_jobs_to_html(jobs)
+        +
+        +# DOCX export (requires python-docx)
+        +try:
+        +    from docx import Document
+        +    from docx.oxml import OxmlElement
+        +    from docx.oxml.ns import qn
+        +    from docx.opc.constants import RELATIONSHIP_TYPE
+        +except ImportError:
+        +    print("⚠️ python-docx not installed; skipping .docx export.")
+        +else:
+        +    def _add_hyperlink(par, text, url):
+        +        part = par.part
+        +        rid  = part.relate_to(url, RELATIONSHIP_TYPE.HYPERLINK, is_external=True)
+        +        hyp  = OxmlElement('w:hyperlink'); hyp.set(qn('r:id'), rid)
+        +        r    = OxmlElement('w:r'); rPr = OxmlElement('w:rPr')
+        +        c    = OxmlElement('w:color'); c.set(qn('w:val'), '0000FF')
+        +        u    = OxmlElement('w:u');     u.set(qn('w:val'), 'single')
+        +        rPr.extend([c, u]); r.append(rPr)
+        +        t = OxmlElement('w:t'); t.text = text; r.append(t)
+        +        hyp.append(r); par._p.append(hyp)
+        +        return hyp
+        +
+        +    def save_jobs_to_docx(jobs, filename='job_output.docx'):
+        +        doc = Document(); doc.add_heading('Job Postings', level=1)
+        +        for i, job in enumerate(jobs,1):
+        +            title = job.get('job_title','N/A')
+        +            doc.add_heading(f'Job {i}: {title}', level=2)
+        +            for lbl in ['employer_name','job_location','job_posted_at_datetime_utc',
+        +                        'job_salary','job_min_salary','job_max_salary']:
+        +                val = job.get(lbl,'N/A')
+        +                p = doc.add_paragraph(style='List Bullet')
+        +                p.add_run(f"{lbl.replace('_',' ').title()}: {val}")
+        +            desc = job.get('job_description','').split('\\n')
+        +            if any(desc):
+        +                p = doc.add_paragraph(); p.add_run('Description:').bold=True
+        +                for ln in desc:
+        +                    if ln.strip(): doc.add_paragraph(ln)
+        +            link_par = doc.add_paragraph(); link_par.add_run('Apply at: ')
+        +            _add_hyperlink(link_par, 'Click here to apply', job.get('job_google_link','#'))
+        +            if i < len(jobs): doc.add_page_break()
+        +        doc.save(filename)
+        +        print(f"✅ Job information saved to {filename}")
+        +
+        +    save_jobs_to_docx(jobs)

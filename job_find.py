@@ -33,20 +33,21 @@ def fetch_jobs():
         }
     # API parameters
     params = {
-            "query":"director engineering jobs in Vancouver, BC",
+            "query":"director quality engineering jobs in Vancouver, BC",
             "page":"1",
             "num_pages":"9",
             "country":"ca",
-            "date_posted":"all",
-            "work_from_home":"true"
+            "date_posted":"week",       #prams: today, 3days, week, month,all
+            #"work_from_home":"true"
     }
     
     # Make the API request:
-    # response = requests.get(API_URL, headers=headers,params=params)
-    # data = response.json()
+    response = requests.get(API_URL, headers=headers,params=params)
+    data = response.json()
+    
     # Mock up the API response:
-    with open('jobs_list_1.json', 'r') as file:
-        data = json.load(file)
+    # with open('jobs_list_1.json', 'r') as file:
+    #     data = json.load(file)
     
     #job_postings.extend(data['results'])
     job_postings = data.get("data")
