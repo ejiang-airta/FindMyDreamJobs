@@ -15,6 +15,7 @@ export default function LoginPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
   
 
   useEffect(() => {
@@ -24,6 +25,7 @@ export default function LoginPage() {
   }, [session, router])
 
   const handleLogin = async () => {
+    setIsLoggingIn(true);
     if (!email || !password) return alert("Please enter both email and password.")
     const result = await signIn('credentials', {
       email,
@@ -32,8 +34,10 @@ export default function LoginPage() {
     })
     if (result?.error) {
       alert("Login failed: " + result.error)
+      setIsLoggingIn(false);
     } else {
       router.push('/')
+      setIsLoggingIn(true);
     }
   }
 
@@ -67,12 +71,11 @@ export default function LoginPage() {
           </Link>
         </div>
 
-        <Button className="w-full" onClick={handleLogin}>
-          Sign In
+        <Button className="w-full" onClick={handleLogin} disabled={isLoggingIn}>
+          {isLoggingIn ? "Signing in..." : "Sign In"}
         </Button>
 
         <div className="text-center text-sm text-gray-500">or sign in with</div>
-
         <div className="flex justify-center space-x-4">
           <Button onClick={() => signIn('google')} variant="outline">Google</Button>
         </div>
