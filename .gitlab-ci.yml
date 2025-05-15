@@ -33,7 +33,10 @@ frontend_tests:
     - cd frontend
     - npm install
     - npx playwright install
-    - npx playwright test
+    - echo "Testing loging and menu navigation.."
+    - npx playwright test login.spec.ts app_flow.spec.ts
+    - echo "Testing application workflow.."
+    - npx playwright test app_flow.spec.ts
   only:
     - dev
 
