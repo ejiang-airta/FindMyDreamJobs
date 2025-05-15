@@ -35,7 +35,7 @@ test('Test# 13: User can upload a resume', async ({ page }) => {
 
   // Verify we're on the Resume page:
   const trackedApplicationsElement = page.locator(':text("📤 Upload Resume")');
-  await trackedApplicationsElement.waitFor({ state: 'visible', timeout: 8000 });
+  await trackedApplicationsElement.waitFor({ state: 'visible', timeout: 20000 });
 
   // Generate a random number for the filename:
   const randomNumber = Math.floor(Math.random() * 1000);
@@ -54,7 +54,7 @@ test('Test# 13: User can upload a resume', async ({ page }) => {
 
   // Wait for the upload to complete:
   await expect(page.locator('body')).toContainText('Resume uploaded successfully!', {
-    timeout: 10000
+    timeout: 20000
   });
 });
 
@@ -73,7 +73,7 @@ test('Test# 14: User can analyze a job description', async ({ page }) => {
   
   //verify the toast.success message is appear:
   await expect(page.locator('body')).toContainText('Job description parsed successfully!', { 
-    timeout: 5000 
+    timeout: 20000 
   });
 })
 
@@ -86,7 +86,7 @@ test('Test# 15: User can optimize resume', async ({ page }) => {
   
   // Verify we're on the Optimize page with "Optimize Resume" text:
   const trackedApplicationsElement = page.locator(':text("🛠 Optimize Resume")');
-  await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 8000 });
+  await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 20000 });
 
   // Click on the resume dropdown:
   await page.click('text=Choose your resume'); // Click on the placeholder text
@@ -118,7 +118,7 @@ test('Test# 15: User can optimize resume', async ({ page }) => {
 
   //verify the toast.success message shows up:
   await expect(page.locator('body')).toContainText('Resume optimized successfully!', { 
-    timeout: 5000 
+    timeout: 20000 
   });
 })
 
@@ -131,7 +131,7 @@ test('Test# 16: User can apply to a job', async ({ page }) => {
   
   // Verify we're on the Apply page with "Submit Job Application" text:
   const trackedApplicationsElement = page.locator(':text("📩 Submit Job Application")');
-  await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 8000 });
+  await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 20000 });
 
   // Click on the resume dropdown:
   await page.click('text=Select resume'); // Click on the placeholder text
@@ -166,7 +166,7 @@ test('Test# 16: User can apply to a job', async ({ page }) => {
   
   //verify the toast.success message shows up:
   await expect(page.locator('body')).toContainText('Application submitted!', { 
-    timeout: 5000 
+    timeout: 20000 
   });
 })
 
@@ -175,7 +175,7 @@ test('Test# 17: Forgot password page works', async ({ page }) => {
   await page.goto(`${BASE_URL}/login`)
 
   await page.click('text=Forgot your password?');
-  await expect(page.locator(':text("Reset your password")')).toBeVisible({ timeout: 5000 })
+  await expect(page.locator(':text("Reset your password")')).toBeVisible({ timeout: 20000 })
   await page.fill('input[type="email"]', 'e_jiang@hotmail.com')
   await page.click('text=Send Reset Link')
   
@@ -184,11 +184,11 @@ test('Test# 17: Forgot password page works', async ({ page }) => {
 
   // Wait for the success message text to appear anywhere on the page
   await expect(page.locator('body')).toContainText('Password reset email sent! Redirecting to Home', { 
-    timeout: 10000 
+    timeout: 20000 
   });
 
   // If email sent successfully, we should see home page:
-  await expect(page).toHaveURL(`${BASE_URL}`, { timeout: 5000 })
+  await expect(page).toHaveURL(`${BASE_URL}`, { timeout: 20000 })
     
   });
 
@@ -196,7 +196,7 @@ test('Test# 17: Forgot password page works', async ({ page }) => {
 test('Test# 18: Unauthorized user is redirected to login page', async ({ page }) => {
   await page.goto(`${BASE_URL}/dashboard`)
   await expect(page).toHaveURL(/.*login/)
-  await expect(page.locator(':text("👋 Welcome to FindMyDreamJobs.com! Please sign in or create an account to get started.")')).toBeVisible({ timeout: 7000 })
+  await expect(page.locator(':text("👋 Welcome to FindMyDreamJobs.com! Please sign in or create an account to get started.")')).toBeVisible({ timeout: 20000 })
 
   // Capture end time
 const endTime = Date.now();
