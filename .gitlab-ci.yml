@@ -22,6 +22,11 @@ backend_tests:
     - pytest
   only:
     - dev
+  artifacts:
+    when: always
+    paths:
+      - backend/test-results/
+    expire_in: 1 week
 
 # -------------------
 # 🧪 Frontend Tests (UI)
@@ -39,6 +44,11 @@ frontend_tests:
     - npx playwright test app_flow.spec.ts
   only:
     - dev
+  artifacts:
+    when: always
+    paths:
+      - frontend/test-results/
+    expire_in: 1 week
 
 # -------------------
 # 🚀 Deploy to Render (only on main)
