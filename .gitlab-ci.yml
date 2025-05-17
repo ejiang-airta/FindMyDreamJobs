@@ -38,13 +38,19 @@ frontend_tests:
     - cd frontend
     - npm install
     - npx playwright install
-    - echo "Testing loging and menu navigation.."
-    - npx playwright test login.spec.ts
-    - echo "Testing application workflow.."
-    - npx playwright test app_flow.spec.ts
+    # Add this to your script section before your test command
+    - echo "DEBUG FILE" > frontend/test-results/debug.txt
+    # Add before your test command
+    - mkdir -p frontend/test-results
+    - chmod 777 frontend/test-results
+    - echo "Testing starts"
+    - npx playwright test login.spec.ts app_flow.spec.ts
+    - echo "Test completed"
+    # Add after your test command
+    - ls -la frontend/test-results/
   only:
     - dev
-  artifacts:
+  artifacts:  
     when: always
     paths:
       - frontend/test-results/
