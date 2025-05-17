@@ -7,6 +7,9 @@ __pycache__/
 # VSCode
 .vscode/
 
+# ignore local test results:
+test-results/
+
 # Alembic / DB
 *.sqlite3
 *.log
