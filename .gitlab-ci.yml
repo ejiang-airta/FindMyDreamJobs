@@ -39,21 +39,21 @@ frontend_tests:
     - npm install
     - npx playwright install
     # Add this to your script section before your test command
-    - echo "DEBUG FILE" > frontend/test-results/debug.txt
+    - echo "DEBUG FILE" > test-results/debug.txt
     # Add before your test command
-    - mkdir -p frontend/test-results
-    - chmod 777 frontend/test-results
+    - mkdir -p test-results
+    - chmod 777 test-results
     - echo "Testing starts"
     - npx playwright test login.spec.ts app_flow.spec.ts
     - echo "Test completed"
     # Add after your test command
-    - ls -la frontend/test-results/
+    - ls -la test-results/
   only:
     - dev
   artifacts:  
     when: always
     paths:
-      - frontend/test-results/
+      - test-results/
     expire_in: 1 week
 
 # -------------------

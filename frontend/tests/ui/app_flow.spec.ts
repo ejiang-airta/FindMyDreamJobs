@@ -30,8 +30,17 @@ console.log("Test Started at:", formattedTime);
 test('Test# 13: User can upload a resume', async ({ page }) => {
   await loginAsTestUser(page, TEST_ENV);
 
+  // Debug: Log cookies and URL after login
+  console.log("URL after login:", page.url());
+  const cookies = await page.context().cookies();
+  console.log("Cookies after login:", JSON.stringify(cookies, null, 2));
+
   // Navigate to the Resume upload page:
   await page.getByRole('link', { name: 'Resume' }).click();
+  await page.waitForLoadState('networkidle');
+  
+  // Debug: Log URL after navigation to Resume page
+  console.log("URL at Resume page:", page.url());
 
   // Verify we're on the Resume page:
   const trackedApplicationsElement = page.locator(':text("📤 Upload Resume")');
@@ -40,17 +49,37 @@ test('Test# 13: User can upload a resume', async ({ page }) => {
   // Generate a random number for the filename:
   const randomNumber = Math.floor(Math.random() * 1000);
   const originalFilePath = path.join(__dirname, './data/example.docx');
-  const newFilePath = path.join(__dirname, `./data/example_${randomNumber}.docx`);
+  const newFilePath = path.join(__dirname, `./ui/data/example_${randomNumber}.docx`);
+  
+  // Debug: Check file paths and existence
+  console.log("Original file path:", originalFilePath);
+  console.log("New file path:", newFilePath);
+  console.log("Original file exists:", fs.existsSync(originalFilePath));
 
   // Copy the original file to a new random filename:
   fs.copyFileSync(originalFilePath, newFilePath);
+  console.log("File copied successfully");
 
   // Select the file input element and upload the new file:
   const fileInput = page.locator('input[type="file"]');
   await fileInput.setInputFiles(newFilePath);
+  console.log("File selected for upload");
+
+  // Debug: Check cookies before upload
+  const cookiesBeforeUpload = await page.context().cookies();
+  console.log("Cookies before upload:", JSON.stringify(cookiesBeforeUpload, null, 2));
 
   // Click on the Upload Resume button:
   await page.getByRole('button', { name: 'Upload Resume' }).click();
+  console.log("Upload button clicked");
+
+  // Capture any error message that appears
+  try {
+    const errorText = await page.locator('text="User not found in session"').textContent({ timeout: 5000 });
+    console.log("Error found:", errorText);
+  } catch (e) {
+    console.log("No session error found");
+  }
 
   // Wait for the upload to complete:
   await expect(page.locator('body')).toContainText('Resume uploaded successfully!', {
