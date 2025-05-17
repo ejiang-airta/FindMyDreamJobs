@@ -62,7 +62,7 @@ frontend_tests:
   artifacts:  
     when: always
     paths:
-      - test-results/
+      - frontend/test-results/
     expire_in: 1 week
 
 # -------------------
