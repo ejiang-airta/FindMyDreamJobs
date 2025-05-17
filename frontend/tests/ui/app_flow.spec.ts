@@ -49,7 +49,7 @@ test('Test# 13: User can upload a resume', async ({ page }) => {
   // Generate a random number for the filename:
   const randomNumber = Math.floor(Math.random() * 1000);
   const originalFilePath = path.join(__dirname, './data/example.docx');
-  const newFilePath = path.join(__dirname, `./ui/data/example_${randomNumber}.docx`);
+  const newFilePath = path.join(__dirname, `./data/example_${randomNumber}.docx`);
   
   // Debug: Check file paths and existence
   console.log("Original file path:", originalFilePath);
