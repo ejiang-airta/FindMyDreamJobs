@@ -40,26 +40,26 @@ frontend_tests:
   image: mcr.microsoft.com/playwright:v1.39.0-focal
   script:
     - pwd  # Print working directory to verify where we are
-    - cd frontend
+    #- cd frontend
     - pwd  # Print working directory after cd
-    - npm install
-    - npx playwright install
+    - npm --prefix frontend install
+    - npx --prefix frontend playwright install
     
     # Create test-results directory with debug file
-    - mkdir -p test-results
+    #- mkdir -p test-results
     - chmod 777 test-results
     - echo "DEBUG FILE $(date)" > test-results/debug.txt
     
     - echo "Testing starts"
     # Modified line to continue script execution on test failure
-    - npx playwright test login.spec.ts app_flow.spec.ts || true
+    - npx --prefix frontend playwright test login.spec.ts app_flow.spec.ts || true
    
     # Add extensive debugging to verify files exist
     - echo "Test completed, checking results"
     - pwd #check what is the current folder
     - ls -la  # List current directory (still frontend)
     - ls -la test-results/  # List test-results directory inside frontend
-    - ls la frontend/test-results # list frontend/test-results folder contents
+    - ls -la frontend/test-results # list frontend/test-results folder contents
     - find . -name "test-results" -type d  # Find all test-results directories
     - find . -path "*/test-results/*" -type f | head -20  # Find files in test-results
     
