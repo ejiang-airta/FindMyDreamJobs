@@ -49,7 +49,7 @@ test('Test# 13: User can upload a resume', async ({ page }) => {
   await trackedApplicationsElement.waitFor({ state: 'visible', timeout: 20000 });
 
   // Generate a random number for the filename:
-  const randomNumber = Math.floor(Math.random() * 1000);
+  const randomNumber = Math.floor(Math.random() * 10000);
   const originalFilePath = path.join(__dirname, './data/example.docx');
   const newFilePath = path.join(__dirname, `./data/example_${randomNumber}.docx`);
   
@@ -68,25 +68,25 @@ test('Test# 13: User can upload a resume', async ({ page }) => {
   console.log("File selected for upload");
 
   // Debug: Check cookies before upload
-  const cookiesBeforeUpload = await page.context().cookies();
-  console.log("Cookies before upload:", JSON.stringify(cookiesBeforeUpload, null, 2));
+  // const cookiesBeforeUpload = await page.context().cookies();
+  // console.log("Cookies before upload:", JSON.stringify(cookiesBeforeUpload, null, 2));
 
   // Click on the Upload Resume button:
   await page.getByRole('button', { name: 'Upload Resume' }).click();
-  console.log("Upload button clicked");
+  //console.log("Upload button clicked");
 
   // Capture any error message that appears
-  try {
-    const errorText = await page.locator('text="User not found in session"').textContent({ timeout: 5000 });
-    console.log("Error found:", errorText);
-  } catch (e) {
-    console.log("No session error found");
-  }
+  // try {
+  //   const errorText = await page.locator('text="User not found in session"').textContent({ timeout: 5000 });
+  //   console.log("Error found:", errorText);
+  // } catch (e) {
+  //   console.log("No session error found");
+  // }
 
-  // Wait for the upload to complete:
+  //Wait for the upload to complete:
   await expect(page.locator('body')).toContainText('Resume uploaded successfully!', {
     timeout: 20000
-  });
+  });  
 });
 
 // ✅ Analyze Job

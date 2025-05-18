@@ -1,12 +1,10 @@
 // ✅ File: frontend/playwright.config.ts
 import { defineConfig, devices } from '@playwright/test'
-import path from 'path'
 
 export default defineConfig({
   testDir: './tests/ui',
   timeout: 30 * 1000,
   retries: 1,
-  outputDir: path.resolve(__dirname, 'test-results'), // <-- writes to frontend/test-results
   expect: {
     timeout: 5000,
   },
@@ -18,6 +16,7 @@ export default defineConfig({
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    trace: 'retain-on-failure',      // Store Playwright trace logs
   },
   projects: [
     {
