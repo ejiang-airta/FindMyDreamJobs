@@ -47,7 +47,7 @@ frontend_tests:
     
     # Create test-results directory with debug file
     #- mkdir -p test-results
-    - chmod 777 test-results
+    #- chmod 777 test-results
     - echo "DEBUG FILE $(date)" > test-results/debug.txt
     
     - echo "Testing starts"
