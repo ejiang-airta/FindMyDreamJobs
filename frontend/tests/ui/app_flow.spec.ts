@@ -12,6 +12,8 @@ const BASE_URL = TEST_ENV === 'dev'
 
 console.log("Base URL: ", BASE_URL)
 console.log("Test Environment: ", TEST_ENV)
+
+
 // Capture start time
 const startTime = Date.now();
 const formattedTime = new Intl.DateTimeFormat("en-US", {
