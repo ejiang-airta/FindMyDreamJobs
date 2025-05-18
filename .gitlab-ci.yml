@@ -41,14 +41,15 @@ frontend_tests:
   script:
     - pwd  # Print working directory to verify where we are
     #- cd frontend
-    - pwd  # Print working directory after cd
+    #- pwd  # Print working directory after cd
+    - ls -la  # List current directory (still frontend)
     - npm --prefix frontend install
     - npx --prefix frontend playwright install
     
     # Create test-results directory with debug file
     #- mkdir -p test-results
     #- chmod 777 test-results
-    - echo "DEBUG FILE $(date)" > test-results/debug.txt
+    #- echo "DEBUG FILE $(date)" > debug.txt
     
     - echo "Testing starts"
     # Modified line to continue script execution on test failure
