@@ -1,7 +1,6 @@
 // ✅ File: frontend/tests/ui/app_flow.spec.ts
 import { test, expect } from '@playwright/test'
 import { loginAsTestUser } from './helpers'
-import { time } from 'console';
 import path from 'path';
 import fs from 'fs';
 
@@ -11,7 +10,7 @@ const BASE_URL = TEST_ENV === 'dev'
   : 'https://findmydreamjobs.com'; 
 
 console.log("Base URL: ", BASE_URL)
-console.log("Test Environment: ", TEST_ENV)
+//console.log("Test Environment: ", TEST_ENV)
 
 
 // Capture start time
@@ -33,16 +32,16 @@ test('Test# 13: User can upload a resume', async ({ page }) => {
   await loginAsTestUser(page, TEST_ENV);
 
   // Debug: Log cookies and URL after login
-  console.log("URL after login:", page.url());
-  const cookies = await page.context().cookies();
-  console.log("Cookies after login:", JSON.stringify(cookies, null, 2));
+  //console.log("URL after login:", page.url());
+  // const cookies = await page.context().cookies();
+  // console.log("Cookies after login:", JSON.stringify(cookies, null, 2));
 
   // Navigate to the Resume upload page:
   await page.getByRole('link', { name: 'Resume' }).click();
   await page.waitForLoadState('networkidle');
   
   // Debug: Log URL after navigation to Resume page
-  console.log("URL at Resume page:", page.url());
+  //console.log("URL at Resume page:", page.url());
 
   // Verify we're on the Resume page:
   const trackedApplicationsElement = page.locator(':text("📤 Upload Resume")');
@@ -54,18 +53,18 @@ test('Test# 13: User can upload a resume', async ({ page }) => {
   const newFilePath = path.join(__dirname, `./data/example_${randomNumber}.docx`);
   
   // Debug: Check file paths and existence
-  console.log("Original file path:", originalFilePath);
-  console.log("New file path:", newFilePath);
-  console.log("Original file exists:", fs.existsSync(originalFilePath));
+  // console.log("Original file path:", originalFilePath);
+  // console.log("New file path:", newFilePath);
+  // console.log("Original file exists:", fs.existsSync(originalFilePath));
 
   // Copy the original file to a new random filename:
   fs.copyFileSync(originalFilePath, newFilePath);
-  console.log("File copied successfully");
+  //console.log("File copied successfully");
 
   // Select the file input element and upload the new file:
   const fileInput = page.locator('input[type="file"]');
   await fileInput.setInputFiles(newFilePath);
-  console.log("File selected for upload");
+  //console.log("File selected for upload");
 
   // Debug: Check cookies before upload
   // const cookiesBeforeUpload = await page.context().cookies();

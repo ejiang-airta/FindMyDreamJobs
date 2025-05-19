@@ -64,6 +64,7 @@ deploy-artifacts:
     - mv frontend/test-results/* public/test-results/ || echo "No artifacts to move"  # Prevent errors if folder is empty
 
   artifacts:
+    when: always
     paths:
       - public/  # GitLab Pages stores this folder
     expire_in: 30 days  # Keep artifacts for debugging
