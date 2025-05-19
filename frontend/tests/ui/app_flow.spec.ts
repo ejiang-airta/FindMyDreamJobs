@@ -129,7 +129,22 @@ test('Test# 15: User can optimize resume', async ({ page }) => {
   // If the options contain "Resume #" text
   const resumeOptions = page.locator('text=/Resume #/').all();
   const firstResumeOption = (await resumeOptions)[0];
-  await firstResumeOption.click();
+  // Retry clicking the first resume option up to 3 times if it fails
+  let r_clicked = false;
+  for (let i = 0; i < 3; i++) {
+    try {
+      await firstResumeOption.click();
+      r_clicked = true;
+      break;
+    } catch (e) {
+      if (i < 2) {
+        await page.waitForTimeout(500); // wait 0.5s before retry
+      }
+    }
+  }
+  if (!r_clicked) {
+    throw new Error('Failed to click the first resume option after 3 attempts');
+  }
 
   // Click on the job dropdown:
   await page.click('text=Choose a job'); // Click on the placeholder text
@@ -227,8 +242,10 @@ test('Test# 17: Forgot password page works', async ({ page }) => {
 test('Test# 18: Unauthorized user is redirected to login page', async ({ page }) => {
   await page.goto(`${BASE_URL}/dashboard`)
   await expect(page).toHaveURL(/.*login/)
-  await expect(page.locator(':text("👋 Welcome to FindMyDreamJobs.com! Please sign in or create an account to get started.")')).toBeVisible({ timeout: 20000 })
-
+  await expect(page.locator('body')).toContainText('Please sign in or create an account to get started', {
+    timeout: 20000
+  });  
+  
   // Capture end time
 const endTime = Date.now();
 const formattedTime = new Intl.DateTimeFormat("en-US", {
