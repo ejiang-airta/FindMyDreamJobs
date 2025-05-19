@@ -72,6 +72,7 @@ test('Test# 13: User can upload a resume', async ({ page }) => {
 
   // Click on the Upload Resume button when networking is idle:
   await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(500);
   await page.getByRole('button', { name: 'Upload Resume' }).click();
   //console.log("Upload button clicked");
 
@@ -120,6 +121,7 @@ test('Test# 15: User can optimize resume', async ({ page }) => {
   await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 20000 });
 
   // Click on the resume dropdown:
+  await page.waitForTimeout(500);  // wait for 0.5s
   await page.click('text=Choose your resume'); // Click on the placeholder text
   
   // Wait for dropdown to open and be visible
@@ -180,6 +182,7 @@ test('Test# 16: User can apply to a job', async ({ page }) => {
   await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 20000 });
 
   // Click on the resume dropdown:
+  await page.waitForTimeout(500);  // wait for 0.5s
   await page.click('text=Select resume'); // Click on the placeholder text
   
   // Wait for dropdown to open and be visible
