@@ -35,7 +35,7 @@ frontend_tests:
   stage: test
   image: mcr.microsoft.com/playwright:v1.39.0-focal
   script:
-    - echo "Running CI pipeline..."
+    - echo "Running frontend tests..."
     - pwd
     - cd frontend
     - npm install
@@ -55,7 +55,7 @@ frontend_tests:
       - frontend/test-results/
     expire_in: 1 week
 # -------------------
-# 🚀 Deploy to Public folder for test results
+# 🚀 Deploy test-results artifacts to Public folder:
 # -------------------
 deploy-artifacts:
   stage: deploy
@@ -68,17 +68,19 @@ deploy-artifacts:
     paths:
       - public/  # GitLab Pages stores this folder
     expire_in: 30 days  # Keep artifacts for debugging
+    only:
+      - dev # Only deploy on dev branch
 
 # -------------------
-# 🚀 Deploy to Render (only on main)
+# 🚀 Auto merget the dev branch to main on success pipline runs:
 # -------------------
-deploy_to_render:
+auto_merge_to_main:
   stage: deploy
   image: curlimages/curl:latest
   script:
-    - echo "Triggering Render frontend deployment..."
-    - curl -X GET "https://api.render.com/deploy/${FRONTEND_SERVICE_ID}?key=${FRONTEND_HOOK}"
-    - echo "Triggering Render backend deployment..."
-    - curl -X GET "https://api.render.com/deploy/${BACKEND_SERVICE_ID}?key=${BACKEND_HOOK}"
+    - >
+      curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN"
+      "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests?source_branch=dev&target_branch=main&remove_source_branch=false&title=AutoMerge%20dev%20to%20main"
   only:
-    - main
+    - dev
+  when: on_success
