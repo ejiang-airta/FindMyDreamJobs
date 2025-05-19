@@ -68,8 +68,8 @@ deploy-artifacts:
     paths:
       - public/  # GitLab Pages stores this folder
     expire_in: 30 days  # Keep artifacts for debugging
-    only:
-      - dev # Only deploy on dev branch
+  only:
+    - dev # Only deploy on dev branch
 
 # -------------------
 # 🚀 Auto merget the dev branch to main on success pipline runs:
