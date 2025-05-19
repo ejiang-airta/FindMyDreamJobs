@@ -16,6 +16,7 @@ export default defineConfig({
     ignoreHTTPSErrors: true,
     screenshot: 'only-on-failure',
     video: 'retain-on-failure',
+    trace: 'retain-on-failure',      // Store Playwright trace logs
   },
   projects: [
     {

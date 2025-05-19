@@ -1,7 +1,84 @@
+# .gitlab-ci.yml
+
 stages:
   - test
+  - deploy
 
-test:
+variables:
+  PYTHONPATH: "$CI_PROJECT_DIR/backend"
+
+before_script:
+  - echo "Running CI pipeline..."
+
+# -------------------
+# 🔍 Backend Tests
+# -------------------
+backend_tests:
   stage: test
+  image: python:3.11
   script:
-    - echo "Tests will run here soon."
+    - cd backend
+    - pip install -r requirements.txt
+    - pytest
+  only:
+    - dev
+  artifacts:
+    when: always
+    paths:
+      - backend/test-results/
+    expire_in: 1 week
+
+# -------------------
+# 🧪 Frontend Tests (UI)
+# -------------------
+frontend_tests:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.39.0-focal
+  script:
+    - echo "Running CI pipeline..."
+    - pwd
+    - cd frontend
+    - npm install
+    - npx playwright install
+    - mkdir -p test-results  # Ensure the folder exists before collecting artifacts
+    - echo "Testing starts"
+    - npx playwright test login.spec.ts app_flow.spec.ts --output=test-results
+    - echo "Test completed, checking results"
+    - ls -la test-results/
+    - find test-results/ -type f | head -20
+    
+  only:
+    - dev
+  artifacts:  
+    when: always
+    paths:
+      - frontend/test-results/
+    expire_in: 1 week
+# -------------------
+# 🚀 Deploy to Public folder for test results
+# -------------------
+deploy-artifacts:
+  stage: deploy
+  script:
+    - mkdir -p public/test-results
+    - mv frontend/test-results/* public/test-results/ || echo "No artifacts to move"  # Prevent errors if folder is empty
+
+  artifacts:
+    when: always
+    paths:
+      - public/  # GitLab Pages stores this folder
+    expire_in: 30 days  # Keep artifacts for debugging
+
+# -------------------
+# 🚀 Deploy to Render (only on main)
+# -------------------
+deploy_to_render:
+  stage: deploy
+  image: curlimages/curl:latest
+  script:
+    - echo "Triggering Render frontend deployment..."
+    - curl -X GET "https://api.render.com/deploy/${FRONTEND_SERVICE_ID}?key=${FRONTEND_HOOK}"
+    - echo "Triggering Render backend deployment..."
+    - curl -X GET "https://api.render.com/deploy/${BACKEND_SERVICE_ID}?key=${BACKEND_HOOK}"
+  only:
+    - main

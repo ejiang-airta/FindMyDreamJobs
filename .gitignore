@@ -7,6 +7,9 @@ __pycache__/
 # VSCode
 .vscode/
 
+# ignore local test results:
+test-results/
+
 # Alembic / DB
 *.sqlite3
 *.log
@@ -18,6 +21,7 @@ __pycache__/
 # development file/folders:
 dev_tracking/
 results/
+test-results/
 job_Listing*.json
 job_outputs.txt
 testing*.py
@@ -30,6 +34,7 @@ archive/
 favicon/
 *optimized.txt
 *.docx 
+!example.docx
 job*.html
 job_output.json
 jobs_list_*.json

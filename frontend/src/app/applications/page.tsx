@@ -13,6 +13,24 @@ import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import { BACKEND_BASE_URL }  from '@/lib/env'
 import { Protected } from '@/components/Protected'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
+// Predefined status options for the dropdown
+const STATUS_OPTIONS = [
+  "In Progress",
+  "Application Submitted",
+  "Under Review",
+  "Rejected",
+  "Interview",
+  "Offered",
+  "Other"
+];
 
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
@@ -29,7 +47,10 @@ function ApplicationsPage() {
   const [applications, setApplications] = useState([])
   const [error, setError] = useState('')
   const [updateStatus, setUpdateStatus] = useState<{ [key: number]: string }>({})
+  const [selectedStatus, setSelectedStatus] = useState<{ [key: number]: string }>({})
+  const [customStatus, setCustomStatus] = useState<{ [key: number]: string }>({})
   const [isLoading, setIsLoading] = useState(false)
+  const [updatingStatus, setUpdatingStatus] = useState<{ [key: number]: boolean }>({})
 
   const userId = useUserId()
 
@@ -57,16 +78,39 @@ function ApplicationsPage() {
         setError('❌ Failed to load applications. Please try again later.')
     } finally {
         setIsLoading(false)
+    }
   }
-}
+
+  const handleStatusChange = (applicationId: number, status: string) => {
+    setSelectedStatus(prev => ({ ...prev, [applicationId]: status }));
+    
+    // If status is not "Other", update the status value directly
+    if (status !== "Other") {
+      setUpdateStatus(prev => ({ ...prev, [applicationId]: status }));
+    } else {
+      // If "Other" is selected, use the custom status if available, or empty string
+      setUpdateStatus(prev => ({ 
+        ...prev, 
+        [applicationId]: customStatus[applicationId] || '' 
+      }));
+    }
+  };
+
+  const handleCustomStatusChange = (applicationId: number, value: string) => {
+    setCustomStatus(prev => ({ ...prev, [applicationId]: value }));
+    setUpdateStatus(prev => ({ ...prev, [applicationId]: value }));
+  };
+  
   const handleStatusUpdate = async (applicationId: number) => {
-    const newStatus = updateStatus[applicationId]
+    const newStatus = updateStatus[applicationId];
   
     if (!newStatus || newStatus.trim() === '') {
-      alert("⚠️ Please enter a status before updating.")
-      return
+      alert("⚠️ Please enter a status before updating.");
+      return;
     }
   
+    setUpdatingStatus(prev => ({ ...prev, [applicationId]: true }));
+    
     try {
       const response = await fetch(`${BACKEND_BASE_URL}/update-application-status?application_id=${applicationId}&status=${encodeURIComponent(newStatus.trim())}`, {
         method: "PUT",
@@ -75,23 +119,29 @@ function ApplicationsPage() {
           application_id: applicationId,
           status: newStatus.trim()
         })
-      })
+      });
   
-      const result = await response.json()
+      const result = await response.json();
   
       if (!response.ok) {
-        alert(`❌ ${result.detail || "Failed to update status."}`)
-        return
+        alert(`❌ ${result.detail || "Failed to update status."}`);
+        return;
       }
   
-      alert("✅ Status updated successfully!")
+      alert("✅ Status updated successfully!");
       // Optional: Refresh list
-      fetchApplications()
+      fetchApplications();
+      
+      // Reset states for this application
+      setSelectedStatus(prev => ({ ...prev, [applicationId]: "" }));
+      setCustomStatus(prev => ({ ...prev, [applicationId]: "" }));
     } catch (err) {
-      console.error("❌ Network error:", err)
-      alert("❌ Network error occurred.")
+      console.error("❌ Network error:", err);
+      alert("❌ Network error occurred.");
+    } finally {
+      setUpdatingStatus(prev => ({ ...prev, [applicationId]: false }));
     }
-  }
+  };
   
   return (
     <div className="max-w-4xl mx-auto mt-10 space-y-6">
@@ -145,26 +195,48 @@ function ApplicationsPage() {
                 </p>
                 <p><strong>🔗 URL:</strong> <a href={app.application_url} target="_blank" className="text-blue-600 underline">{app.application_url}</a></p>
                 <p><strong>📅 Date Applied:</strong> {new Date(app.applied_date).toLocaleDateString()}</p>
-                <p>
-                  <strong>📊 Status:</strong> <Badge>{app.application_status}</Badge>
-                  <Input
-                    className="mt-2"
-                    type="text"
-                    placeholder="Update status (e.g., Offered)"
-                    value={updateStatus[app.application_id] || ''}
-                    onChange={(e) => setUpdateStatus(prev => ({ ...prev, [app.application_id]: e.target.value }))}
-                  />
-                  <AppButton
-                    size="sm"
-                    className="mt-2"
-                    onClick={() => {
-                      console.log("Updating status for:", app.application_id, "New status:", updateStatus[app.application_id])
-                      handleStatusUpdate(app.application_id)
-                  }}
-                  >
-                    🔄 Update
-                  </AppButton>
-                </p>
+                <div className="mt-2">
+                  <div className="mt-2">
+                    <p>
+                      <strong>📊 Status:</strong> <Badge>{app.application_status}</Badge>
+                    </p>
+                    <div className="space-y-2 mt-2">
+                      <Select
+                        value={selectedStatus[app.application_id] || ""}
+                        onValueChange={(value) => handleStatusChange(app.application_id, value)}
+                      >
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Select new status" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {STATUS_OPTIONS.map((status) => (
+                            <SelectItem key={status} value={status}>
+                              {status}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      
+                      {selectedStatus[app.application_id] === "Other" && (
+                        <Input
+                          type="text"
+                          placeholder="Enter custom status"
+                          value={customStatus[app.application_id] || ''}
+                          onChange={(e) => handleCustomStatusChange(app.application_id, e.target.value)}
+                        />
+                      )}
+                      
+                      <AppButton
+                        size="sm"
+                        className="mt-2"
+                        disabled={updatingStatus[app.application_id] || !updateStatus[app.application_id]}
+                        onClick={() => handleStatusUpdate(app.application_id)}
+                      >
+                        {updatingStatus[app.application_id] ? "Updating..." : "🔄 Update"}
+                      </AppButton>
+                    </div>
+                  </div>
+                </div>
               </div>
             ))
           ) : (
