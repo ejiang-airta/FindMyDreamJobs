@@ -70,7 +70,8 @@ test('Test# 13: User can upload a resume', async ({ page }) => {
   // const cookiesBeforeUpload = await page.context().cookies();
   // console.log("Cookies before upload:", JSON.stringify(cookiesBeforeUpload, null, 2));
 
-  // Click on the Upload Resume button:
+  // Click on the Upload Resume button when networking is idle:
+  await page.waitForLoadState('networkidle');
   await page.getByRole('button', { name: 'Upload Resume' }).click();
   //console.log("Upload button clicked");
 
