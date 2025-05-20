@@ -78,28 +78,98 @@ auto_merge_to_main:
   stage: deploy
   image: curlimages/curl:latest
   script:
-    - echo "Running CI pipeline..."
+    - echo "Running CI pipeline for auto-merge from dev to main..."
     - |
-      RESPONSE=$(curl --silent --request POST \
-        --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
-        --data "source_branch=dev&target_branch=main&remove_source_branch=false&title=AutoMerge dev to main" \
-        "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests")
-
-      MR_IID=$(echo "$RESPONSE" | grep -o '"iid":[0-9]*' | grep -o '[0-9]*' | head -1)
-
-      if [ -n "$MR_IID" ]; then
-        echo "Merging MR IID $MR_IID..."
-        curl --fail --request PUT \
-          --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
-          "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$MR_IID/merge"
-      else
-        echo "❌ Failed to find or create merge request"
-        echo "RESPONSE: $RESPONSE"
+      # Check if GITLAB_TOKEN is set
+      if [ -z "$GITLAB_TOKEN" ]; then
+        echo "❌ Error: GITLAB_TOKEN is not set"
         exit 1
       fi
-
-
-
+      
+      # Check if there's already an open MR
+      echo "Checking for existing merge requests..."
+      EXISTING_MRS=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+        "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests?state=opened&source_branch=dev&target_branch=main")
+      
+      echo "Current open MRs: $EXISTING_MRS"
+      
+      EXISTING_MR_IID=$(echo "$EXISTING_MRS" | grep -o '"iid":[0-9]*' | grep -o '[0-9]*' | head -1)
+      
+      if [ -n "$EXISTING_MR_IID" ]; then
+        echo "Found existing merge request #$EXISTING_MR_IID, attempting to merge it..."
+        MERGE_RESPONSE=$(curl --silent --request PUT \
+          --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+          --header "Content-Type: application/json" \
+          --data '{"should_remove_source_branch": false, "merge_when_pipeline_succeeds": true}' \
+          "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$EXISTING_MR_IID/merge")
+        
+        echo "Merge response: $MERGE_RESPONSE"
+        
+        # Check if merge was successful
+        if echo "$MERGE_RESPONSE" | grep -q '"state":"merged"'; then
+          echo "✅ Successfully merged existing MR #$EXISTING_MR_IID"
+        else
+          echo "❌ Failed to merge existing MR #$EXISTING_MR_IID"
+          echo "Response: $MERGE_RESPONSE"
+          
+          # Check for specific error messages
+          ERROR_MSG=$(echo "$MERGE_RESPONSE" | grep -o '"message":"[^"]*"' | cut -d'"' -f4)
+          if [ -n "$ERROR_MSG" ]; then
+            echo "Error message: $ERROR_MSG"
+          fi
+          
+          exit 1
+        fi
+      else
+        echo "No existing merge request found, creating a new one..."
+        RESPONSE=$(curl --silent --request POST \
+          --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+          --header "Content-Type: application/json" \
+          --data '{"source_branch":"dev","target_branch":"main","remove_source_branch":false,"title":"AutoMerge dev to main"}' \
+          "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests")
+        
+        echo "MR creation response: $RESPONSE"
+        
+        MR_IID=$(echo "$RESPONSE" | grep -o '"iid":[0-9]*' | grep -o '[0-9]*' | head -1)
+        
+        if [ -n "$MR_IID" ]; then
+          echo "Created MR #$MR_IID, attempting to merge it..."
+          MERGE_RESPONSE=$(curl --silent --request PUT \
+            --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+            --header "Content-Type: application/json" \
+            --data '{"should_remove_source_branch": false, "merge_when_pipeline_succeeds": true}' \
+            "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$MR_IID/merge")
+          
+          echo "Merge response: $MERGE_RESPONSE"
+          
+          # Check if merge was successful
+          if echo "$MERGE_RESPONSE" | grep -q '"state":"merged"'; then
+            echo "✅ Successfully merged new MR #$MR_IID"
+          else
+            echo "❌ Failed to merge new MR #$MR_IID"
+            echo "Response: $MERGE_RESPONSE"
+            
+            # Check for specific error messages
+            ERROR_MSG=$(echo "$MERGE_RESPONSE" | grep -o '"message":"[^"]*"' | cut -d'"' -f4)
+            if [ -n "$ERROR_MSG" ]; then
+              echo "Error message: $ERROR_MSG"
+            fi
+            
+            exit 1
+          fi
+        else
+          echo "❌ Failed to create merge request"
+          echo "Response: $RESPONSE"
+          
+          # Check for specific error messages
+          ERROR_MSG=$(echo "$RESPONSE" | grep -o '"message":"[^"]*"' | cut -d'"' -f4)
+          if [ -n "$ERROR_MSG" ]; then
+            echo "Error message: $ERROR_MSG"
+          fi
+          
+          exit 1
+        fi
+      fi
   only:
     - dev
   when: on_success
