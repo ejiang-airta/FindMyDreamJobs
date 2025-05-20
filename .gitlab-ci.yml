@@ -72,7 +72,7 @@ deploy-artifacts:
     - dev # Only deploy on dev branch
 
 # -------------------
-# 🚀 Auto merget the dev branch to main on success pipline runs:
+# 🚀 Auto-create dev to main merge request on success pipline runs:
 # -------------------
 auto_merge_to_main:
   stage: deploy
