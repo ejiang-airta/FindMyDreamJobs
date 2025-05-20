@@ -77,38 +77,27 @@ deploy-artifacts:
 auto_merge_to_main:
   stage: deploy
   image: curlimages/curl:latest
-  script: |
+  script:
     - echo "Running CI pipeline..."
-    # Step 1: Try to get an existing open MR from dev → main
-    EXISTING_MR=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
-      "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests?state=opened&source_branch=dev&target_branch=main")
-
-    MR_IID=$(echo "$EXISTING_MR" | grep -o '"iid":[0-9]*' | grep -o '[0-9]*' | head -1)
-
-    # Step 2: If no open MR exists, create one
-    if [ -z "$MR_IID" ]; then
-      echo "No existing MR found. Creating one..."
+    # 1. Create the merge request if it doesn't exist
+    - |
       RESPONSE=$(curl --silent --request POST \
         --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
         --data "source_branch=dev&target_branch=main&remove_source_branch=false&title=AutoMerge dev to main" \
         "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests")
-
-      echo "Create MR API Response: $RESPONSE"
+      # 2. Extract the IID
       MR_IID=$(echo "$RESPONSE" | grep -o '"iid":[0-9]*' | grep -o '[0-9]*' | head -1)
-    else
-      echo "Found existing MR IID: $MR_IID"
-    fi
+      # 3. Merge the merge request
+      if [ -n "$MR_IID" ]; then
+        echo "Merging MR IID $MR_IID..."
+        curl --fail --request PUT \
+          --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+          "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$MR_IID/merge"
+      else
+        echo "❌ Failed to find or create merge request"
+        exit 1
+      fi
 
-    # Step 3: Merge the MR
-    if [ -n "$MR_IID" ]; then
-      echo "Merging MR IID $MR_IID..."
-      curl --fail --request PUT \
-        --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
-        "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests/$MR_IID/merge"
-    else
-      echo "❌ Failed to find or create a merge request"
-      exit 1
-    fi
 
 
   only:
