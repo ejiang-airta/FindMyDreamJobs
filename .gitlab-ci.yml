@@ -42,7 +42,7 @@ frontend_tests:
     - npx playwright install
     - mkdir -p test-results  # Ensure the folder exists before collecting artifacts
     - echo "Testing starts"
-    - npx playwright test login.spec.ts app_flow.spec.ts --output=test-results
+    - TZ="America/Los_Angeles" npx playwright test login.spec.ts app_flow.spec.ts --output=test-results
     - echo "Test completed, checking results"
     - ls -la test-results/
     - find test-results/ -type f | head -20

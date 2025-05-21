@@ -246,10 +246,10 @@ test('Test# 17: Forgot password page works', async ({ page }) => {
 // ✅ Unauthorized route guard
 test('Test# 18: Unauthorized user is redirected to login page', async ({ page }) => {
   await page.goto(`${BASE_URL}/dashboard`)
-  await expect(page).toHaveURL(/.*login/)
   await expect(page.locator('body')).toContainText('Please sign in or create an account to get started', {
     timeout: 20000
   });  
+  await expect(page).toHaveURL(/.*login/)
   
   // Capture end time
 const endTime = Date.now();
