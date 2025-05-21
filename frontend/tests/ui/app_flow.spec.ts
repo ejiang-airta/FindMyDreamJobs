@@ -3,6 +3,7 @@ import { test, expect } from '@playwright/test'
 import { loginAsTestUser } from './helpers'
 import path from 'path';
 import fs from 'fs';
+import { time } from 'console';
 
 const TEST_ENV = process.env.ENV || 'prod'; // Default to production
 const BASE_URL = TEST_ENV === 'dev' 
@@ -226,6 +227,7 @@ test('Test# 17: Forgot password page works', async ({ page }) => {
   await page.click('text=Forgot your password?');
   await expect(page.locator(':text("Reset your password")')).toBeVisible({ timeout: 20000 })
   await page.fill('input[type="email"]', 'e_jiang@hotmail.com')
+  await page.waitForTimeout(500);  // wait for 0.5s
   await page.click('text=Send Reset Link')
   
   // Wait for button state to change
