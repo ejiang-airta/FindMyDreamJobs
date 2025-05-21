@@ -9,6 +9,8 @@ import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { BACKEND_BASE_URL } from '@/lib/env'
+//import { PasswordInput } from '@/components/ui/PasswordInput'
+
 
 // ✅ Page must be default export
 export default function ResetPasswordPage() {
@@ -56,15 +58,19 @@ function ResetPasswordForm() {
   return (
     <div className="max-w-md mx-auto mt-20 space-y-4">
       <h1 className="text-2xl font-bold text-center">Set a New Password</h1>
+      
+      {/*<PasswordInput placeholder="New password" name="password" required /> */}
       <Input
         type="password"
         placeholder="New password"
+        name="password" 
         value={password}
         onChange={(e) => setPassword(e.target.value)}
       />
       <Input
         type="password"
         placeholder="Confirm password"
+        name="password" 
         value={confirm}
         onChange={(e) => setConfirm(e.target.value)}
       />

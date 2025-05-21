@@ -16,7 +16,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoggingIn, setIsLoggingIn] = useState(false);
-  
+  const [showPassword, setShowPassword] = useState(false)  
 
   useEffect(() => {
     if (session?.user?.email) {
@@ -59,7 +59,7 @@ export default function LoginPage() {
         />
         
         <Input
-          type="password"
+          type={showPassword ? "text" : "password"}
           placeholder="Your password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -70,7 +70,6 @@ export default function LoginPage() {
             Forgot your password?
           </Link>
         </div>
-
         <Button className="w-full" onClick={handleLogin} disabled={isLoggingIn}>
           {isLoggingIn ? "Signing in..." : "Sign In"}
         </Button>
