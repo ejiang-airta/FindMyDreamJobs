@@ -1,7 +1,7 @@
 # File: /backend/app/main.py
 # Main entry point for the FastAPI application
 from fastapi import FastAPI
-from app.routes import user, job, resume, application, match, auth, ai_optimization, ats, dashboard, download
+from app.routes import user, job, resume, application, match, auth, ai_optimization, ats, dashboard, download, job_search
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 import sys
@@ -9,7 +9,6 @@ import os
 from datetime import datetime
 from app.config.settings import PROJECT_ROOT
 from dotenv import load_dotenv
-import os
 import httpx
 import asyncio 
 
@@ -79,6 +78,8 @@ app.include_router(job.router)
 app.include_router(match.router)
 app.include_router(resume.router)
 app.include_router(download.router)
+app.include_router(user.router)
+app.include_router(job_search.router)  # ✅ Job Search API
 
 
 

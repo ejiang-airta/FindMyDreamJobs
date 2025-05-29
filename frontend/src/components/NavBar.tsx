@@ -13,15 +13,16 @@ import { BACKEND_BASE_URL }  from '@/lib/env'
 
 const navItems = [
   { href: '/', label: '🏠 Home' },
-  { href: '/dashboard', label: '📊 Dashboard' },
-  { href: '/upload', label: '📤 Resume' },
-  { href: '/analyze', label: '📑 Analyze' },
-  { href: '/match', label: '🔍 Match' },
-  { href: '/optimize', label: '🛠 Optimize' },
-  { href: '/apply', label: '📩 Apply' },
-  { href: '/applications', label: '🧾 Applications' },
-  { href: '/stats', label: '📈 Stats' },
-  { href: '/wizard', label: '🧙 Wizard' },
+  { href: '/dashboard', label: 'Dashboard' },
+  { href: '/upload', label: 'Resume' },
+  { href: '/jobs', label: 'Jobs' },
+  { href: '/analyze', label: 'Analyze' },
+  { href: '/match', label: 'Match' },
+  { href: '/optimize', label: 'Optimize' },
+  { href: '/apply', label: 'Apply' },
+  { href: '/applications', label: 'Applications' },
+  { href: '/stats', label: 'Stats' },
+  { href: '/wizard', label: 'Wizard' },
 ]
 
 export default function NavBar() {
