@@ -22,7 +22,7 @@ test-results/
 dev_tracking/
 results/
 test-results/
-job_Listing*.json
+job_Listings*.json
 job_outputs.txt
 testing*.py
 structure.dot
@@ -52,3 +52,6 @@ debug.json
 # exclude the temp files for "npm run dev"
 .next/
 
+# this is an alternative to use the Adzuna API, ignore for how:
+job_search_adzuna.py
+job_find.*
