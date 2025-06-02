@@ -1,7 +1,6 @@
 # File: /backend/app/config/settings.py
 from dotenv import load_dotenv
 import os
-import os
 
 # Set Project Root: Job_App/
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", ".."))
@@ -22,13 +21,11 @@ TEMP_DIR = os.path.join(APP_DIR, "temp")
 # Load environment variables from a .env file, need "pip install python-dotenv" for it to work
 load_dotenv()
 
-# Default value for DATABASE_URL
-DATABASE_URL = os.getenv("DATABASE_URL")
-
-
+# Database configuration:
 username = os.getenv("POSTGRES_USER", "user")
 password = os.getenv("POSTGRES_PASSWORD", "password")
 #host = os.getenv("POSTGRES_HOST", "localhost")
+# Default value for DATABASE_URL
 DATABASE_URL = os.getenv("DATABASE_URL", f"postgresql+psycopg2://{username}:{password}@localhost/job_db")
 
 # debugging print the DATABASE_URL:

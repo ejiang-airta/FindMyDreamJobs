@@ -8,7 +8,7 @@ from app.models.user import User
 from pydantic import BaseModel
 from passlib.context import CryptContext  # ✅ Added for password hashing
 from pydantic import BaseModel, EmailStr # ✅ Use EmailStr for email validation
-from app.utils.token import generate_password_reset_token, verify_password_reset_token
+from app.utils.auth_token import generate_password_reset_token, verify_password_reset_token
 from app.utils.email import send_password_reset_email  # we'll define this below
 
 
@@ -43,14 +43,7 @@ def whoami(payload: dict = Body(...), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == email).first()
 
     if not user:
-        user = User(
-            email=email,
-            full_name=name or "",
-            hashed_password="",
-        )
-        db.add(user)
-        db.commit()
-        db.refresh(user)
+        raise HTTPException(status_code=404, detail="User not found.")
 
     return {"user_id": user.id}
 
@@ -101,7 +94,7 @@ def request_password_reset(payload: PasswordResetRequest, db: Session = Depends(
 # ✅ This endpoint should be called from the frontend after the user clicks the link in the email
 @router.post("/auth/reset-password", tags=["Auth"])
 def reset_password(payload: PasswordResetPayload, db: Session = Depends(get_db)):
-    from app.utils.token import verify_password_reset_token
+    from backend.app.utils.auth_token import verify_password_reset_token
 
     user_id = verify_password_reset_token(payload.token)
     if not user_id:
