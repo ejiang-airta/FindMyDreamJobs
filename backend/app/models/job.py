@@ -17,6 +17,7 @@ class Job(Base):
     job_link = Column(String, nullable=True)
     extracted_skills = Column(JSONB, nullable=True)  # ✅ Store as an 2D array /w skills/frequency
     required_experience = Column(String, nullable=True) # ✅ Adding this for tracking experienve
+    salary = Column(String, nullable=True)  # ✅ New field for salary information
     created_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = Column(DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=True)
 

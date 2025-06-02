@@ -1,7 +1,7 @@
 # ✅ File: //backend/app/routes/job.py
 import requests
 from bs4 import BeautifulSoup
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Request
 from sqlalchemy.orm import Session
 from app.database.connection import get_db
 from app.models.job import Job
@@ -10,12 +10,13 @@ from datetime import datetime, timezone
 import re
 import spacy
 from app.schemas.job import JobOut, JobInput  # centeralized JobInput and JobOut to schemas/job.py
+from app.utils.salary_extractor import extract_salary  # Import salary extraction utility
 from app.utils.job_extraction import (
     extract_title,
     extract_company_name,
     extract_skills_with_frequency,
     extract_experience,
-    extract_location
+    extract_location,
 )
 
 router = APIRouter()
@@ -53,6 +54,7 @@ async def parse_job_description(job: JobInput, db: Session = Depends(get_db)):
     experience = extract_experience(description)
     location = extract_location(description)
     company = extract_company_name(description)
+    salary = extract_salary(description) # Extract salary if available, else None
 
     # 🧾 Save to DB
     new_job = Job(
@@ -64,6 +66,7 @@ async def parse_job_description(job: JobInput, db: Session = Depends(get_db)):
         required_experience=experience,
         company_name=company or "Unknown Company",  # ✅ Fallback if extract company return nothing
         location=location,
+        salary=salary,
         created_at=datetime.now(timezone.utc),
         updated_at=datetime.now(timezone.utc),
     )
@@ -80,7 +83,46 @@ async def parse_job_description(job: JobInput, db: Session = Depends(get_db)):
         "experience": experience,
         "company_name": company,
         "location": location,
+        "salary": salary,
     }
+
+@router.post("/analyze-searched-job", tags=["Jobs"])
+async def analyze_searched_job(request: Request, db: Session = Depends(get_db)):
+    """
+    This route is used for jobs returned by the search results with structured data.
+    """
+    payload = await request.json()
+    required_fields = ["job_title", "employer_name", "job_description", "user_id"]
+    for field in required_fields:
+        if field not in payload:
+            raise HTTPException(status_code=400, detail=f"Missing required field: {field}")
+
+    job_title = payload["job_title"]
+    employer_name = payload["employer_name"]
+    job_description = payload["job_description"]
+    job_location = payload.get("job_location") or extract_location(job_description)
+    user_id = payload["user_id"]
+    job_link = payload.get("job_link")
+    salary = payload.get("salary") or extract_salary(job_description)
+
+    extracted_skills: dict[str, list[str]] = extract_skills_with_frequency(job_description)
+
+    new_job = Job(
+        job_title=job_title,
+        company_name=employer_name,
+        job_description=job_description,
+        location=job_location,
+        user_id=user_id,
+        job_link=job_link,
+        salary=salary,
+        extracted_skills=extracted_skills,
+        created_at=datetime.now(timezone.utc),
+    )
+    db.add(new_job)
+    db.commit()
+    db.refresh(new_job)
+    return new_job
+
 # Get all jobs by user:
 @router.get("/jobs/by-user/{user_id}", tags=["Jobs"])
 def get_jobs_by_user(user_id: int, db: Session = Depends(get_db)):
@@ -108,3 +150,38 @@ def get_job_by_id(job_id: int, db: Session = Depends(get_db)):
         "company_name": job.company_name,
         "emphasized_skills": job.extracted_skills.get("emphasized_skills", []) if job.extracted_skills else [],
     }
+
+# get all saved jobs for a user:
+@router.post("/toggle-save-job", tags=["Jobs"])
+async def toggle_save_job(request: Request, db: Session = Depends(get_db)):
+    """
+    Toggle save/unsave for a job using a user_id + job_link combo.
+    """
+    payload = await request.json()
+    user_id = payload.get("user_id")
+    job_link = payload.get("job_link")
+
+    if not user_id or not job_link:
+        raise HTTPException(status_code=400, detail="user_id and job_link are required")
+
+    job = db.query(Job).filter(Job.user_id == user_id, Job.redirect_url == job_link).first()
+    if job:
+        db.delete(job)
+        db.commit()
+        return {"message": "Job unsaved", "action": "unsaved"}
+    else:
+        new_job = Job(
+            job_title=payload.get("job_title", "N/A"),
+            company_name=payload.get("employer_name", "N/A"),
+            job_description=payload.get("job_description", "N/A"),
+            location=payload.get("job_location", "N/A"),
+            user_id=user_id,
+            job_link=job_link,
+            salary=payload.get("salary"),
+            extracted_skills="{}",
+            created_at=datetime.now(timezone.utc),
+        )
+        db.add(new_job)
+        db.commit()
+        db.refresh(new_job)
+        return {"message": "Job saved", "action": "saved", "job_id": new_job.id}

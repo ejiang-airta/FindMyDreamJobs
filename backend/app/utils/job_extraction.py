@@ -4,6 +4,8 @@ import re
 import spacy
 from app.config.skills_config import SKILL_KEYWORDS, MIN_SKILL_FREQUENCY, MAX_EMPHASIZED_SKILLS
 from collections import Counter
+from typing import Optional, Dict, Tuple
+from dataclasses import dataclass
 
 # Load spaCy English model
 nlp = spacy.load("en_core_web_sm")
@@ -62,8 +64,6 @@ def extract_company_name(text: str) -> str:
     return "Unknown Company"
 
 
-
-
 # ✅ Extract skills from job description summary:
 def extract_skills_with_frequency(text: str) -> dict:
     """
@@ -118,3 +118,27 @@ def extract_location(text: str) -> str:
     match = re.search(r"in\s+([A-Z][a-z]+(?:\s+[A-Z][a-z]+)?)", text)
     return match.group(1).strip() if match else "Unspecified"
 
+def extract_salary(job_description: str) -> Optional[str]:
+    """
+    Extract salary information from job description text.
+    Returns a string like "$140,000 - $200,000" or "$140,000" if found, else None.
+    """
+    if not job_description:
+        return None
+
+    # Common patterns like: $140,000 - $200,000 or $80K–$100K or $120000/year
+    patterns = [
+        r"\$\s?\d{2,3}(?:,\d{3})?\s*[-–]\s*\$\s?\d{2,3}(?:,\d{3})?",     # e.g. $140,000 - $200,000
+        r"\$\s?\d{2,3}K\s*[-–]\s*\$\s?\d{2,3}K",                         # e.g. $80K–$100K
+        r"\$\s?\d{2,3}(?:,\d{3})?\s*(?:per year|annually|/year)",        # e.g. $120,000 per year
+        r"\$\s?\d{2,3}K\s*(?:per year|annually|/year)",                  # e.g. $120K per year
+        r"\$\s?\d{2,3}(?:,\d{3})?",                                      # fallback: single value like $140,000
+        r"\$\s?\d{2,3}K"                                                 # fallback: single value like $120K
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, job_description, re.IGNORECASE)
+        if match:
+            return match.group(0).strip()
+
+    return None

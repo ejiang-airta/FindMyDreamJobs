@@ -4,6 +4,7 @@ from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 import requests
 import os
+from app.utils.job_extraction import extract_salary
 
 router = APIRouter()
 
@@ -24,12 +25,13 @@ def search_jobs(query: str = Query(..., description="Search keyword for jobs")):
         params = {
                 "query": query,
                 "page":"1",
-                "num_pages":"9",
+                "num_pages":"1",
                 "country":"ca",
-                "date_posted":"week",       #prams: today, 3days, week, month,all
+                "date_posted":"all",       #prams: today, 3days, week, month,all
                 #"work_from_home":"true"
         }
         # Make the API request:
+        print(f"Making request to {API_URL} with headers {headers} and params {params}")
         response = requests.get(API_URL, headers=headers,params=params)
         data = response.json()
 
@@ -39,6 +41,7 @@ def search_jobs(query: str = Query(..., description="Search keyword for jobs")):
                 "employer_name": job.get("employer_name"),
                 "job_location": job.get("job_city"),
                 "description": job.get("job_description"),
+                "salary": job.get("job_salary") or extract_salary(job.get("job_description")),
                 "posted_at": job.get("job_posted_at_datetime_utc"),
                 "redirect_url": job.get("job_google_link")
             }
