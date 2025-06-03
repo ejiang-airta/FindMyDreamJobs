@@ -20,6 +20,7 @@ export default function ProtectedPage() {
       <JobsPage />
     </Protected>
   )
+}
 
 function JobsPage() {
   const [jobs, setJobs] = useState<any[]>([])
