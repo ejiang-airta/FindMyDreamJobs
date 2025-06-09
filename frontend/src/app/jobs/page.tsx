@@ -42,7 +42,7 @@ function JobsPage() {
       axios.get(`${BACKEND_BASE_URL}/saved-jobs/${uid}`)
         .then(res => {
           const saved = res.data || [];
-          const ids = new Set(saved.map((job: any) => job.search_id).filter(Boolean));
+          const ids = new Set<string>(saved.map((job: any) => job.search_id).filter(Boolean));
           setSavedJobIds(ids);
         })
         .catch(err => console.error("Failed to fetch saved jobs:", err));
