@@ -20,3 +20,6 @@ class User(Base):
     applications = relationship("Application", back_populates="user")  # ✅ Track jobs applied for by user
     job_matches = relationship("JobMatch", back_populates="user")  # ✅ Track past match results per user
     jobs = relationship("Job", back_populates="user")  # if not already there
+    saved_jobs = relationship("SavedJob", back_populates="user", cascade="all, delete-orphan")
+
+

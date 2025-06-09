@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { MapPin, CalendarDays, Bookmark, BarChart3, Send } from "lucide-react"
+import { MapPin, CalendarDays, Bookmark, BarChart3, Send, WalletIcon } from "lucide-react"
 import axios from "axios"
 import { BACKEND_BASE_URL } from "@/lib/env"
 import { Input } from "@/components/ui/input"
@@ -13,13 +13,14 @@ import { AppButton } from '@/components/ui/AppButton'
 import { toast } from 'sonner'
 import { Protected } from '@/components/Protected'
 
+
 // This ensures page is only accessible to authenticated users:
 export default function ProtectedPage() {
   return (
     <Protected>
       <JobsPage />
     </Protected>
-  )
+  );
 }
 
 function JobsPage() {
@@ -35,16 +36,17 @@ function JobsPage() {
   const router = useRouter()
 
   useEffect(() => {
-    const uid = localStorage.getItem("user_id")
-    if (uid && !isNaN(parseInt(uid))) {
-      setUserId(uid)
-    } else {
-      console.warn("Invalid user_id found in localStorage:", uid)
-      setUserId(null)
+    const uid = localStorage.getItem("user_id");
+    if (uid) {
+      setUserId(uid);
+      axios.get(`${BACKEND_BASE_URL}/saved-jobs/${uid}`)
+        .then(res => {
+          const saved = res.data || [];
+          const ids = new Set(saved.map((job: any) => job.search_id).filter(Boolean));
+          setSavedJobIds(ids);
+        })
+        .catch(err => console.error("Failed to fetch saved jobs:", err));
     }
-
-    const saved = localStorage.getItem("saved_jobs")
-    if (saved) setSavedJobIds(new Set(JSON.parse(saved)))
 
     const analyzed = localStorage.getItem("analyzed_jobs")
     if (analyzed) setAnalyzedJobIds(new Set(JSON.parse(analyzed)))
@@ -116,23 +118,59 @@ function JobsPage() {
     localStorage.setItem("applied_jobs", JSON.stringify(Array.from(updated)))
   }
 
-  const handleSave = (job: any) => {
-    const jobId = job.job_id || job.id || job.redirect_url
-    if (!jobId) return
-    const updated = new Set(savedJobIds)
-    updated.add(jobId)
-    setSavedJobIds(updated)
-    localStorage.setItem("saved_jobs", JSON.stringify(Array.from(updated)))
-    toast.success("✅ Job saved to Saved tab")
-  }
+  const handleSave = async (job: any) => {
+    console.log("🔍 Save clicked for job:", job);
+    console.log("Current userId:", userId)  
+    console.log("Current jobId:", job.job_id)
+    if (!userId || !job?.job_id) return;
+    const searchId = job.job_id;
+    const isSaved = savedJobIds.has(searchId);
+    const updated = new Set(savedJobIds);
+
+    try {
+      if (isSaved) {
+        await axios.post(`${BACKEND_BASE_URL}/unsave-job`, {
+          user_id: userId,
+          search_id: searchId,
+        });
+        updated.delete(searchId);
+        toast.success("❌ Job unsaved");
+      } else {
+        await axios.post(`${BACKEND_BASE_URL}/save-job`, {
+          user_id: userId,
+          job: {
+            job_id: job.job_id,
+            job_title: job.job_title,
+            employer_name: job.employer_name,
+            employer_logo: job.employer_logo,
+            employer_website: job.employer_website,
+            job_location: job.job_location,
+            job_is_remote: job.job_is_remote,
+            job_employment_type: job.job_employment_type,
+            job_salary: job.job_salary,
+            job_description: job.job_description,
+            job_google_link: job.job_google_link,
+            job_posted_at_datetime_utc: job.job_posted_at_datetime_utc || new Date().toISOString(),
+
+          }
+        });
+        updated.add(searchId);
+        toast.success("✅ Job saved");
+      }
+      setSavedJobIds(updated);
+    } catch (error) {
+      console.error("Save/Unsave failed", error);
+      toast.error("⚠️ Failed to save or unsave the job");
+    }
+  };
 
   const tabFilteredJobs = jobs.filter(job => {
-    const jobId = job.job_id || job.id || job.redirect_url
+    const jobId = job.job_id;
     switch (activeTab) {
-      case 'saved': return savedJobIds.has(jobId)
-      case 'analyzed': return analyzedJobIds.has(jobId)
-      case 'applied': return appliedJobIds.has(jobId)
-      default: return true
+      case 'saved': return savedJobIds.has(jobId);
+      case 'analyzed': return analyzedJobIds.has(jobId);
+      case 'applied': return appliedJobIds.has(jobId);
+      default: return true;
     }
   })
 
@@ -174,8 +212,10 @@ function JobsPage() {
 
       <div className="space-y-6">
         {tabFilteredJobs.map((job, idx) => {
-          const jobId = job.job_id || job.id || job.redirect_url
-          const isSaved = savedJobIds.has(jobId)
+          const jobId = job.job_id;
+          const isSaved = savedJobIds.has(jobId);
+          const postedAt = job.job_posted_at_datetime_utc;
+          
           return (
             <div key={idx} className="rounded-lg border bg-white p-6 shadow-sm space-y-4">
               <div className="flex justify-between items-start">
@@ -186,7 +226,7 @@ function JobsPage() {
                 <div className="flex flex-col items-end space-y-1">
                   <Badge className="bg-green-100 text-green-800">94% Match</Badge>
                   <span className="text-xs text-gray-400">
-                    {job.posted_at ? new Date(job.posted_at).toLocaleDateString() : ""}
+                    {postedAt ? new Date(postedAt).toLocaleDateString() : "Unknown"}
                   </span>
                 </div>
               </div>
@@ -195,16 +235,20 @@ function JobsPage() {
                   <MapPin className="h-4 w-4" />
                   {job.job_location || "Unknown"}
                 </div>
-
                 <div className="flex items-center gap-1">
                   <CalendarDays className="h-4 w-4" />
-                  {job.posted_at ? new Date(job.posted_at).toDateString() : ""}
+                  {postedAt ? new Date(postedAt).toLocaleDateString() : "Unknown"}
                 </div>
-                {job.salary && (
-                  <div className="text-foreground font-medium">{job.salary}</div>
+                
+                {(job.job_salary || job.salary) && (
+                  <div className="flex items-center gap-1">
+                    <WalletIcon className="h-4 w-4" />
+                    {job.job_salary || job.salary}
+                  </div>
                 )}
+
               </div>
-              <p className="text-sm text-gray-700 line-clamp-3">{job.description}</p>
+              <p className="text-sm text-gray-700 line-clamp-3">{job.job_description || job.description || "No description available."}</p>
               <div className="flex gap-2">
                 <AppButton variant="ghost" size="sm" onClick={() => handleSave(job)} className={isSaved ? "bg-blue-50" : ""}>
                   <Bookmark className="h-4 w-4 mr-1" /> {isSaved ? "Saved" : "Save"}
@@ -212,7 +256,7 @@ function JobsPage() {
                 <AppButton variant="ghost" size="sm" onClick={() => handleAnalyze(job)}>
                   <BarChart3 className="h-4 w-4 mr-1" /> Analyze
                 </AppButton>
-                <AppButton variant="default" size="sm" onClick={() => handleApply(job.redirect_url, jobId)}>
+                <AppButton variant="ghost" size="sm" onClick={() => handleApply(job.job_google_link, jobId)}>
                   <Send className="h-4 w-4 mr-1" /> Apply
                 </AppButton>
               </div>
