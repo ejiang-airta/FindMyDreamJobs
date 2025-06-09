@@ -36,7 +36,7 @@ favicon/
 *.docx 
 !example.docx
 job*.html
-job_output.json
+job_output*.json
 jobs_list_*.json
 out*.txt
 

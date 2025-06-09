@@ -45,7 +45,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,  # Allow all origins during dev
+    allow_origins=origins,    # Allow all origins during dev
     allow_credentials=True,
     allow_methods=["*"],      # or list specific methods like ["POST", "GET"]
     allow_headers=["*"],      # or explicitly allow ["Authorization", "Content-Type"]
@@ -72,14 +72,14 @@ async def startup_event():
 app.include_router(ai_optimization.router)  # ✅ AI Resume Optimization API
 app.include_router(application.router)
 app.include_router(ats.router)              # ✅ New ATS API
-app.include_router(auth.router) # adding a prefix , prefix="/auth", tags=["auth"]
-app.include_router(dashboard.router)             # ✅ Dashboard API
+app.include_router(auth.router)             # adding a prefix , prefix="/auth", tags=["auth"]
+app.include_router(dashboard.router)        # ✅ Dashboard API
 app.include_router(job.router)
 app.include_router(match.router)
 app.include_router(resume.router)
 app.include_router(download.router)
 app.include_router(user.router)
-app.include_router(job_search.router)  # ✅ Job Search API
+app.include_router(job_search.router)       # ✅ Job Search API
 
 
 

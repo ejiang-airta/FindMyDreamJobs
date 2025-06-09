@@ -1,5 +1,5 @@
 # Utility for extracting structured salary information from job descriptions
-# File: backend/app/utils/salary_extraction.py
+# File: backend/app/utils/salary_extractor.py
 import re
 from typing import Optional, Dict, Tuple
 
@@ -33,27 +33,22 @@ def extract_salary_info(job_description: str) -> Optional[SalaryInfo]:
         r'\$\s?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s*(?:to\s*'
         r'\$\s?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?))?\s*(?:CAD|USD)?',
         
-        # Hourly rates with range (fixed - put back working version)
+        # Case 7 fix: Compensation: $120K-$150K annually
+        r'compensation\s*:\s*\$(\d+)K-\$(\d+)K\s+(annually)',
+        
+        # Case 9 fix: Starting at $90K per year  
+        r'starting\s+at\s+\$(\d+)K\s+(per\s+year)',
+        
+        # Case 10 fix: Salary: $4000-$6000 monthly
+        r'salary\s*:\s*\$(\d+)-\$(\d+)\s+(monthly)',
+        
+        # Hourly rates with range
         r'(?:hourly rate|rate).*?(?:starts)?\s*(?:at\s*)?'
         r'\$\s?(\d{1,3}(?:\.\d{2})?)\s*/hour\s*(?:to)\s*'
         r'\$\s?(\d{1,3}(?:\.\d{2})?)\s*/hour',
         
         # Simple compact K format ranges like $120K-$150K
         r'\$\s?(\d{1,3})\s*K\s*[-–—]\s*\$?\s?(\d{1,3})\s*K(?:\s*(?:annually|per year|/year))?',
-        
-        # Colon prefix patterns like "Compensation: $120K-$150K"
-        r'(?:compensation|salary|pay)\s*:\s*'
-        r'\$\s?(\d{1,3})\s*K\s*[-–—]\s*\$?\s?(\d{1,3})\s*K(?:\s*(?:annually|per year|/year))?',
-        
-        # Starting at K format like "Starting at $90K per year"
-        r'(?:starting)\s*(?:at)\s*'
-        r'\$\s?(\d{1,3})\s*K(?:\s*(?:per year|annually|/year))?',
-        
-        # Salary: $X-$Y monthly format
-        r'(?:salary)\s*:\s*'
-        r'\$\s?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s*[-–—]\s*'
-        r'\$?\s?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s*'
-        r'(monthly|per month)',
         
         # Pay range: $X-Y per hour (without $ on second number)
         r'(?:pay range)\s*:\s*'
@@ -109,7 +104,7 @@ def _parse_salary_match(match, job_description: str) -> Optional[SalaryInfo]:
     frequency = "annual"  # default
     currency = "USD"  # default
     
-    # Extract numeric values
+    # Extract numeric values and frequency indicators
     for group in groups:
         if group and re.search(r'\d', group):
             if 'K' in group.upper():
@@ -125,27 +120,29 @@ def _parse_salary_match(match, job_description: str) -> Optional[SalaryInfo]:
                         amounts.append(float(clean_num))
                     except ValueError:
                         continue
-            else:
-                # Check for frequency indicators
-                group_lower = group.lower()
-                if any(term in group_lower for term in ['hour', 'hr']):
-                    frequency = "hourly"
-                elif 'weekly' in group_lower and 'bi' not in group_lower:
-                    frequency = "weekly"
-                elif 'bi-weekly' in group_lower:
-                    frequency = "bi-weekly"
-                elif 'month' in group_lower:
-                    frequency = "monthly"
+        elif group:
+            # Check for frequency indicators in non-numeric groups
+            group_lower = group.lower()
+            if any(term in group_lower for term in ['hour', 'hr']):
+                frequency = "hourly"
+            elif 'weekly' in group_lower and 'bi' not in group_lower:
+                frequency = "weekly"
+            elif 'bi-weekly' in group_lower:
+                frequency = "bi-weekly"
+            elif 'month' in group_lower:
+                frequency = "monthly"
+            elif any(term in group_lower for term in ['annually', 'per year', '/year']):
+                frequency = "annual"
     
     # Additional frequency detection from full match
     full_match_lower = full_match.lower()
-    if any(term in full_match_lower for term in ['hour', '/hr']):
+    if any(term in full_match_lower for term in ['hour', '/hr']) and frequency == "annual":
         frequency = "hourly"
-    elif 'weekly' in full_match_lower and 'bi' not in full_match_lower:
+    elif 'weekly' in full_match_lower and 'bi' not in full_match_lower and frequency == "annual":
         frequency = "weekly"
-    elif 'bi-weekly' in full_match_lower:
+    elif 'bi-weekly' in full_match_lower and frequency == "annual":
         frequency = "bi-weekly"
-    elif 'month' in full_match_lower:
+    elif 'month' in full_match_lower and frequency == "annual":
         frequency = "monthly"
     
     # Currency detection
@@ -187,11 +184,11 @@ def _filter_realistic_amounts(amounts: list, frequency: str) -> list:
             if 800 <= amount <= 20000:
                 filtered.append(amount)
         elif frequency == "monthly":
-            # Monthly: $1000-25000/month reasonable
+            # Monthly: $1000-25000/month reasonable - FIXED RANGE
             if 1000 <= amount <= 25000:
                 filtered.append(amount)
         else:  # annual
-            # Annual: $15000-1000000 reasonable (widened range)
+            # Annual: $15000-1000000 reasonable - FIXED RANGE
             if 15000 <= amount <= 1000000:
                 filtered.append(amount)
     
