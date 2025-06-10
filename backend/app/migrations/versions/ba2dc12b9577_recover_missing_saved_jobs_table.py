@@ -12,7 +12,7 @@ import sqlalchemy as sa
 from sqlalchemy import text
 
 # revision identifiers
-revision = 'xxxxxxxxxx'  # replace with your generated revision
+revision = 'ba2dc12b9577'  # replace with your generated revision
 down_revision = '00d565e9ca74'
 branch_labels = None
 depends_on = None
