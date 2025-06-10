@@ -4,6 +4,7 @@ from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse
 import requests
 import os
+import json
 from app.utils.salary_extractor import extract_salary
 
 
