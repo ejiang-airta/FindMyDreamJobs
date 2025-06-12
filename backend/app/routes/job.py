@@ -222,8 +222,8 @@ async def get_saved_jobs(user_id: int, db: Session = Depends(get_db)):
             "job_employment_type": s.job_employment_type,
             "job_salary": s.job_salary or extract_salary(s.job_description or ""),
             "job_google_link": s.job_apply_link,
+            "job_description": s.job_description,
             "job_posted_at_datetime_utc": (s.job_posted_at.isoformat() if s.job_posted_at else datetime.utcnow().isoformat()),
-
         }
         for s in saved
     ]

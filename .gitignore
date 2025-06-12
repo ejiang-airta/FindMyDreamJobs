@@ -39,6 +39,7 @@ job*.html
 job_output*.json
 jobs_list_*.json
 out*.txt
+saved*.csv
 
 job_find.*
 job_output.json

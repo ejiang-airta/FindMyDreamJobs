@@ -27,6 +27,18 @@ def extract_salary_info(job_description: str) -> Optional[SalaryInfo]:
     
     # Comprehensive salary patterns - ordered by specificity
     patterns = [
+        # create a pattern for "The pay range for this role is: 140,000 - 200,000 CAD per year"
+        r'(?:pay range for this role is[:\s]*)?(\d{1,3}(?:,\d{3})*)\s*[-–—]\s*(\d{1,3}(?:,\d{3})*)\s*(CAD|USD)?\s*(?:per year|annually)?',
+        
+       
+        # Pattern for "Salary: 140-150K"
+        r'salary\s*:\s*(\d{1,3})\s*[-–—]\s*(\d{1,3})\s*K',
+
+        # Pattern 2: Salary keyword followed by range with K suffix
+        # e.g., "Salary: 140-150K", "Pay: 80-90K"
+        r'(?:salary|compensation|pay|wage)\s*:\s*(\d{1,3}(?:,\d{3})*)\s*[-–—]\s*(\d{1,3}(?:,\d{3})*)\s*[kKmM](?!\w)'
+
+
         # Complex ranges with multiple amounts (like example 1)
         r'(?:salary|pay|compensation).*?(?:range|is).*?'
         r'\$\s?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)\s*(?:to)\s*'
