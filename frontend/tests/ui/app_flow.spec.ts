@@ -5,7 +5,7 @@ import path from 'path';
 import fs from 'fs';
 import { time } from 'console';
 
-const TEST_ENV = process.env.ENV || 'dev'; // Default to production
+const TEST_ENV = process.env.ENV || 'prod'; // Default to production
 const BASE_URL = TEST_ENV === 'dev' 
   ? 'http://localhost:3000' 
   : 'https://findmydreamjobs.com'; 
