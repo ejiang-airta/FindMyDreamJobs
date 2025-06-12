@@ -279,8 +279,8 @@ function JobsPage() {
                     : `${job.job_description?.slice(0, 200)}... `
                 )
                   ?.split(/\n+/)
-                  .filter((line) => line.trim() !== '')
-                  .map((line, index) => {
+                  .filter((line: string) => line.trim() !== '')
+                  .map((line: string, index: number) => {
                     const trimmedLine = line.trim();
                     const isBullet = trimmedLine.startsWith('•');
 
