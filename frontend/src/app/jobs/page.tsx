@@ -33,6 +33,8 @@ function JobsPage() {
   const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set())
   const [analyzedJobIds, setAnalyzedJobIds] = useState<Set<string>>(new Set())
   const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set())
+  const [showFullDescription, setShowFullDescription] = useState<{ [jobId: string]: boolean }>({})
+  const [savedJobsList, setSavedJobsList] = useState<any[]>([]);
   const router = useRouter()
 
   useEffect(() => {
@@ -47,7 +49,6 @@ function JobsPage() {
         })
         .catch(err => console.error("Failed to fetch saved jobs:", err));
     }
-
     const analyzed = localStorage.getItem("analyzed_jobs")
     if (analyzed) setAnalyzedJobIds(new Set(JSON.parse(analyzed)))
 
@@ -62,6 +63,13 @@ function JobsPage() {
     setLocation(storedLocation)
     if (storedResults) setJobs(JSON.parse(storedResults))
   }, [])
+
+
+  useEffect(() => {
+    if (activeTab === 'saved' && userId) {
+      loadSavedJobs();
+    }
+  }, [activeTab, userId]);
 
   const persistSearch = (query: string, location: string, results: any[]) => {
     localStorage.setItem("last_query", query)
@@ -83,6 +91,19 @@ function JobsPage() {
     }
     setLoading(false)
   }
+
+  const loadSavedJobs = async () => {
+    try {
+      const res = await axios.get(`${BACKEND_BASE_URL}/saved-jobs/${userId}`);
+      const saved = res.data || [];
+      const ids = new Set<string>(saved.map((job: any) => job.search_id).filter(Boolean));
+      setSavedJobIds(ids);
+      setSavedJobsList(saved);   // ✅ Add this line
+    } catch (err) {
+      console.error("Failed to fetch saved jobs:", err);
+    }
+  };
+
 
   const handleAnalyze = async (job: any) => {
     try {
@@ -164,15 +185,18 @@ function JobsPage() {
     }
   };
 
-  const tabFilteredJobs = jobs.filter(job => {
-    const jobId = job.job_id;
-    switch (activeTab) {
-      case 'saved': return savedJobIds.has(jobId);
-      case 'analyzed': return analyzedJobIds.has(jobId);
-      case 'applied': return appliedJobIds.has(jobId);
-      default: return true;
-    }
-  })
+  const tabFilteredJobs =
+  activeTab === 'saved'
+    ? savedJobsList
+    : jobs.filter(job => {
+        const jobId = job.job_id;
+        switch (activeTab) {
+          case 'analyzed': return analyzedJobIds.has(jobId);
+          case 'applied': return appliedJobIds.has(jobId);
+          default: return true;
+        }
+      });
+
 
   const getTabCount = (type: string) => {
     switch (type) {
@@ -240,15 +264,53 @@ function JobsPage() {
                   {postedAt ? new Date(postedAt).toLocaleDateString() : "Unknown"}
                 </div>
                 
-                {(job.job_salary || job.salary) && (
-                  <div className="flex items-center gap-1">
-                    <WalletIcon className="h-4 w-4" />
-                    {job.job_salary || job.salary}
-                  </div>
-                )}
+                <div className="flex items-center gap-1">
+                  <WalletIcon className="h-4 w-4" />
+                  {(job.job_salary && job.job_salary.trim()) ? job.job_salary
+                    : (job.salary && job.salary.trim()) ? job.salary
+                    : "Unknown"}
+                </div>
 
               </div>
-              <p className="text-sm text-gray-700 line-clamp-3">{job.job_description || job.description || "No description available."}</p>
+              <div className="text-gray-600 space-y-2">
+                {(
+                  showFullDescription[job.job_id]
+                    ? job.job_description
+                    : `${job.job_description?.slice(0, 200)}... `
+                )
+                  ?.split(/\n+/)
+                  .filter((line) => line.trim() !== '')
+                  .map((line, index) => {
+                    const trimmedLine = line.trim();
+                    const isBullet = trimmedLine.startsWith('•');
+
+                    if (isBullet) {
+                      return (
+                        <li key={index} className="ml-4 list-disc">
+                          {trimmedLine.slice(1).trim()}
+                        </li>
+                      );
+                    } else {
+                      return <p key={index}>{trimmedLine}</p>;
+                    }
+                  })}
+
+                {job.job_description?.length > 200 && (
+                  <button
+                    onClick={() =>
+                      setShowFullDescription((prev) => ({
+                        ...prev,
+                        [job.job_id]: !prev[job.job_id],
+                      }))
+                    }
+                    className="text-blue-500 underline ml-2"
+                  >
+                    {showFullDescription[job.job_id] ? 'Show Less' : 'Full Description'}
+                  </button>
+                )}
+              </div>
+
+
               <div className="flex gap-2">
                 <AppButton variant="ghost" size="sm" onClick={() => handleSave(job)} className={isSaved ? "bg-blue-50" : ""}>
                   <Bookmark className="h-4 w-4 mr-1" /> {isSaved ? "Saved" : "Save"}
