@@ -31,9 +31,11 @@ export default function HomePage() {
     <div className="min-h-screen bg-gradient-to-b from-blue-600 to-blue-400 text-white text-center p-10">
       <h1 className="text-5xl font-extrabold mb-4">Find Your Dream Job</h1>
       <p className="text-lg mb-8">
-        Upload your resume and let our AI match you with the perfect job opportunities.
+        Upload your resume and let our AI match you with the perfect job opportunities. 
       </p>
-
+      <p className="text-lg font-semibold mb-8">
+        IMPORTANT: Sign-up now for a two-week free trial!
+      </p>
       {session?.user && (
         <p className="text-md font-semibold mb-6">
           Welcome back, {session.user.name}!
