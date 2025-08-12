@@ -38,7 +38,7 @@ def submit_application(req: ApplicationRequest, db: Session = Depends(get_db)):
         job_id=req.job_id,
         resume_id=req.resume_id,
         application_url=req.application_url,
-        application_status="In Progress",
+        application_status="Application Submitted",
         applied_date=datetime.now(timezone.utc)
     )
 
