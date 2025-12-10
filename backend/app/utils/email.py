@@ -1,3 +1,5 @@
+# ✅ File: backend/app/utils/email.py
+# Sends password reset emails using MailerSend SMTP with a friendly display name.
 
 import smtplib
 from email.mime.text import MIMEText
