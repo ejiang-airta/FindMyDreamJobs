@@ -58,3 +58,6 @@ debug.json
 
 # this is an alternative to use the Adzuna API, ignore for how:
 job_search_adzuna.py
+
+# exclude the chatGPT memory files:
+FindMyDreamJobs_ProjectState_June2025.txt

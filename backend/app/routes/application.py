@@ -85,6 +85,8 @@ def get_user_applications(user_id: int, db: Session = Depends(get_db)):
             Application.job_id,
             Job.job_title,
             Job.company_name,
+            Job.salary,
+            Job.location,
             Resume.resume_name,
             Application.resume_id,
             Application.application_status,
