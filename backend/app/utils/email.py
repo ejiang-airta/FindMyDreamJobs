@@ -11,14 +11,16 @@ from os import getenv
 load_dotenv()  # For local dev
 
 MAILERSEND_API_TOKEN = getenv("MAILERSEND_API_TOKEN")
+MAILERSEND_FROM=getenv("MAILERSEND_FROM", "MS_vLUg4T@findmydreamjobs.com")
 SMTP_HOST = getenv("SMTP_HOST", "smtp.mailersend.net")
 SMTP_PORT = int(getenv("SMTP_PORT", "587"))
-SMTP_USERNAME = getenv("SMTP_USER")  # e.g., MS_xxx@findmydreamjobs.com
+SMTP_USERNAME = getenv("SMTP_USER","MS_vLUg4T@findmydreamjobs.com")  # e.g., MS_xxx@findmydreamjobs.com
 DISPLAY_NAME = "Findmydreamjobs Team"
 SMTP_PASSWORD = getenv("SMTP_PASS")
 FROM_EMAIL = getenv("FROM_EMAIL", "noreply@example.com")
-ENVIRONMENT = getenv("Env", "dev")  # Use "production" in Render
+ENVIRONMENT = getenv("ENVIRONMENT", "development")  # Use "production" in Render
 FRONTEND_URL = getenv("FRONTEND_BASE_URL", "https://findmydreamjobs.com")  # Fallback for safety
+print(f"📧 Email ENVIRONMENT: {ENVIRONMENT}")
 
 
 # Main wrapper function
@@ -63,6 +65,7 @@ def send_with_smtp(to_email: str, subject: str, html_body: str):
 
 # Option 2: MailerSend API (Production)
 def send_with_mailersend(to_email: str, subject: str, html_body: str):
+    print("Using MailerSend token send email to ", to_email, " from ", SMTP_USERNAME)
     try:
         headers = {
             "Authorization": f"Bearer {MAILERSEND_API_TOKEN}",
@@ -71,7 +74,7 @@ def send_with_mailersend(to_email: str, subject: str, html_body: str):
 
         data = {
             "from": {
-                "email": SMTP_USERNAME,
+                "email": MAILERSEND_FROM,
                 "name": DISPLAY_NAME
             },
             "to": [{"email": to_email}],
@@ -80,7 +83,17 @@ def send_with_mailersend(to_email: str, subject: str, html_body: str):
         }
 
         response = requests.post("https://api.mailersend.com/v1/email", headers=headers, json=data)
-        response.raise_for_status()
-        print(f"✅ [MailerSend] Email sent to {to_email}")
+        if response.status_code >= 400:
+            print(f"❌ [MailerSend] Failed to send email. "
+                f"Status: {response.status_code}")
+            # NEW: dump the response body no matter what
+            try:
+                print("[MailerSend] Response JSON:", response.json())
+            except Exception:
+                print("[MailerSend] Response TEXT:", response.text)
+            # DO NOT raise here, since we want /auth/request-password-reset to stay 200
+            return
+
+        print("✅ [MailerSend] Email sent. Status:", response.status_code)
     except requests.exceptions.RequestException as e:
         print(f"❌ [MailerSend] Failed to send email: {e}")
