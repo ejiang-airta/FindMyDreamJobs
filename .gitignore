@@ -58,3 +58,20 @@ debug.json
 
 # this is an alternative to use the Adzuna API, ignore for how:
 job_search_adzuna.py
+
+# exclude the chatGPT memory files:
+FindMyDreamJobs_ProjectState_June2025.txt
+
+# exclude mock test files:
+Mailersend_API_access_token.txt
+backend/tests/unit/test_jobs.py
+frontend/debug-job-search.png
+frontend/debug-msw-not-working.png
+frontend/login-failure-1750358848003.png
+frontend/login-failure-1750358868384.png
+frontend/playwright/
+frontend/public/mockServiceWorker.js
+frontend/src/components/MSWStarter.tsx
+frontend/src/mocks/
+frontend/tests/ui/job_search.spec.ts
+frontend/tests/ui/saved_jobs.spec.ts

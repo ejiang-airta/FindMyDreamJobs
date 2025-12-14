@@ -167,8 +167,9 @@ function ApplicationsPage() {
             applications.map((app: any) => (
               <div key={app.application_id} className="border p-4 rounded-md">
                 <p><strong>📄 Job #:</strong>{app.job_id}: {app.job_title}</p>
-                <p><strong>🏢 Company:</strong> {app.company_name}</p>
-                <p><strong>📝 Resume #</strong>{app.resume_id}: {app.resume_name || 'Unnamed'}  
+                <p><strong>🏢 Company:</strong> {app.company_name}{/* Add a few non-breaking spaces here */}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>📍 Location:</strong> {app.location}</p>
+                <p><strong>💰 Salary Range:</strong> {app.salary ?? 'Unknown'}</p>
+                <p><strong>📄 Resume #:</strong> {app.resume_id}: {app.resume_name || 'Unnamed'}
                 <Button
                     className="ml-8"  // <-- adds left margin (space)
                     variant="outline"
@@ -197,7 +198,16 @@ function ApplicationsPage() {
                 <p><strong>📅 Date Applied:</strong> {new Date(app.applied_date).toLocaleDateString()}</p>
                 <div className="mt-2">
                   <div className="mt-2">
-                    <p>
+                    <p className="mt-2">
+                      <strong>📈 Scores:</strong>{" "}
+                      <Badge className="ml-2" variant="secondary">
+                        Match: {app.match_score ?? "—"}%
+                      </Badge>
+                      <Badge className="ml-2" variant="secondary">
+                        ATS: {app.ats_score ?? "—"}%
+                      </Badge>
+                    </p>
+                                        <p>
                       <strong>📊 Status:</strong> <Badge>{app.application_status}</Badge>
                     </p>
                     <div className="space-y-2 mt-2">
