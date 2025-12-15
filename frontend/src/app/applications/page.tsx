@@ -200,10 +200,10 @@ function ApplicationsPage() {
                   <div className="mt-2">
                     <p className="mt-2">
                       <strong>📈 Scores:</strong>{" "}
-                      <Badge className="ml-2" variant="secondary">
+                      <Badge className="ml-2">
                         Match: {app.match_score ?? "—"}%
                       </Badge>
-                      <Badge className="ml-2" variant="secondary">
+                      <Badge className="ml-2">
                         ATS: {app.ats_score ?? "—"}%
                       </Badge>
                     </p>
