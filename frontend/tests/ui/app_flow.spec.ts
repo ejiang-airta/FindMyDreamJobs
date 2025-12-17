@@ -220,28 +220,28 @@ test('Test# 16: User can apply to a job', async ({ page }) => {
   });
 })
 
-// // ✅ Forgot Password
-// test('Test# 17: Forgot password page works', async ({ page }) => {
-//   await page.goto(`${BASE_URL}/login`)
+// ✅ Forgot Password
+test('Test# 17: Forgot password page works', async ({ page }) => {
+  await page.goto(`${BASE_URL}/login`)
 
-//   await page.click('text=Forgot your password?');
-//   await expect(page.locator(':text("Reset your password")')).toBeVisible({ timeout: 20000 })
-//   await page.fill('input[type="email"]', 'e_jiang@hotmail.com')
-//   await page.waitForTimeout(500);  // wait for 0.5s
-//   await page.click('text=Send Reset Link')
+  await page.click('text=Forgot your password?');
+  await expect(page.locator(':text("Reset your password")')).toBeVisible({ timeout: 20000 })
+  await page.fill('input[type="email"]', 'e_jiang@hotmail.com')
+  await page.waitForTimeout(500);  // wait for 0.5s
+  await page.click('text=Send Reset Link')
   
-//   // Wait for button state to change
-//   await expect(page.locator('button:has-text("Sending...")')).toBeVisible();
+  // Wait for button state to change
+  await expect(page.locator('button:has-text("Sending...")')).toBeVisible();
 
-//   // Wait for the success message text to appear anywhere on the page
-//   await expect(page.locator('body')).toContainText('Password reset email sent! Redirecting to Home', { 
-//     timeout: 20000 
-//   });
+  // Wait for the success message text to appear anywhere on the page
+  await expect(page.locator('body')).toContainText('Password reset email sent! Redirecting to Home', { 
+    timeout: 20000 
+  });
 
-//   // If email sent successfully, we should see home page:
-//   await expect(page).toHaveURL(`${BASE_URL}`, { timeout: 20000 })
+  // If email sent successfully, we should see home page:
+  await expect(page).toHaveURL(`${BASE_URL}`, { timeout: 20000 })
     
-//   });
+  });
 
 // ✅ Unauthorized route guard
 test('Test# 18: Unauthorized user is redirected to login page', async ({ page }) => {
