@@ -1,3 +1,4 @@
+# backend/app/models/job.py
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.orm import relationship
 from app.database.connection import Base
@@ -13,6 +14,7 @@ class Job(Base):
     job_title = Column(String, nullable=False)
     company_name = Column(String, nullable=False)
     location = Column(String, nullable=True)
+    applicants_count = Column(String, nullable=True)  # enhancement on Dec.20,2025 to record info from LinkedIn e.g. "100+"
     job_description = Column(Text, nullable=False)  # 🛑 Change from String → Text for large JD content
     job_link = Column(String, nullable=True)
     extracted_skills = Column(JSONB, nullable=True)  # ✅ Store as an 2D array /w skills/frequency

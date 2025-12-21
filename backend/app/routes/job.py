@@ -23,6 +23,29 @@ router = APIRouter()
 # Load spaCy model
 nlp = spacy.load("en_core_web_sm")
 
+from pydantic import BaseModel
+from typing import Optional
+
+class JobUpdateIn(BaseModel):
+    job_title: Optional[str] = None
+    company_name: Optional[str] = None
+    location: Optional[str] = None
+    salary: Optional[str] = None
+    applicants_count: Optional[str] = None
+
+@router.put("/jobs/{job_id}", tags=["Jobs"])
+def update_job(job_id: int, payload: JobUpdateIn, db: Session = Depends(get_db)):
+    job = db.query(Job).filter(Job.id == job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+
+    # Update only provided fields
+    for field, value in payload.dict(exclude_unset=True).items():
+        setattr(job, field, value)
+
+    db.commit()
+    db.refresh(job)
+    return job
 
 
 @router.post("/parse-job-description", tags=["Jobs"])

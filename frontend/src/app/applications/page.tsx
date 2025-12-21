@@ -169,6 +169,7 @@ function ApplicationsPage() {
                 <p><strong>📄 Job #:</strong>{app.job_id}: {app.job_title}</p>
                 <p><strong>🏢 Company:</strong> {app.company_name}{/* Add a few non-breaking spaces here */}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>📍 Location:</strong> {app.location}</p>
                 <p><strong>💰 Salary Range:</strong> {app.salary ?? 'Unknown'}</p>
+                <p><strong>👥 # of Applicants:</strong> {app.applicants_count ?? "Unknown"}</p>
                 <p><strong>📄 Resume #:</strong> {app.resume_id}: {app.resume_name || 'Unnamed'}
                 <Button
                     className="ml-8"  // <-- adds left margin (space)
