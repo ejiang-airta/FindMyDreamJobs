@@ -30,6 +30,7 @@ class JobUpdateIn(BaseModel):
     job_title: Optional[str] = None
     company_name: Optional[str] = None
     location: Optional[str] = None
+    job_link: Optional[str] = None
     salary: Optional[str] = None
     applicants_count: Optional[str] = None
 

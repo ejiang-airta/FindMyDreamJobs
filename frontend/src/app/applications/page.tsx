@@ -51,7 +51,7 @@ function ApplicationsPage() {
   const [customStatus, setCustomStatus] = useState<{ [key: number]: string }>({})
   const [isLoading, setIsLoading] = useState(false)
   const [updatingStatus, setUpdatingStatus] = useState<{ [key: number]: boolean }>({})
-
+  
   const userId = useUserId()
 
   useEffect(() => {
@@ -62,7 +62,8 @@ function ApplicationsPage() {
     fetchApplications()
   }, [userId])
 
-
+  
+  
   const fetchApplications = async () => {
     setIsLoading(true)
     try {
@@ -170,7 +171,27 @@ function ApplicationsPage() {
                 <p><strong>🏢 Company:</strong> {app.company_name}{/* Add a few non-breaking spaces here */}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>📍 Location:</strong> {app.location}</p>
                 <p><strong>💰 Salary Range:</strong> {app.salary ?? 'Unknown'}</p>
                 <p><strong>👥 # of Applicants:</strong> {app.applicants_count ?? "Unknown"}</p>
-                <p><strong>📄 Resume #:</strong> {app.resume_id}: {app.resume_name || 'Unnamed'}
+                {(() => {
+                  const url = (app.job_link ?? "").trim() || (app.application_url ?? "").trim()
+                  return (
+                    <p>
+                      <strong>🔗 URL: </strong>
+                      {url ? (
+                        <a
+                          href={url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-blue-600 underline break-all"
+                        >
+                          {url}
+                        </a>
+                      ) : (
+                        <span className="text-muted-foreground">N/A</span>
+                      )}
+                    </p>
+                  )
+                })()}
+                 <p><strong>📄 Resume #:</strong> {app.resume_id}: {app.resume_name || 'Unnamed'}
                 <Button
                     className="ml-8"  // <-- adds left margin (space)
                     variant="outline"
@@ -195,7 +216,6 @@ function ApplicationsPage() {
                     ⬇️ Download 
                     </Button>
                 </p>
-                <p><strong>🔗 URL:</strong> <a href={app.application_url} target="_blank" className="text-blue-600 underline">{app.application_url}</a></p>
                 <p><strong>📅 Date Applied:</strong> {new Date(app.applied_date).toLocaleDateString()}</p>
                 <div className="mt-2">
                   <div className="mt-2">
