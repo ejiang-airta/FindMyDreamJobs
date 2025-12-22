@@ -23,6 +23,7 @@ type ParsedJobResponse = {
   title?: string
   company?: string
   location?: string
+  job_link: string
   salary?: string
   experience?: string
   skills?: {
@@ -36,6 +37,7 @@ type JobDraft = {
   job_title: string
   company_name: string
   location: string
+  job_link: string
   salary: string
   applicants_count: string // ✅ string like "100+"
 }
@@ -54,6 +56,7 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
     job_title: '',
     company_name: '',
     location: '',
+    job_link: '',
     salary: '',
     applicants_count: '',
   })
@@ -115,6 +118,7 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
         job_id: result.job_id,
         job_title: result.title ?? '',
         company_name: result.company ?? '',
+        job_link: result.job_link,
         location: result.location ?? '',
         salary: result.salary ?? '',
         // applicants_count is user input; keep whatever user typed previously
@@ -144,6 +148,7 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
           job_title: jobDraft.job_title,
           company_name: jobDraft.company_name,
           location: jobDraft.location,
+          job_link: jobDraft.job_link,
           salary: jobDraft.salary,
           applicants_count: jobDraft.applicants_count,
         }),
@@ -232,15 +237,22 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
             </div>
 
             <div>
+              <label className="text-sm font-medium">Job Link URL</label>
+              <Input
+                value={jobDraft.job_link}
+                onChange={(e) => setJobDraft({ ...jobDraft, job_link: e.target.value })}
+                placeholder='e.g., "https://www.linkedin.com/jobs/view/4336963628/"'
+              />
+            </div>
+            <div>
               <label className="text-sm font-medium"># of Applicants</label>
               <Input
                 value={jobDraft.applicants_count}
-                onChange={(e) => setJobDraft({ ...jobDraft, applicants_count: e.target.value })}
+                onChange={(e) => setJobDraft({ ...jobDraft,applicants_count: e.target.value })}
                 placeholder='e.g., "100+"'
               />
             </div>
           </div>
-
           <Button
             className="bg-green-600 text-white hover:bg-green-700"
             onClick={handleSave}
