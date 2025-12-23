@@ -31,7 +31,7 @@ const STATUS_OPTIONS = [
   "Rejected",
   "Interview",
   "Offered",
-  "Other"
+  "Others"
 ];
 
 // ✅ MOVE FilterDropdown OUTSIDE the ApplicationsPage component
@@ -82,9 +82,10 @@ function FilterDropdown({
           <ChevronDown className="h-4 w-4 opacity-60" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent 
+      <PopoverContent
         className="w-64 space-y-3"
-        onInteractOutside={(e) => e.preventDefault()}
+        onMouseLeave={() => onOpenChange(false)}   // ✅ close when mouse leaves dropdown
+        onInteractOutside={() => onOpenChange(false)} // ✅ close when click outside
       >
         <div className="font-semibold">Status</div>
         <label className="flex items-center gap-2 cursor-pointer">
@@ -201,18 +202,30 @@ function ApplicationsPage() {
   // Filtered + Sorted applications
   const filteredSortedApplications = React.useMemo(() => {
     const apps = Array.isArray(applications) ? [...applications] : []
-  // Filter by status
+    const PREDEFINED = STATUS_OPTIONS.filter(s => s !== "Others")
+    const selectedHasOther = filterStatuses.includes("Others")
+
+    // Filter by status
     const filtered =
       filterStatuses.length === 0
         ? []
-        : apps.filter((a: any) => filterStatuses.includes(a.application_status))
+        : apps.filter((a: any) => {
+            const status = (a.application_status ?? "").trim()
 
-  // Sorting
-    const dir = sortDir === 'asc' ? 1 : -1
-    const getNumber = (v: any) => {
-      const n = Number(v)
-      return Number.isFinite(n) ? n : -Infinity
-    }
+            const isPredefined = PREDEFINED.includes(status)
+
+            // Normal statuses: match by exact selection
+            if (isPredefined) return filterStatuses.includes(status)
+
+            // Everything else: treated as "Others"
+            return selectedHasOther
+          })
+    // Sorting
+      const dir = sortDir === 'asc' ? 1 : -1
+      const getNumber = (v: any) => {
+        const n = Number(v)
+        return Number.isFinite(n) ? n : -Infinity
+      }
 
     filtered.sort((a: any, b: any) => {
       let va: any
@@ -281,11 +294,11 @@ function ApplicationsPage() {
   const handleStatusChange = (applicationId: number, status: string) => {
     setSelectedStatus(prev => ({ ...prev, [applicationId]: status }));
     
-    // If status is not "Other", update the status value directly
-    if (status !== "Other") {
+    // If status is not "Others", update the status value directly
+    if (status !== "Others") {
       setUpdateStatus(prev => ({ ...prev, [applicationId]: status }));
     } else {
-      // If "Other" is selected, use the custom status if available, or empty string
+      // If "Others" is selected, use the custom status if available, or empty string
       setUpdateStatus(prev => ({ 
         ...prev, 
         [applicationId]: customStatus[applicationId] || '' 
@@ -458,7 +471,7 @@ function ApplicationsPage() {
                       </SelectContent>
                     </Select>
                     
-                    {selectedStatus[app.application_id] === "Other" && (
+                    {selectedStatus[app.application_id] === "Others" && (
                       <Input
                         type="text"
                         placeholder="Enter custom status"
