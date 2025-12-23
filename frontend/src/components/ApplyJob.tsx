@@ -51,8 +51,8 @@ const ApplyJob: React.FC<ApplyJobProps> = ({ userId, isWizard = false, onSuccess
     setMessage('')
     setError('')
 
-    if (!resumeId || !jobId || !applicationUrl) {
-      setError('⚠️ All fields are required.')
+    if (!resumeId || !jobId ) {
+      setError('⚠️ Resume and Job fields are both required.')
       return
     }
 
@@ -63,7 +63,7 @@ const ApplyJob: React.FC<ApplyJobProps> = ({ userId, isWizard = false, onSuccess
         body: JSON.stringify({
           resume_id: parseInt(resumeId),
           job_id: parseInt(jobId),
-          application_url: applicationUrl.trim(),
+          application_url: applicationUrl?.trim() || null
         }),
       })
 

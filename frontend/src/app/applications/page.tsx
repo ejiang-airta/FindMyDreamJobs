@@ -2,7 +2,7 @@
 // This page is for displaying all the job applications made by the user.
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react' 
 import { Card, CardHeader, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { AppButton } from '@/components/ui/AppButton'
@@ -11,8 +11,10 @@ import { Input } from '@/components/ui/input'
 import { useUserId } from '@/hooks/useUserId'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { BACKEND_BASE_URL }  from '@/lib/env'
 import { Protected } from '@/components/Protected'
+import { ChevronDown } from "lucide-react" // Use lucide icon
 import {
   Select,
   SelectContent,
@@ -32,7 +34,132 @@ const STATUS_OPTIONS = [
   "Other"
 ];
 
-// This ensures page is only accessible to authenticated users:
+// ✅ MOVE FilterDropdown OUTSIDE the ApplicationsPage component
+function FilterDropdown({
+  options,
+  selected,
+  appliedSelected,
+  onChange,
+  open,
+  onOpenChange,
+  onApply,
+}: {
+  options: string[]
+  selected: string[]
+  appliedSelected: string[]
+  onChange: (v: string[]) => void
+  open: boolean
+  onOpenChange: (v: boolean) => void
+  onApply: () => void
+}) {
+  const allSelected = selected.length === options.length
+
+  const toggleAll = useCallback(() => {
+    onChange(allSelected ? [] : [...options])
+  }, [allSelected, options, onChange])
+  
+  const toggleOne = useCallback((s: string) => {
+    onChange(selected.includes(s) ? selected.filter(x => x !== s) : [...selected, s])
+  }, [selected, onChange])
+  
+  const appliedCount = appliedSelected.length
+  const label =
+    appliedCount === 0
+      ? "Filter (0)"
+      : appliedCount === options.length
+      ? "Filter (All)"
+      : `Filter (${appliedCount})`
+  
+  const handleCheckboxClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation()
+  }, [])
+
+  return (
+    <Popover open={open} onOpenChange={onOpenChange}>
+      <PopoverTrigger asChild>
+        <Button variant="outline" className="w-[240px] justify-between">
+          <span>{label}</span>
+          <ChevronDown className="h-4 w-4 opacity-60" />
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent 
+        className="w-64 space-y-3"
+        onInteractOutside={(e) => e.preventDefault()}
+      >
+        <div className="font-semibold">Status</div>
+        <label className="flex items-center gap-2 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={allSelected}
+            onClick={handleCheckboxClick}
+            onChange={toggleAll}
+          />
+          <span>ALL</span>
+        </label>
+        <div className="space-y-2">
+          {options.map((s) => (
+            <label key={s} className="flex items-center gap-2 cursor-pointer">
+              <input
+                type="checkbox"
+                checked={selected.includes(s)}
+                onClick={handleCheckboxClick}
+                onChange={() => toggleOne(s)}
+              />
+              <span>{s}</span>
+            </label>
+          ))}
+        </div>
+        <p className="text-xs text-muted-foreground">Multiple selections allowed</p>
+        <div className="flex justify-end gap-2 pt-2 border-t">
+          <Button variant="outline" size="sm" onClick={() => onOpenChange(false)}>
+            Cancel
+          </Button>
+          <AppButton size="sm" onClick={onApply}>
+            Apply
+          </AppButton>
+        </div>
+      </PopoverContent>
+    </Popover>
+  )
+}
+
+// ✅ MOVE SortDropdown OUTSIDE too
+function SortDropdown({
+  sortBy,
+  sortDir,
+  onSortByChange,
+  onSortDirChange,
+}: {
+  sortBy: string
+  sortDir: "asc" | "desc"
+  onSortByChange: (v: any) => void
+  onSortDirChange: (v: any) => void
+}) {
+  return (
+    <div className="flex items-center gap-2">
+      <Select value={sortBy} onValueChange={(v) => onSortByChange(v)}>
+        <SelectTrigger className="w-[240px]">
+          <SelectValue placeholder="Sort by" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="applied_date">Applied Date</SelectItem>
+          <SelectItem value="match_score">Match Score</SelectItem>
+          <SelectItem value="ats_score">ATS Score</SelectItem>
+          <SelectItem value="company_name">Company</SelectItem>
+          <SelectItem value="job_title">Job Title</SelectItem>
+        </SelectContent>
+      </Select>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => onSortDirChange(sortDir === "asc" ? "desc" : "asc")}
+      >
+        {sortDir === "asc" ? "Asc" : "Desc"}
+      </Button>
+    </div>
+  )
+}
+
 export default function ProtectedPage() {
   return (
     <Protected>
@@ -52,18 +179,87 @@ function ApplicationsPage() {
   const [isLoading, setIsLoading] = useState(false)
   const [updatingStatus, setUpdatingStatus] = useState<{ [key: number]: boolean }>({})
   
+  // ✅ Filter + Sort (client-side)
+  const FILTER_STATUS_OPTIONS = STATUS_OPTIONS // reuse same list
+  const [filterStatuses, setFilterStatuses] = useState<string[]>(FILTER_STATUS_OPTIONS) // default ALL selected
+  const [sortBy, setSortBy] = useState<'applied_date' | 'match_score' | 'ats_score' | 'company_name' | 'job_title'>('applied_date')
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
+  const [filterOpen, setFilterOpen] = useState(false)
+  const [pendingStatuses, setPendingStatuses] = useState<string[]>(filterStatuses)
+
+  //When user opens popover, we want pending = current:
+  useEffect(() => {
+    if (filterOpen) setPendingStatuses(filterStatuses)
+  }, [filterOpen, filterStatuses])
+  
+  // Apply button action
+  const applyFilter = useCallback(() => {
+    setFilterStatuses(pendingStatuses)
+    setFilterOpen(false)
+  }, [pendingStatuses])
+
+  // Filtered + Sorted applications
+  const filteredSortedApplications = React.useMemo(() => {
+    const apps = Array.isArray(applications) ? [...applications] : []
+  // Filter by status
+    const filtered =
+      filterStatuses.length === 0
+        ? []
+        : apps.filter((a: any) => filterStatuses.includes(a.application_status))
+
+  // Sorting
+    const dir = sortDir === 'asc' ? 1 : -1
+    const getNumber = (v: any) => {
+      const n = Number(v)
+      return Number.isFinite(n) ? n : -Infinity
+    }
+
+    filtered.sort((a: any, b: any) => {
+      let va: any
+      let vb: any
+
+      switch (sortBy) {
+        case 'company_name':
+          va = (a.company_name ?? '').toString().toLowerCase()
+          vb = (b.company_name ?? '').toString().toLowerCase()
+          break
+        case 'job_title':
+          va = (a.job_title ?? '').toString().toLowerCase()
+          vb = (b.job_title ?? '').toString().toLowerCase()
+          break
+        case 'match_score':
+          va = getNumber(a.match_score)
+          vb = getNumber(b.match_score)
+          break
+        case 'ats_score':
+          va = getNumber(a.ats_score)
+          vb = getNumber(b.ats_score)
+          break
+        case 'applied_date':
+        default:
+          va = new Date(a.applied_date).getTime()
+          vb = new Date(b.applied_date).getTime()
+          break
+      }
+
+      if (va < vb) return -1 * dir
+      if (va > vb) return 1 * dir
+      return 0
+    })
+
+    return filtered
+  }, [applications, filterStatuses, sortBy, sortDir])
+
   const userId = useUserId()
 
   useEffect(() => {
     if (!userId) {
-      console.warn('❌ No valid user ID found.')
+      console.warn('⚠ No valid user ID found.')
       return
     }
     fetchApplications()
-  }, [userId])
+  }, [userId])  
 
-  
-  
   const fetchApplications = async () => {
     setIsLoading(true)
     try {
@@ -76,9 +272,9 @@ function ApplicationsPage() {
 
       setApplications(data)
     } catch (err) {
-        setError('❌ Failed to load applications. Please try again later.')
+      setError('⚠ Failed to load applications. Please try again later.')
     } finally {
-        setIsLoading(false)
+      setIsLoading(false)
     }
   }
 
@@ -125,7 +321,7 @@ function ApplicationsPage() {
       const result = await response.json();
   
       if (!response.ok) {
-        alert(`❌ ${result.detail || "Failed to update status."}`);
+        alert(`⚠ ${result.detail || "Failed to update status."}`);
         return;
       }
   
@@ -137,13 +333,13 @@ function ApplicationsPage() {
       setSelectedStatus(prev => ({ ...prev, [applicationId]: "" }));
       setCustomStatus(prev => ({ ...prev, [applicationId]: "" }));
     } catch (err) {
-      console.error("❌ Network error:", err);
-      alert("❌ Network error occurred.");
+      console.error("⚠ Network error:", err);
+      alert("⚠ Network error occurred.");
     } finally {
       setUpdatingStatus(prev => ({ ...prev, [applicationId]: false }));
     }
   };
-  
+
   return (
     <div className="max-w-4xl mx-auto mt-10 space-y-6">
       <h1 className="text-2xl font-bold">📌 Your Job Applications</h1>
@@ -158,14 +354,43 @@ function ApplicationsPage() {
       )}
 
       <Card>
-        <CardHeader>
-          <h2 className="text-xl font-bold">🧾 Application History</h2>
+        <CardHeader className="space-y-3">
+          <div className="flex items-center justify-between gap-3">
+            <h2 className="text-xl font-bold">🧾 Application History</h2>
+            <div className="text-sm text-muted-foreground">
+              Showing <strong>{filteredSortedApplications.length}</strong> of{" "}
+              <strong>{applications.length}</strong>
+            </div>
+          </div>
+
+          <div className="flex items-center justify-between gap-3">
+            {/* Left: Filter + Apply */}
+            <div className="flex items-center gap-3">
+              <FilterDropdown
+                options={STATUS_OPTIONS}
+                selected={pendingStatuses}          // used inside the checkbox list
+                appliedSelected={filterStatuses}    // used for the trigger label (freeze)
+                onChange={setPendingStatuses}
+                open={filterOpen}
+                onOpenChange={setFilterOpen}
+                onApply={applyFilter}
+              />
+            </div>
+
+            {/* Right: Sort */}
+            <SortDropdown
+              sortBy={sortBy}
+              sortDir={sortDir}
+              onSortByChange={setSortBy}
+              onSortDirChange={setSortDir}
+            />
+          </div>
         </CardHeader>
         <CardContent className="space-y-4">
-        {isLoading ? (
+          {isLoading ? (
             <Skeleton className="h-10 w-full" />
           ) : applications.length > 0 ? (
-            applications.map((app: any) => (
+            filteredSortedApplications.map((app: any) => (
               <div key={app.application_id} className="border p-4 rounded-md">
                 <p><strong>📄 Job #:</strong>{app.job_id}: {app.job_title}</p>
                 <p><strong>🏢 Company:</strong> {app.company_name}{/* Add a few non-breaking spaces here */}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<strong>📍 Location:</strong> {app.location}</p>
@@ -177,12 +402,7 @@ function ApplicationsPage() {
                     <p>
                       <strong>🔗 URL: </strong>
                       {url ? (
-                        <a
-                          href={url}
-                          target="_blank"
-                          rel="noreferrer"
-                          className="text-blue-600 underline break-all"
-                        >
+                        <a href={url} target="_blank" rel="noreferrer" className="text-blue-600 underline break-all">
                           {url}
                         </a>
                       ) : (
@@ -197,9 +417,8 @@ function ApplicationsPage() {
                     variant="outline"
                     size="sm"
                     onClick={async () => {
-                        try {
+                      try {
                         const res = await fetch(`${BACKEND_BASE_URL}/download-resume/${app.resume_id}`)
-                        
                         const blob = await res.blob()
                         const url = window.URL.createObjectURL(blob)
                         const a = document.createElement('a')
@@ -207,65 +426,55 @@ function ApplicationsPage() {
                         a.download = `resume_${app.resume_id}.txt`
                         a.click()
                         window.URL.revokeObjectURL(url)
-                        } catch (err) {
-                        alert("❌ Failed to download resume.")
+                      } catch (err) {
+                        alert("⚠ Failed to download resume.")
                         console.error(err)
-                        }
+                      }
                     }}
-                    >
+                  >
                     ⬇️ Download 
-                    </Button>
+                  </Button>
                 </p>
                 <p><strong>📅 Date Applied:</strong> {new Date(app.applied_date).toLocaleDateString()}</p>
                 <div className="mt-2">
-                  <div className="mt-2">
-                    <p className="mt-2">
-                      <strong>📈 Scores:</strong>{" "}
-                      <Badge className="ml-2">
-                        Match: {app.match_score ?? "—"}%
-                      </Badge>
-                      <Badge className="ml-2">
-                        ATS: {app.ats_score ?? "—"}%
-                      </Badge>
-                    </p>
-                                        <p>
-                      <strong>📊 Status:</strong> <Badge>{app.application_status}</Badge>
-                    </p>
-                    <div className="space-y-2 mt-2">
-                      <Select
-                        value={selectedStatus[app.application_id] || ""}
-                        onValueChange={(value) => handleStatusChange(app.application_id, value)}
-                      >
-                        <SelectTrigger className="w-full">
-                          <SelectValue placeholder="Select new status" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {STATUS_OPTIONS.map((status) => (
-                            <SelectItem key={status} value={status}>
-                              {status}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      
-                      {selectedStatus[app.application_id] === "Other" && (
-                        <Input
-                          type="text"
-                          placeholder="Enter custom status"
-                          value={customStatus[app.application_id] || ''}
-                          onChange={(e) => handleCustomStatusChange(app.application_id, e.target.value)}
-                        />
-                      )}
-                      
-                      <AppButton
-                        size="sm"
-                        className="mt-2"
-                        disabled={updatingStatus[app.application_id] || !updateStatus[app.application_id]}
-                        onClick={() => handleStatusUpdate(app.application_id)}
-                      >
-                        {updatingStatus[app.application_id] ? "Updating..." : "🔄 Update"}
-                      </AppButton>
-                    </div>
+                  <p className="mt-2">
+                    <strong>📈 Scores:</strong>{" "}
+                    <Badge className="ml-2">Match: {app.match_score ?? "—"}%</Badge>
+                    <Badge className="ml-2">ATS: {app.ats_score ?? "—"}%</Badge>
+                  </p>
+                  <p><strong>📊 Status:</strong> <Badge>{app.application_status}</Badge></p>
+                  <div className="space-y-2 mt-2">
+                    <Select
+                      value={selectedStatus[app.application_id] || ""}
+                      onValueChange={(value) => handleStatusChange(app.application_id, value)}
+                    >
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select new status" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STATUS_OPTIONS.map((status) => (
+                          <SelectItem key={status} value={status}>{status}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    
+                    {selectedStatus[app.application_id] === "Other" && (
+                      <Input
+                        type="text"
+                        placeholder="Enter custom status"
+                        value={customStatus[app.application_id] || ''}
+                        onChange={(e) => handleCustomStatusChange(app.application_id, e.target.value)}
+                      />
+                    )}
+                    
+                    <AppButton
+                      size="sm"
+                      className="mt-2"
+                      disabled={updatingStatus[app.application_id] || !updateStatus[app.application_id]}
+                      onClick={() => handleStatusUpdate(app.application_id)}
+                    >
+                      {updatingStatus[app.application_id] ? "Updating..." : "🔄 Update"}
+                    </AppButton>
                   </div>
                 </div>
               </div>
