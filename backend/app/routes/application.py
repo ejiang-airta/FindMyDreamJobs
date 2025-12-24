@@ -6,6 +6,7 @@ from app.models.application import Application
 from app.models.resume import Resume
 from app.models.match import JobMatch
 from sqlalchemy import func
+from typing import Optional  # Add this import at the top
 
 from app.models.job import Job
 from datetime import datetime, timezone
@@ -17,7 +18,7 @@ router = APIRouter()
 class ApplicationRequest(BaseModel):
     resume_id: int
     job_id: int
-    application_url: str
+    application_url: Optional[str] = None  # ✅ Make this optional with default None
 
 # Database Dependency
 def get_db():
