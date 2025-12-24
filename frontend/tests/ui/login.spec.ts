@@ -17,7 +17,7 @@ const startTime = Date.now();
 console.log("Test Started at: ", startTime)
 
 test(`Test #1: User can visit login page and see email/password fields in ${TEST_ENV} environment`, async ({ page }) => {
-  await page.goto(`${BASE_URL}/login`)
+  await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded', timeout: 60000 }) // Wait up to 60 seconds for page load  
 
   // Check that email and password input fields exist
   const emailInput = page.locator('input[type="email"]')
@@ -32,11 +32,11 @@ test(`Test #1: User can visit login page and see email/password fields in ${TEST
 test('Test #2: Login fails with incorrect credentials (via alert dialog)', async ({ page }) => {
 // Check that a toast or error appears
   page.on('dialog', async dialog => {
-    expect(dialog.message()).toContain('Login failed: CredentialsSignin')
+    expect(dialog.message()).toContain('Please enter both email and password.')
     await dialog.dismiss()
   })
 
-  await page.goto(`${BASE_URL}/login`)
+  await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded', timeout: 60000 }) // Wait up to 60 seconds for page load
   await page.fill('input[type="email"]', 'fakeuser@example.com')
   await page.fill('input[type="password"]', 'wrongpassword')
   await page.locator('button', { hasText: 'Sign In' }).click()

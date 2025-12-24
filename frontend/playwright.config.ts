@@ -5,6 +5,7 @@ export default defineConfig({
   testDir: './tests/ui',
   timeout: 30 * 1000,
   retries: 1,
+  globalSetup: './tests/ui/global-setup.ts',
   expect: {
     timeout: 5000,
   },
