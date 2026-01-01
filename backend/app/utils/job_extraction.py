@@ -133,12 +133,39 @@ def _clean_title_output(title: str) -> str:
     - Remove "at [Company]" suffix
     - Remove trailing punctuation
     - Strip location/remote tags
+    - STOP at natural boundaries where description begins
     """
     if not title:
         return ""
     
     # Remove leading articles and adjectives
-    title = re.sub(r"(?i)^(as a|as an|as the|and|an|a|the|experienced|hands-on|visionary|dynamic|talented|seasoned|successful|highly motivated|detail-oriented|strategic)\s+", "", title.strip())
+    title = re.sub(r"(?i)^(as a|as an|as|as the|and|an|a|the|experienced|hands-on|visionary|dynamic|talented|seasoned|successful|highly motivated|detail-oriented|strategic)\s+", "", title.strip())
+    
+    # STOP at boundaries - split and take first part only
+    # Pattern: ", you" or "you'll" or "you will"
+    if re.search(r",?\s+you['â€™\s]*(will|ll|are)", title, re.IGNORECASE):
+        title = re.split(r",?\s+you['â€™\s]*(will|ll|are)", title, flags=re.IGNORECASE)[0]
+    
+    # Pattern: "to [verb]"
+    if re.search(r"\s+to\s+(lead|join|build|drive|shape|define|help|partner)", title, re.IGNORECASE):
+        title = re.split(r"\s+to\s+(lead|join|build|drive|shape|define|help|partner)", title, flags=re.IGNORECASE)[0]
+    
+    # Pattern: "for our/the"
+    if re.search(r"\s+for\s+(our|the)\s", title, re.IGNORECASE):
+        title = re.split(r"\s+for\s+(our|the)\s", title, flags=re.IGNORECASE)[0]
+    
+    # Pattern: "with consulting/experience"
+    if re.search(r"\s+with\s+(consulting|experience)", title, re.IGNORECASE):
+        title = re.split(r"\s+with\s+(consulting|experience)", title, flags=re.IGNORECASE)[0]
+
+    # Pattern: "focused on"
+    if re.search(r"\s+focused\s+on", title, re.IGNORECASE):
+        title = re.split(r"\s+focused\s+on", title, flags=re.IGNORECASE)[0]
+
+    # Pattern: "is a senior ..."
+    if re.search(r"\s+is\s+a\s+(senior)?", title, re.IGNORECASE):
+        title = re.split(r"\s+is\s+a", title, flags=re.IGNORECASE)[0]
+
     
     # Remove "at [Company]" suffix
     title = re.split(r"\s+[Aa]t\s+", title)[0]
@@ -152,6 +179,9 @@ def _clean_title_output(title: str) -> str:
     
     # Clean trailing punctuation
     title = title.strip().strip(',').strip(':').strip('.')
+
+    # Remove trailing verbs/descriptions
+    title = re.split(r'\s+(for|to|will|you will|you\'ll|for our|to| is a senior|offers|specializes)', title)[0].strip()
     
     return _clean_spaces(title)
 
@@ -198,7 +228,10 @@ def _is_complete_title(text: str) -> bool:
         "serve as", "serves as", "responsible for",
         "headquartered", "based in", "located in",
         "will be", "will work", "will lead",
-        "you will", "who will", "we are", "who we are"
+        "you will", "who will", "we are", "who we are",
+        # Add specific failures from screenshots
+        "to define", "training sessions", "by example",
+        "successful candidate", "similar role"
     ]
     
     for indicator in description_indicators:
@@ -210,8 +243,9 @@ def _is_complete_title(text: str) -> bool:
         return False
     
     # Check if it starts with a verb (likely a responsibility, not title)
+    # BUT allow "Lead" and "Architect" as they can be titles
     verb_starts = ["define", "execute", "build", "develop", "ensure", "orchestrate", 
-                   "drive", "lead", "manage", "oversee", "provide", "create", "deliver",
+                   "drive", "manage", "oversee", "provide", "create", "deliver",
                    "establish", "implement", "coordinate", "support", "enhance"]
     
     if words[0] in verb_starts and len(words) > 5:
@@ -436,7 +470,7 @@ def _score_title_candidate(candidate: str, position: int, before_context: str,
     
     # Penalize if starts with verb
     first_word = candidate.split()[0].lower()
-    if first_word in ['define', 'execute', 'build', 'develop', 'ensure', 'drive', 'lead', 'manage', 'oversee']:
+    if first_word in ['define', 'execute', 'build', 'develop', 'ensure', 'drive', 'manage', 'oversee']:
         if word_count > 5:  # "Build Engineer" is OK, "Build and manage teams" is not
             score -= 40
     
