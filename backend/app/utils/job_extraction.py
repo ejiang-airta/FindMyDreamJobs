@@ -102,15 +102,6 @@ def _norm(s: str) -> str:
     return _clean_spaces(s).lower()
 
 
-def _sanitize_single_line(value: str, max_len: int) -> str:
-    """Force single-line output, trim, and cap length."""
-    v = (value or "").replace("\r", "\n")
-    parts = [_clean_spaces(x) for x in v.split("\n") if _clean_spaces(x)]
-    v = _clean_spaces(" ".join(parts))
-    if len(v) > max_len:
-        v = v[:max_len].rstrip()
-    return v
-
 
 def _get_context_window(text: str, match_start: int, match_end: int, words_before: int = 5, words_after: int = 5) -> Tuple[str, str]:
     """
@@ -663,33 +654,51 @@ def extract_location(text: str) -> str:
     return "Unspecified"
 
 
-def extract_skills_with_frequency(text: str) -> Dict[str, int]:
+def extract_skills_with_frequency(text: str) -> dict:
+    """
+    Canonical extracted_skills schema (used across Analyze + Match + Optimize):
+
+    {
+      "skills": [{"skill": "GCP", "frequency": 2}, ...],
+      "emphasized_skills": ["GCP", "Testing", ...]
+    }
+    """
     if not text:
-        return {}
+        return {
+            "skills": [{"skill": "N/A", "frequency": 0}],
+            "emphasized_skills": ["N/A"],
+        }
 
     t = text.lower()
     freq: Dict[str, int] = {}
 
+    # SKILL_KEYWORDS can be dict (preferred) or list
     skills = SKILL_KEYWORDS.keys() if isinstance(SKILL_KEYWORDS, dict) else SKILL_KEYWORDS
 
     for skill in skills:
         if not skill:
             continue
-        pattern = r"\b" + re.escape(skill.lower()) + r"\b"
+        pattern = r"\b" + re.escape(str(skill).lower()) + r"\b"
         count = len(re.findall(pattern, t))
         if count > 0:
+            # Preserve original key casing as stored in SKILL_KEYWORDS/list
             freq[str(skill)] = count
 
-    return freq
+    # Convert to list[{"skill","frequency"}] and sort desc
+    sorted_skills = sorted(
+        [{"skill": skill, "frequency": count} for skill, count in freq.items()],
+        key=lambda x: x["frequency"],
+        reverse=True,
+    )
 
+    emphasized = [
+        s["skill"] for s in sorted_skills if s["frequency"] >= MIN_SKILL_FREQUENCY
+    ][:MAX_EMPHASIZED_SKILLS]
 
-def get_emphasized_skills(extracted_skills: Dict[str, int]) -> Dict[str, int]:
-    if not extracted_skills:
-        return {}
-
-    emphasized = {k: v for k, v in extracted_skills.items() if v >= MIN_SKILL_FREQUENCY}
-    sorted_items = sorted(emphasized.items(), key=lambda x: x[1], reverse=True)
-    return dict(sorted_items[:MAX_EMPHASIZED_SKILLS])
+    return {
+        "skills": sorted_skills or [{"skill": "N/A", "frequency": 0}],
+        "emphasized_skills": emphasized or ["N/A"],
+    }
 
 
 def extract_experience(text: str) -> str:
