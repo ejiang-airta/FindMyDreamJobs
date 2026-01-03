@@ -41,6 +41,12 @@ frontend_tests:
   stage: test
   image: mcr.microsoft.com/playwright:v1.39.0-focal
   <<: *mr_only
+  rules:
+  # This prevents UI tests from running in MRs, saving you 5 mins of build time
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    when: never 
+  # But keep them for the main branch/dev branch if you wish
+  - if: $CI_COMMIT_BRANCH == "main"
   script:
     - echo "Running frontend tests..."
     - pwd
