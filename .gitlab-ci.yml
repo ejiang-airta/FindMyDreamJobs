@@ -2,13 +2,20 @@
 
 stages:
   - test
-  - deploy
+  - deploy      # This is where your artifacts move to the 'public' folder
+  - prepare_mr  # This is where the Auto-MR is created
 
 variables:
   PYTHONPATH: "$CI_PROJECT_DIR/backend"
 
+# Reusable rule: Only run these jobs inside a Merge Request
+.mr_only: &mr_only
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: always
+
 before_script:
-  - echo "Running CI pipeline..."
+  - echo "Running CI pipeline for Merge Request..."
 
 # -------------------
 # 🔍 Backend Tests
@@ -16,12 +23,11 @@ before_script:
 backend_tests:
   stage: test
   image: python:3.11
+  <<: *mr_only
   script:
     - cd backend
     - pip install -r requirements.txt
     - pytest
-  only:
-    - dev
   artifacts:
     when: always
     paths:
@@ -34,6 +40,13 @@ backend_tests:
 frontend_tests:
   stage: test
   image: mcr.microsoft.com/playwright:v1.39.0-focal
+  <<: *mr_only
+  rules:
+  # This prevents UI tests from running in MRs, saving you 5 mins of build time
+  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    when: never 
+  # But keep them for the main branch/dev branch if you wish
+  - if: $CI_COMMIT_BRANCH == "main"
   script:
     - echo "Running frontend tests..."
     - pwd
@@ -45,10 +58,7 @@ frontend_tests:
     - TZ="America/Los_Angeles" npx playwright test login.spec.ts app_flow.spec.ts --output=test-results
     - echo "Test completed, checking results"
     - ls -la test-results/
-    - find test-results/ -type f | head -20
-    
-  only:
-    - dev
+    - find test-results/ -type f | head -20    
   artifacts:  
     when: always
     paths:
@@ -57,30 +67,33 @@ frontend_tests:
 # -------------------
 # 🚀 Deploy test-results artifacts to Public folder:
 # -------------------
+# This job takes the results from the tests above and puts them where 
+# GitLab Pages/Artifacts can easily show them to you.
 deploy-artifacts:
   stage: deploy
+  <<: *mr_only
   script:
     - mkdir -p public/test-results
-    - mv frontend/test-results/* public/test-results/ || echo "No artifacts to move"  # Prevent errors if folder is empty
-
+    - mv frontend/test-results/* public/test-results/ || echo "No frontend artifacts"
+    - mv backend/test-results/* public/test-results/ || echo "No backend artifacts"
   artifacts:
     when: always
     paths:
-      - public/  # GitLab Pages stores this folder
+      - public/         # GitLab Pages stores this folder
     expire_in: 30 days  # Keep artifacts for debugging
-  only:
-    - dev # Only deploy on dev branch
 
 # -------------------
-# 🚀 Auto-create dev to main merge request on success pipline runs:
+# 🚀 Auto-create Merge Request
 # -------------------
-auto_merge_to_main:
-  stage: deploy
+# This job runs on the 'dev' branch push to ensure the MR exists.
+# Once it creates the MR, the jobs above (backend/frontend) will trigger automatically.
+auto_create_mr:
+  stage: prepare_mr
   image: curlimages/curl:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
   script:
     - >
       curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN"
       "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests?source_branch=dev&target_branch=main&remove_source_branch=false&title=AutoMerge%20dev%20to%20main"
-  only:
-    - dev
-  when: on_success
+  allow_failure: true # Prevents pipeline failure if MR already exists
