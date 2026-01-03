@@ -71,6 +71,13 @@ async function waitForFrontend() {
 }
 
 export default async function globalSetup() {
+  // If we are in a GitLab MR, Render is still building the preview.
+  // We skip the warmup because the Preview URLs aren't stable yet.
+  if (process.env.CI_PIPELINE_SOURCE === 'merge_request_event') {
+    console.log('⏩ Skipping warmup for Merge Request Preview build.');
+    return;
+  }
+
   console.log(`\n🌙 Render warmup start (ENV=${TEST_ENV})`)
   await waitForBackend()
   await waitForFrontend()
