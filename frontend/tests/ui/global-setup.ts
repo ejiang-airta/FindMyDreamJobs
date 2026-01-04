@@ -1,19 +1,24 @@
+// ✅ File: frontend/tests/ui/global-setup.ts
 import { chromium, request } from '@playwright/test'
 
 const TEST_ENV = process.env.ENV || 'prod'
 
+// 1. UPDATED URL LOGIC: Matches your render.yaml naming
 const FRONTEND_URL =
-  TEST_ENV === 'dev' ? 'http://localhost:3000' : 'https://findmydreamjobs.com'
+  process.env.PLAYWRIGHT_BASE_URL || 
+  (TEST_ENV === 'dev' ? 'http://localhost:3000' : 'https://findmydreamjobs.com')
 
 const BACKEND_URL =
-  TEST_ENV === 'dev' ? 'http://localhost:8000' : 'https://findmydreamjobs.onrender.com'
+  process.env.PLAYWRIGHT_BACKEND_URL || 
+  (TEST_ENV === 'dev' ? 'http://localhost:8000' : 'https://findmydreamjobs.onrender.com/')
 
-const TIMEOUT_MS = Number(process.env.WARMUP_TIMEOUT_MS || 180000) // 3 min
-const INTERVAL_MS = Number(process.env.WARMUP_INTERVAL_MS || 5000) // 5 sec
+const TIMEOUT_MS = Number(process.env.WARMUP_TIMEOUT_MS || 420000) // Increased to 7 min for Render builds
+const INTERVAL_MS = Number(process.env.WARMUP_INTERVAL_MS || 10000) // 10 sec intervals to be gentler
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))
 
 async function waitForBackend() {
+  console.log(`⏳ Waiting for Backend Preview: ${BACKEND_URL}...`)
   const start = Date.now()
   const api = await request.newContext()
 
@@ -22,7 +27,8 @@ async function waitForBackend() {
       const res = await api.get(`${BACKEND_URL}/`)
       if (res.ok()) {
         const json = await res.json().catch(() => null)
-        if (json?.message?.includes('Welcome to FindMyDreamJobs API')) {
+        // Adjust this check based on your actual health check response
+        if (json?.message?.includes('Welcome to FindMyDreamJobs API') || res.status() === 200) {
           console.log(`✅ Backend ready: ${BACKEND_URL}`)
           await api.dispose()
           return
@@ -30,7 +36,7 @@ async function waitForBackend() {
       }
       console.log(`… Backend not ready yet (${res.status()})`)
     } catch {
-      console.log(`… Backend not ready yet (network)`)
+      console.log(`… Backend not ready yet (connecting...)`)
     }
     await sleep(INTERVAL_MS)
   }
@@ -40,13 +46,15 @@ async function waitForBackend() {
 }
 
 async function waitForFrontend() {
+  console.log(`⏳ Waiting for Frontend Preview: ${FRONTEND_URL}...`)
   const start = Date.now()
   const browser = await chromium.launch()
   const page = await browser.newPage()
 
   while (Date.now() - start < TIMEOUT_MS) {
     try {
-      await page.goto(FRONTEND_URL, { waitUntil: 'domcontentloaded', timeout: 60000 })
+      // We use a shorter timeout here so the loop can retry faster
+      await page.goto(FRONTEND_URL, { waitUntil: 'domcontentloaded', timeout: 30000 })
 
       // pick either of these:
       const hasHeroText = await page.getByText('Find Your Dream Job').first().isVisible().catch(() => false)
@@ -57,10 +65,9 @@ async function waitForFrontend() {
         await browser.close()
         return
       }
-
-      console.log(`… Frontend loaded but not ready yet`)
+      console.log(`… Frontend loaded but Hero text not visible yet`)
     } catch {
-      console.log(`… Frontend not ready yet (loading)`)
+      console.log(`… Frontend not responding yet (Render is likely still building)`)
     }
 
     await sleep(INTERVAL_MS)
@@ -71,15 +78,15 @@ async function waitForFrontend() {
 }
 
 export default async function globalSetup() {
-  // If we are in a GitLab MR, Render is still building the preview.
-  // We skip the warmup because the Preview URLs aren't stable yet.
-  if (process.env.CI_PIPELINE_SOURCE === 'merge_request_event') {
-    console.log('⏩ Skipping warmup for Merge Request Preview build.');
-    return;
-  }
+  // 2. REMOVED THE SKIP LOGIC: 
+  // We wait for the preview to finish building.
+  
+  console.log(`\n🌙 Render Preview Warmup Start`)
+  console.log(`📍 Target Frontend: ${FRONTEND_URL}`)
+  console.log(`📍 Target Backend: ${BACKEND_URL}\n`)
 
-  console.log(`\n🌙 Render warmup start (ENV=${TEST_ENV})`)
   await waitForBackend()
   await waitForFrontend()
-  console.log('🔥 Warmup complete. Starting tests.\n')
+  
+  console.log('🔥 Warmup complete. All Preview services are LIVE. Starting tests.\n')
 }

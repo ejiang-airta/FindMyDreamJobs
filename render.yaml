@@ -1,0 +1,48 @@
+version: "1"
+
+services:
+  # =========================
+  # Backend (FastAPI)
+  # =========================
+  - type: web
+    name: findmydreamjobs_service
+    runtime: python
+    repo: https://gitlab.com/airta.hero/Job_App
+    branch: dev
+    plan: free
+    region: oregon
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: ./start.sh
+    envVars:
+      - fromGroup: eugene-env-group
+      - key: ENV
+        value: preview
+    previews:
+      generation: automatic
+
+  # =========================
+  # Frontend (Next.js)
+  # =========================
+  - type: web
+    name: findmydreamjobs-frontend
+    runtime: node
+    repo: https://gitlab.com/airta.hero/Job_App
+    branch: dev
+    plan: free
+    region: oregon
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    startCommand: npm run start
+    envVars:
+      - fromGroup: eugene-env-group
+
+      # 🔑 THIS IS THE KEY PART
+      # Render internal hostname → backend preview
+      - key: NEXT_PUBLIC_API_BASE_URL
+        value: http://findmydreamjobs-backend:8000
+
+      - key: NEXTAUTH_URL
+        value: https://findmydreamjobs.onrender.com
+    previews:
+      generation: automatic

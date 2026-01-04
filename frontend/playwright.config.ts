@@ -10,7 +10,8 @@ export default defineConfig({
     timeout: 5000,
   },
   use: {
-    baseURL: 'https://findmydreamjobs.com',
+    // Use the variable from GitLab to point to preview env, or fallback to production
+    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'https://findmydreamjobs.com',
     headless: true,
     viewport: { width: 1280, height: 720 },
     actionTimeout: 0,
