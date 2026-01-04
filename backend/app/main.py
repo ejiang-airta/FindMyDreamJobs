@@ -33,6 +33,7 @@ origins = [
     "http://localhost:3000",      # ✅ Next.js dev server
     "http://127.0.0.1:3000",       # ✅ Alternate dev address
     "https://findmydreamjobs-frontend.onrender.com",  # ✅ Render frontend prod
+    "https://.*\.onrender\.com",  # ✅ Allow all subdomains on Render
     "https://www.findmydreamjobs.com",  # ✅ optional: custom domain
     "https://findmydreamjobs.com",  # ✅ Render frontend staging
     "https://www.findmydreamjobs.com",  # ✅ Render frontend staging
