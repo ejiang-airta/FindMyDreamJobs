@@ -52,12 +52,12 @@ frontend_tests:
   # But keep them for the main branch/dev branch if you wish
   - if: $CI_COMMIT_BRANCH == "main"
   script:
-    - PLAYWRIGHT_BASE_URL=$RENDER_FE_PREVIEW_URL PLAYWRIGHT_BACKEND_URL=$RENDER_BE_PREVIEW_URL npx playwright test
     - echo "Running frontend tests..."
     - pwd
     - cd frontend
     - npm install
-    - npx playwright install
+    - npx playwright install --with-deps # Ensures browsers are ready
+    - PLAYWRIGHT_BASE_URL=$RENDER_FE_PREVIEW_URL PLAYWRIGHT_BACKEND_URL=$RENDER_BE_PREVIEW_URL npx playwright test
     - mkdir -p test-results  # Ensure the folder exists before collecting artifacts
     - echo "Testing starts"
     - TZ="America/Los_Angeles" npx playwright test login.spec.ts app_flow.spec.ts --output=test-results
