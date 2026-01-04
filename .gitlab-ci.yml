@@ -7,6 +7,9 @@ stages:
 
 variables:
   PYTHONPATH: "$CI_PROJECT_DIR/backend"
+  # Note the underscore in the backend name to match your render.yaml
+  RENDER_BE_PREVIEW_URL: "https://findmydreamjobs-service-pr-$CI_MERGE_REQUEST_IID.onrender.com"
+  RENDER_FE_PREVIEW_URL: "https://findmydreamjobs-frontend-pr-$CI_MERGE_REQUEST_IID.onrender.com"
 
 # Reusable rule: Only run these jobs inside a Merge Request
 .mr_only: &mr_only
@@ -41,6 +44,7 @@ frontend_tests:
   stage: test
   image: mcr.microsoft.com/playwright:v1.39.0-focal
   <<: *mr_only
+  allow_failure: false  # <--- failure will block the pipeline
   rules:
   # This prevents UI tests from running in MRs, saving you 5 mins of build time
   - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -48,6 +52,7 @@ frontend_tests:
   # But keep them for the main branch/dev branch if you wish
   - if: $CI_COMMIT_BRANCH == "main"
   script:
+    - PLAYWRIGHT_BASE_URL=$RENDER_FE_PREVIEW_URL PLAYWRIGHT_BACKEND_URL=$RENDER_BE_PREVIEW_URL npx playwright test
     - echo "Running frontend tests..."
     - pwd
     - cd frontend
