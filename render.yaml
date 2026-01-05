@@ -40,7 +40,9 @@ services:
       # 🔑 THIS IS THE KEY PART
       # Render internal hostname → backend preview
       - key: NEXT_PUBLIC_API_BASE_URL
-        value: http://findmydreamjobs-backend:8000
+        # To use Render's internal service discovery OR the preview URL pattern:
+        value: https://findmydreamjobs-service.onrender.com  # default/production
+        # OR for previews, Render automatically injects the preview URL
 
       - key: NEXTAUTH_URL
         value: https://findmydreamjobs.onrender.com

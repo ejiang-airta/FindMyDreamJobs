@@ -1,13 +1,14 @@
+# File: /backend/app/utils/job_extraction.py
 # .gitlab-ci.yml
 
 stages:
+  - prepare_mr  # This is where the Auto-MR is created
   - test
   - deploy      # This is where your artifacts move to the 'public' folder
-  - prepare_mr  # This is where the Auto-MR is created
 
 variables:
   PYTHONPATH: "$CI_PROJECT_DIR/backend"
-  # Note the underscore in the backend name to match your render.yaml
+  # IMPORTANT: Match your Render service names from render.yaml
   RENDER_BE_PREVIEW_URL: "https://findmydreamjobs-service-pr-$CI_MERGE_REQUEST_IID.onrender.com"
   RENDER_FE_PREVIEW_URL: "https://findmydreamjobs-frontend-pr-$CI_MERGE_REQUEST_IID.onrender.com"
 
@@ -17,78 +18,9 @@ variables:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: always
 
-before_script:
-  - echo "Running CI pipeline for Merge Request..."
 
 # -------------------
-# 🔍 Backend Tests
-# -------------------
-backend_tests:
-  stage: test
-  image: python:3.11
-  <<: *mr_only
-  script:
-    - cd backend
-    - pip install -r requirements.txt
-    - pytest
-  artifacts:
-    when: always
-    paths:
-      - backend/test-results/
-    expire_in: 1 week
-
-# -------------------
-# 🧪 Frontend Tests (UI)
-# -------------------
-frontend_tests:
-  stage: test
-  image: mcr.microsoft.com/playwright:v1.39.0-focal
-  <<: *mr_only
-  allow_failure: false  # <--- failure will block the pipeline
-  rules:
-  # This prevents UI tests from running in MRs, saving you 5 mins of build time
-  - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-    when: never 
-  # But keep them for the main branch/dev branch if you wish
-  - if: $CI_COMMIT_BRANCH == "main"
-  script:
-    - echo "Running frontend tests..."
-    - pwd
-    - cd frontend
-    - npm install
-    - npx playwright install --with-deps # Ensures browsers are ready
-    - PLAYWRIGHT_BASE_URL=$RENDER_FE_PREVIEW_URL PLAYWRIGHT_BACKEND_URL=$RENDER_BE_PREVIEW_URL npx playwright test
-    - mkdir -p test-results  # Ensure the folder exists before collecting artifacts
-    - echo "Testing starts"
-    - TZ="America/Los_Angeles" npx playwright test login.spec.ts app_flow.spec.ts --output=test-results
-    - echo "Test completed, checking results"
-    - ls -la test-results/
-    - find test-results/ -type f | head -20    
-  artifacts:  
-    when: always
-    paths:
-      - frontend/test-results/
-    expire_in: 1 week
-# -------------------
-# 🚀 Deploy test-results artifacts to Public folder:
-# -------------------
-# This job takes the results from the tests above and puts them where 
-# GitLab Pages/Artifacts can easily show them to you.
-deploy-artifacts:
-  stage: deploy
-  <<: *mr_only
-  script:
-    - mkdir -p public/test-results
-    - mv frontend/test-results/* public/test-results/ || echo "No frontend artifacts"
-    - mv backend/test-results/* public/test-results/ || echo "No backend artifacts"
-  artifacts:
-    when: always
-    paths:
-      - public/         # GitLab Pages stores this folder
-    expire_in: 30 days  # Keep artifacts for debugging
-
-# -------------------
-# 🚀 Auto-create Merge Request
+# 🚀Auto-create Merge Request
 # -------------------
 # This job runs on the 'dev' branch push to ensure the MR exists.
 # Once it creates the MR, the jobs above (backend/frontend) will trigger automatically.
@@ -96,9 +28,119 @@ auto_create_mr:
   stage: prepare_mr
   image: curlimages/curl:latest
   rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
+    - if: $CI_COMMIT_BRANCH == "dev" && $CI_PIPELINE_SOURCE == "push"
   script:
-    - >
-      curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN"
-      "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests?source_branch=dev&target_branch=main&remove_source_branch=false&title=AutoMerge%20dev%20to%20main"
-  allow_failure: true # Prevents pipeline failure if MR already exists
+    - |
+      # Check if MR already exists
+      response=$(curl --silent --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+        "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests?source_branch=dev&target_branch=main&state=opened")
+      
+      if echo "$response" | grep -q '"iid":'; then
+        echo "MR already exists. Skipping creation."
+      else
+        echo "Creating new MR..."
+        curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN" \
+          "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests" \
+          --form "source_branch=dev" \
+          --form "target_branch=main" \
+          --form "title=AutoMerge: dev → main [Pipeline: $CI_PIPELINE_ID]" \
+          --form "remove_source_branch=false" \
+          --form "squash=false"
+      fi
+  allow_failure: false
+
+# -------------------
+# 🔍 Backend Tests (Run only in MR)
+# -------------------
+backend_tests:
+  stage: test
+  image: python:3.11
+  <<: *mr_only
+  needs: []  # Run independently after MR creation
+  script:
+    - cd backend
+    - pip install -r requirements.txt
+    - echo "Testing against preview backend: $RENDER_BE_PREVIEW_URL"
+    # Set environment variable for tests to use preview URL
+    - export API_BASE_URL=$RENDER_BE_PREVIEW_URL
+    - pytest --tb=short -v
+  artifacts:
+    when: always
+    paths:
+      - backend/test-results/
+    reports:
+      junit: backend/test-results/junit.xml
+  allow_failure: false
+
+# -------------------
+# 🧪 Frontend Tests (Run only in MR)
+# -------------------
+frontend_tests:
+  stage: test
+  image: mcr.microsoft.com/playwright:v1.39.0-focal
+  <<: *mr_only
+  needs: []  # Run independently after MR creation
+  variables:
+    # Override FE to use preview BE
+    NEXT_PUBLIC_API_BASE_URL: "https://findmydreamjobs-service-pr-$CI_MERGE_REQUEST_IID.onrender.com"
+  script:
+    - echo "Running frontend tests against preview environment..."
+    - echo "FE Preview URL: https://findmydreamjobs-frontend-pr-$CI_MERGE_REQUEST_IID.onrender.com"
+    - echo "BE Preview URL: $NEXT_PUBLIC_API_BASE_URL"
+    - pwd
+    - cd frontend
+    - npm install
+    # Install Playwright browsers
+    - npx playwright install --with-deps chromium # Ensures browsers are ready
+    - PLAYWRIGHT_BASE_URL=$RENDER_FE_PREVIEW_URL PLAYWRIGHT_BACKEND_URL=$RENDER_BE_PREVIEW_URL 
+    
+    # Run tests against the preview FE (which should use preview BE)
+    - mkdir -p test-results  # Ensure the folder exists before collecting artifacts
+    - echo "Testing starts"
+    - TZ="America/Los_Angeles" npx playwright test login.spec.ts app_flow.spec.ts \
+        --reporter=junit,line \
+        --output=test-results \
+        --project=chromium
+    - echo "Test completed, checking results"
+    - ls -la test-results/
+    - find test-results/ -type f | head -20    
+
+  artifacts:  
+    when: always
+    paths:
+      - frontend/test-results/
+    reports:
+      junit: frontend/test-results/results.xml
+  allow_failure: false  # This will block merge on failure
+
+# -------------------
+# Deploy test-results artifacts to Public folder:
+# -------------------
+# This job takes the results from the tests above and puts them where 
+# GitLab Pages/Artifacts can easily show them to you.
+deploy-artifacts:
+  stage: deploy
+  <<: *mr_only
+  needs: [backend_tests, frontend_tests]  # Only run after tests complete
+  script:
+    - mkdir -p public
+    - |
+      # Copy backend test results
+      if [ -d "backend/test-results" ]; then
+        cp -r backend/test-results/* public/ 2>/dev/null || true
+      fi
+      
+      # Copy frontend test results
+      if [ -d "frontend/test-results" ]; then
+        cp -r frontend/test-results/* public/ 2>/dev/null || true
+      fi
+      
+      # Create an index.html for easy viewing
+      echo "<h1>Test Results</h1><p>Pipeline: $CI_PIPELINE_ID</p>" > public/index.html
+      echo "<ul><li><a href='junit.xml'>JUnit Report</a></li></ul>" >> public/index.html
+  artifacts:
+    paths:
+      - public/         # GitLab Pages stores this folder
+    expire_in: 30 days  # Keep artifacts for debugging
+  rules:
+    - when: always  # Always create artifacts even if tests fail
