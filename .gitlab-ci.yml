@@ -97,8 +97,8 @@ auto_create_mr:
   image: curlimages/curl:latest
   rules:
     - if: $CI_COMMIT_BRANCH == "dev"
-  script:
+  script:  # Create a Merge Request from 'dev' to 'main' with title starting with '[render preview]' to always trigger Render preview deployments
     - >
       curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN"
-      "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests?source_branch=dev&target_branch=main&remove_source_branch=false&title=AutoMerge%20dev%20to%20main"
+      "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests?source_branch=dev&target_branch=main&remove_source_branch=false&title=%5Brender%20preview%5D%20AutoMerge%20dev%20to%20main"
   allow_failure: true # Prevents pipeline failure if MR already exists
