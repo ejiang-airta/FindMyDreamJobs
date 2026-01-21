@@ -1,18 +1,9 @@
 // ✅ File: frontend/tests/ui/app_flow.spec.ts
 import { test, expect } from '@playwright/test'
 import { loginAsTestUser } from './helpers'
+import { BASE_URL } from './test-config'
 import path from 'path';
 import fs from 'fs';
-import { time } from 'console';
-
-const TEST_ENV = process.env.ENV || 'prod'; // Default to production
-const BASE_URL = TEST_ENV === 'dev' 
-  ? 'http://localhost:3000' 
-  : 'https://findmydreamjobs.com'; 
-
-console.log("Base URL: ", BASE_URL)
-//console.log("Test Environment: ", TEST_ENV)
-
 
 // Capture start time
 const startTime = Date.now();
@@ -30,7 +21,7 @@ console.log("Test Started at:", formattedTime);
 
 // ✅ Upload Resume
 test('Test# 13: User can upload a resume', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV);
+  await loginAsTestUser(page);
 
   // Debug: Log cookies and URL after login
   //console.log("URL after login:", page.url());
@@ -93,7 +84,7 @@ test('Test# 13: User can upload a resume', async ({ page }) => {
 
 // ✅ Analyze Job
 test('Test# 14: User can analyze a job description', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV)
+  await loginAsTestUser(page);
 
   // Goes to on Analyze upload page:
   await page.click('text=Analyze')
@@ -112,7 +103,7 @@ test('Test# 14: User can analyze a job description', async ({ page }) => {
 
 // ✅ Optimize Resume
 test('Test# 15: User can optimize resume', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV)
+  await loginAsTestUser(page);
 
   // Click on Optimize page: 
   await page.getByRole('link', { name: 'Optimize' }).click()
@@ -173,7 +164,7 @@ test('Test# 15: User can optimize resume', async ({ page }) => {
 
 // ✅ Apply Job
 test('Test# 16: User can apply to a job', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV)
+  await loginAsTestUser(page);
 
   // Click on Apply page: 
   await page.getByRole('link', { name: 'Apply' }).click()

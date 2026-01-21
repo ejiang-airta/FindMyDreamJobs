@@ -1,11 +1,8 @@
+// ✅ File: frontend/tests/ui/helpers.ts
 import { Page } from '@playwright/test'
+import { BASE_URL } from './test-config'
 
-export async function loginAsTestUser(page: Page, env: string) {
-  const BASE_URL = env === 'dev'
-    ? 'http://localhost:3000'
-    : 'https://findmydreamjobs.com'
-  //console.log("Base URL: ", BASE_URL)
-
+export async function loginAsTestUser(page: Page) {
   const email = process.env.E2E_EMAIL || 'testuser@abc.com'
   const password = process.env.E2E_PASSWORD || 'test123'
 
@@ -14,7 +11,7 @@ export async function loginAsTestUser(page: Page, env: string) {
     await page.fill('input[type="email"]', email)
     await page.fill('input[type="password"]', password)
     await page.locator('button', { hasText: 'Sign In' }).click()
-    await page.waitForLoadState('networkidle');  // ensures all requests settle, use this to replace the message verification
+    await page.waitForLoadState('networkidle') // ensures all requests settle, use this to replace the message verification
     await page.waitForTimeout(1000) // wait for 1 seconds to ensure the message is displayed
     await page.getByText('Welcome back, test user1!').waitFor({ timeout: 5000 }) //ensure the message shows correctly after 'networkidle' state
   }

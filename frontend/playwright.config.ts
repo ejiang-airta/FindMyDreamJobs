@@ -1,5 +1,6 @@
 // ✅ File: frontend/playwright.config.ts
 import { defineConfig, devices } from '@playwright/test'
+import { BASE_URL } from './tests/ui/test-config'
 
 export default defineConfig({
   testDir: './tests/ui',
@@ -10,8 +11,7 @@ export default defineConfig({
     timeout: 5000,
   },
   use: {
-    // Use the variable from GitLab to point to preview env, or fallback to production
-    baseURL: process.env.PLAYWRIGHT_BASE_URL || 'https://findmydreamjobs.com',
+    baseURL: BASE_URL,
     headless: true,
     viewport: { width: 1280, height: 720 },
     actionTimeout: 0,
