@@ -1,23 +1,13 @@
 // File: frontend/tests/ui/login.spec.ts
-
 import { test, expect } from '@playwright/test'
 import { loginAsTestUser } from './helpers'
+import { BASE_URL, TEST_ENV } from './test-config'
 
-
-const TEST_ENV = process.env.ENV || 'prod'; // Default to production
-const BASE_URL = TEST_ENV === 'dev' 
-  ? 'http://localhost:3000' 
-  : 'https://findmydreamjobs.com'; 
-
-console.log("Base URL: ", BASE_URL)
-console.log("Test Environment: ", TEST_ENV)
-
-// Capture start time
 const startTime = Date.now();
 console.log("Test Started at: ", startTime)
 
-test(`Test #1: User can visit login page and see email/password fields in ${TEST_ENV} environment`, async ({ page }) => {
-  await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded', timeout: 60000 }) // Wait up to 60 seconds for page load  
+test(`Test #1: User can visit login page in ${TEST_ENV} environment`, async ({ page }) => {
+  await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded', timeout: 60000 })
 
   // Check that email and password input fields exist
   const emailInput = page.locator('input[type="email"]')
@@ -28,7 +18,6 @@ test(`Test #1: User can visit login page and see email/password fields in ${TEST
   await expect(passwordInput).toBeVisible()
   await expect(loginButton).toBeVisible()
 })
-
 test('Test #2: Login fails with incorrect credentials (via alert dialog)', async ({ page }) => {
 // Check that a toast or error appears
   page.on('dialog', async dialog => {
@@ -37,12 +26,13 @@ test('Test #2: Login fails with incorrect credentials (via alert dialog)', async
   })
 
   await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded', timeout: 60000 }) // Wait up to 60 seconds for page load
+
   await page.fill('input[type="email"]', 'fakeuser@example.com')
   await page.fill('input[type="password"]', 'wrongpassword')
   await page.locator('button', { hasText: 'Sign In' }).click()
 })
 test('Test #3: Login succeeds with correct credentials and lands on home page', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV)
+  await loginAsTestUser(page)
   //await page.getByRole('button', { name: 'Dashboard' }).click()
 
   // Wait for redirect and assert user’s name is visible
@@ -52,7 +42,7 @@ test('Test #3: Login succeeds with correct credentials and lands on home page', 
 
 test('Test #4: Navigate to Dashboard and verify Tracked Applications is present', async ({ page }) => {
   // Go to the initial page (replace with your page URL)
-  await loginAsTestUser(page, TEST_ENV)
+  await loginAsTestUser(page)
 
   // Locate and click the Dashboard button in the navigation bar.
   // We'll be specific to target the text within the navigation element.
@@ -69,8 +59,8 @@ test('Test #4: Navigate to Dashboard and verify Tracked Applications is present'
   await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 8000 });  
 });
 
-test('Test #5: User can log in and access Analyze page', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV)  
+test('Test #5: Access Analyze page', async ({ page }) => {
+  await loginAsTestUser(page)  
 
   // Click on Analyze button
   await page.getByRole('link', { name: 'Analyze' }).click()
@@ -80,19 +70,20 @@ test('Test #5: User can log in and access Analyze page', async ({ page }) => {
   await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 8000 });
 });
 
-test('Test #6: Access Match page after login', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV)  
+test('Test #6: Access Match page', async ({ page }) => {
+  await loginAsTestUser(page)
+
 
   /// Click on Match button
   await page.getByRole('link', { name: 'Match' }).click()
   
-//   // Verify we're on the Match page with "Match Score" text:
+  // Verify we're on the Match page with "Match Score" text:
   const trackedApplicationsElement = page.locator(':text("📊 Match Score")');
   await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 8000 });
 });
 
-test('Test #7: Access Optimize page after login', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV)  
+test('Test #7: Access Optimize page', async ({ page }) => {
+  await loginAsTestUser(page)  
 
   // Click on Optimize button
   await page.getByRole('link', { name: 'Optimize' }).click()
@@ -102,8 +93,8 @@ test('Test #7: Access Optimize page after login', async ({ page }) => {
   await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 8000 });
 });
 
-test('Test #8: Access Apply page after login', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV)  
+test('Test #8: Access Apply page', async ({ page }) => {
+  await loginAsTestUser(page)
 
   /// Click on Apply button
   await page.getByRole('link', { name: 'Apply' }).click()
@@ -113,8 +104,8 @@ test('Test #8: Access Apply page after login', async ({ page }) => {
   await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 8000 });
 });
 
-test('Test #9: Access Applications page after login', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV)  
+test('Test #9: Access Applications page', async ({ page }) => {
+  await loginAsTestUser(page)
 
   /// Click on Applications button
   await page.getByRole('link', { name: 'Applications' }).click()
@@ -124,19 +115,19 @@ test('Test #9: Access Applications page after login', async ({ page }) => {
   await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 8000 });
 });
 
-test('Test #10: Access Stats page after login', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV)  
+test('Test #10: Access Stats page', async ({ page }) => {
+  await loginAsTestUser(page)
 
   /// Click on Stats button
   await page.getByRole('link', { name: 'Stats' }).click()
   
-//   // Verify we're on the Stats page with "📊 Application Stats" text:
+  // Verify we're on the Stats page with "📊 Application Stats" text:
   const trackedApplicationsElement = page.locator(':text("📊 Application Stats")');
   await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 8000 });
 });
 
-test('Test #11: Access Wizard page after login', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV)  
+test('Test #11: Access Wizard page', async ({ page }) => {
+  await loginAsTestUser(page)
 
   /// Click on Wizard button
   await page.getByRole('link', { name: 'Wizard' }).click()
@@ -146,8 +137,8 @@ test('Test #11: Access Wizard page after login', async ({ page }) => {
   await trackedApplicationsElement.waitFor({ state: 'visible',  timeout: 8000 });
 });
 
-test('Test #12: Switch to Home page after login', async ({ page }) => {
-  await loginAsTestUser(page, TEST_ENV)  
+test('Test #12: Switch to Home page', async ({ page }) => {
+  await loginAsTestUser(page)
 
   // Click on Analuze button
   await page.getByRole('link', { name: 'Analyze' }).click()
@@ -164,6 +155,5 @@ test('Test #12: Switch to Home page after login', async ({ page }) => {
 
   // Capture duration time
   const duration = (endTime - startTime) / 1000; // Convert to seconds
-  console.log("Total Duration for this round: ", duration, " seconds")
+  console.log("Total Duration: ", duration, " seconds")
 });
-

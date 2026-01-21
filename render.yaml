@@ -8,10 +8,15 @@ services:
     name: findmydreamjobs_service
     runtime: python
     repo: https://gitlab.com/airta.hero/Job_App
-    branch: dev
+    # NOTE: branch removed - Render uses the branch from dashboard settings
+    # and creates previews for MRs targeting that branch
     plan: free
     region: oregon
     rootDir: backend
+    # Add this to ensure it builds on every PR push
+    buildFilter:
+      paths:
+        - "*"
     buildCommand: pip install -r requirements.txt
     startCommand: ./start.sh
     envVars:
@@ -28,10 +33,14 @@ services:
     name: findmydreamjobs-frontend
     runtime: node
     repo: https://gitlab.com/airta.hero/Job_App
-    branch: dev
+    # NOTE: branch removed - same reason as above
     plan: free
     region: oregon
     rootDir: frontend
+    # Add this to ensure it builds on every PR push
+    buildFilter:
+      paths:
+        - "*"
     buildCommand: npm install && npm run build
     startCommand: npm run start
     envVars:
@@ -40,8 +49,7 @@ services:
       # 🔑 THIS IS THE KEY PART
       # Render internal hostname → backend preview
       - key: NEXT_PUBLIC_API_BASE_URL
-        value: http://findmydreamjobs-backend:8000
-
+        value: http://findmydreamjobs-service:8000
       - key: NEXTAUTH_URL
         value: https://findmydreamjobs.onrender.com
     previews:

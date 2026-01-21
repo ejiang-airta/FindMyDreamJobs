@@ -48,6 +48,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=origins,    # Allow all origins during dev
     allow_credentials=True,
+    allow_origin_regex=r"https://findmydreamjobs-pr-\d+\.onrender\.com",  # ← This handles all PR numbers
     allow_methods=["*"],      # or list specific methods like ["POST", "GET"]
     allow_headers=["*"],      # or explicitly allow ["Authorization", "Content-Type"]
 )
