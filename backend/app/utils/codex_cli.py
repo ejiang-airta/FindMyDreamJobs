@@ -5,7 +5,11 @@ import sys
 import openai
 import os
 
-openai.api_key = "sk-proj-_lTeWxj3ERmgV-KOMDSj-INW8Z7_jSFEYACK0cF78EsgYAH9aZvGXg9T4PXfyC8AognP1m1IgXT3BlbkFJcdwx9RYTZnGqTXxrM0rzRtFzMEhFETGOVKStiiTMHfh_dyLONYC0QkZnmO-3hyFfR_1Z6V6a8AE"
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
+if not openai.api_key:
+    print("Error: OPENAI_API_KEY environment variable not set")
+    sys.exit(1)
 
 def main():
     if len(sys.argv) != 2:
@@ -32,3 +36,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+
