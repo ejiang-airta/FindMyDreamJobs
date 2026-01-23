@@ -2,7 +2,7 @@ version: "1"
 
 services:
   # =========================
-  # Backend (FastAPI)
+  # Backend (FastAPI) 
   # =========================
   - type: web
     name: findmydreamjobs_service
@@ -11,7 +11,7 @@ services:
     plan: free
     region: oregon
 
-    # ✅ Monorepo: use repo root so any change triggers preview build
+    # ✅ Monorepo: use repo root so any change triggers preview build 
     rootDir: .
     buildCommand: cd backend && pip install -r requirements.txt
     startCommand: cd backend && ./start.sh
