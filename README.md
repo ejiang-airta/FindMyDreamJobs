@@ -2,15 +2,23 @@
 
 An AI-powered job search assistant that helps users analyze job descriptions, match them with resumes, optimize content for ATS systems, and track applications — all through an intuitive, wizard-based web interface.
 
+![GitHub stars](https://img.shields.io/github/stars/ejiang-airta/FindMyDreamJobs?style=social)
+![GitHub forks](https://img.shields.io/github/forks/ejiang-airta/FindMyDreamJobs?style=social)
+![GitHub watchers](https://img.shields.io/github/watchers/ejiang-airta/FindMyDreamJobs?style=social)
+![Visitors](https://visitor-badge.laobi.icu/badge?page_id=ejiang-airta.FindMyDreamJobs)
+
+🌐 **Live Demo:** [https://findmydreamjobs.com](https://findmydreamjobs.com)
+
 ---
 
 ## 🚀 Features
 
-* ✅ Upload resumes (PDF/WORDX/TXT)
-* ✅ Paste job descriptions
-* ✅ Get match score & ATS score
-* ✅ AI-enhanced resume optimization
-* ✅ Download resumes (.docx, watermarked if not reviewed and approved by user)
+* ✅ Upload resumes (PDF/DOCX/TXT)
+* ✅ Analyze job descriptions
+* ✅ Search for jobs with title and location i.e. engineer in Vancouver
+* ✅ Evalue ATS score for a resume
+* ✅ Get match score against a job
+* ✅ AI-optimized resume for download in .docx (watermarked if not reviewed by user) 
 * ✅ Track job applications with status 
 * ✅ Full onboarding wizard for first-time users
 * ✅ Google or Email/Password authentication
@@ -26,7 +34,7 @@ An AI-powered job search assistant that helps users analyze job descriptions, ma
 | Database | PostgreSQL (hosted on Neon)        |
 | Auth     | NextAuth.js                        |
 | Hosting  | Render.com                         |
-| CI/CD    | (Planned) GitLab or GitHub Actions |
+| CI/CD    | GitLab CI + Playwright             |
 | Testing  | Pytest (backend) + Playwright (UI) |
 
 ---
@@ -73,40 +81,53 @@ BACKEND_SERVICE_ID=...
 
 ## 📦 Deployment
 
-The app is deployed on Render:
+The app is deployed on Render with automatic preview environments for every merge request.
 
-* **Frontend:** [https://findmydreamjobs.onrender.com](https://findmydreamjobs.onrender.com)
-* **Backend:** [https://findmydreamjobs-service.onrender.com](https://findmydreamjobs-service.onrender.com)
-
-Cron jobs automatically suspend services during off-hours to save cost.
+* **Production:** [https://findmydreamjobs.com](https://findmydreamjobs.com)
+* **API:** [https://findmydreamjobs-service.onrender.com](https://findmydreamjobs-service.onrender.com)
 
 ---
 
 ## 🧪 Tests
 
-* **Backend:** `pytest`
-* **Frontend UI:** `playwright/test`
-  Tests are executed manually (CI/CD coming soon).
+```bash
+# Backend tests
+cd backend
+pytest
+
+# Frontend UI tests
+cd frontend
+npx playwright test
+```
+
+Tests run automatically in GitLab CI pipeline against Render preview environments.
 
 ---
 
 ## 🛣️ Roadmap
 
-* [ ] Add `/profile` and `/payment` pages
-* [ ] Enable GitLab CI to auto-test and deploy
-* [ ] Enhance resume download formatting
-* [ ] Add job search integration
-* [ ] Add user analytics dashboard
-* [ ] Stripe integration for paid users
+- [ ] Add `/profile` and `/payment` pages
+- [ ] Enhance resume download formatting
+- [ ] Add job search integration (LinkedIn, Indeed)
+- [ ] Add user analytics dashboard
+- [ ] Stripe integration for paid users
 
 ---
 
 ## 🤝 Contributing
 
-Want to contribute? Feel free to fork the repo and open a Merge Request!
+Want to contribute? Feel free to fork the repo and open a Pull Request!
 
 ---
 
 ## 📄 License
 
 MIT License
+
+---
+
+## 📊 GitHub Stats
+
+![GitHub last commit](https://img.shields.io/github/last-commit/ejiang-airta/FindMyDreamJobs)
+![GitHub issues](https://img.shields.io/github/issues/ejiang-airta/FindMyDreamJobs)
+![GitHub pull requests](https://img.shields.io/github/issues-pr/ejiang-airta/FindMyDreamJobs)
