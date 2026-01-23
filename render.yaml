@@ -2,55 +2,56 @@ version: "1"
 
 services:
   # =========================
-  # Backend (FastAPI)
+  # Backend (FastAPI) 
   # =========================
   - type: web
     name: findmydreamjobs_service
     runtime: python
     repo: https://gitlab.com/airta.hero/Job_App
-    # NOTE: branch removed - Render uses the branch from dashboard settings
-    # and creates previews for MRs targeting that branch
     plan: free
     region: oregon
-    rootDir: backend
-    # Add this to ensure it builds on every PR push
-    buildFilter:
-      paths:
-        - "*"
-    buildCommand: pip install -r requirements.txt
-    startCommand: ./start.sh
+
+    # ✅ Monorepo: use repo root so any change triggers preview build 
+    rootDir: .
+    buildCommand: cd backend && pip install -r requirements.txt
+    startCommand: cd backend && ./start.sh
+
     envVars:
       - fromGroup: eugene-env-group
       - key: ENV
-        value: preview
+        value: production
+        previewValue: preview
+
     previews:
       generation: automatic
 
   # =========================
-  # Frontend (Next.js)
+  # Frontend (Next.js) 
   # =========================
   - type: web
-    name: findmydreamjobs-frontend
+    # ✅ Rename so preview URL becomes: https://findmydreamjobs-pr-XX.onrender.com
+    name: findmydreamjobs
     runtime: node
     repo: https://gitlab.com/airta.hero/Job_App
-    # NOTE: branch removed - same reason as above
     plan: free
     region: oregon
-    rootDir: frontend
-    # Add this to ensure it builds on every PR push
-    buildFilter:
-      paths:
-        - "*"
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
+
+    # ✅ Monorepo: use repo root so any change triggers preview build
+    rootDir: .
+    buildCommand: cd frontend && npm install && npm run build
+    startCommand: cd frontend && npm run start
+
     envVars:
       - fromGroup: eugene-env-group
-
-      # 🔑 THIS IS THE KEY PART
-      # Render internal hostname → backend preview
+      # Production: use internal hostname
+      # Preview: use the preview backend's external URL
       - key: NEXT_PUBLIC_API_BASE_URL
-        value: http://findmydreamjobs-service:8000
+        value: https://findmydreamjobs-service.onrender.com
+        previewValue: https://findmydreamjobs-service-pr-${RENDER_PR_NUMBER}.onrender.com
+
       - key: NEXTAUTH_URL
         value: https://findmydreamjobs.onrender.com
+        previewValue: https://findmydreamjobs-pr-${RENDER_PR_NUMBER}.onrender.com
+
     previews:
       generation: automatic
