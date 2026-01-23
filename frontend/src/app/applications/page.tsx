@@ -27,10 +27,11 @@ import {
 const STATUS_OPTIONS = [
   "In Progress",
   "Application Submitted",
-  "Under Review",
+  "Follow Up",
   "Rejected",
-  "Interview",
+  "Interviewed No Offer",
   "Offered",
+  "No Response (Position Closed)",
   "Others"
 ];
 
