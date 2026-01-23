@@ -26,7 +26,7 @@ services:
       generation: automatic
 
   # =========================
-  # Frontend (Next.js)
+  # Frontend (Next.js) 
   # =========================
   - type: web
     # ✅ Rename so preview URL becomes: https://findmydreamjobs-pr-XX.onrender.com
