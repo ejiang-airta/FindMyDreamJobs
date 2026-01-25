@@ -16,7 +16,7 @@ An AI-powered job search assistant that helps users analyze job descriptions, ma
 * ✅ Upload resumes (PDF/DOCX/TXT)
 * ✅ Analyze job descriptions
 * ✅ Search for jobs with title and location i.e. engineer in Vancouver
-* ✅ Evalue ATS score for a resume
+* ✅ Evaluate ATS score for a resume
 * ✅ Get match score against a job
 * ✅ AI-optimized resume for download in .docx (watermarked if not reviewed by user) 
 * ✅ Track job applications with status 
@@ -44,8 +44,8 @@ An AI-powered job search assistant that helps users analyze job descriptions, ma
 ### 1. Clone the repo
 
 ```bash
-git clone https://gitlab.com/YOUR_USERNAME/Job_App.git
-cd Job_App
+git clone https://github.com/ejiang-airta/FindMyDreamJobs.git
+cd FindMyDreamJobs
 ```
 
 ### 2. Set up Python backend
@@ -81,7 +81,7 @@ BACKEND_SERVICE_ID=...
 
 ## 📦 Deployment
 
-The app is deployed on Render with automatic preview environments for every merge request.
+The app is deployed on Render with automatic preview environments for every pull request.
 
 * **Production:** [https://findmydreamjobs.com](https://findmydreamjobs.com)
 * **API:** [https://findmydreamjobs-service.onrender.com](https://findmydreamjobs-service.onrender.com)
@@ -100,7 +100,7 @@ cd frontend
 npx playwright test
 ```
 
-Tests run automatically in GitLab CI pipeline against Render preview environments.
+Tests run automatically in CI pipeline against Render preview environments.
 
 ---
 
