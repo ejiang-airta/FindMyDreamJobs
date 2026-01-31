@@ -20,13 +20,21 @@ before_script:
 backend_tests:
   stage: test
   image: python:3.11
+  services:
+    - postgres:15
+  variables:
+    POSTGRES_DB: test_db
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: postgres
+    TEST_DATABASE_URL: "postgresql+psycopg2://postgres:postgres@postgres:5432/test_db"
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: always
   script:
     - cd backend
     - pip install -r requirements.txt
-    - pytest
+    - python -m spacy download en_core_web_sm
+    - python -m pytest tests/ -v --tb=short
   artifacts:
     when: always
     paths:
