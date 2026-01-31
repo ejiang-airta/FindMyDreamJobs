@@ -23,3 +23,4 @@ itsdangerous    # for creating tokens
 python-docx # for creating word documents
 pytest  # for testing
 requests-mock # for mocking requests in tests
+pandas==2.2.3 
