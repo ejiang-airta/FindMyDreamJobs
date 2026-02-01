@@ -14,18 +14,12 @@ class TestExtractSalaryInfo:
         assert info.min_amount <= info.max_amount
 
     def test_k_suffix_range(self):
-        # Use the format that matches the extractor's "Compensation:" + K pattern
         text = "Compensation: $120K-$150K annually"
         info = extract_salary_info(text)
-        # This specific format is matched by the dedicated compensation pattern
-        if info is not None:
-            assert info.min_amount >= 100000
-            assert info.max_amount <= 200000
-        else:
-            # Fallback: verify standard comma-separated range works
-            info2 = extract_salary_info("The range for base pay is $120,000 - $150,000")
-            assert info2 is not None
-            assert info2.min_amount >= 100000
+        assert info is not None
+        assert info.min_amount == 120000
+        assert info.max_amount == 150000
+        assert info.frequency == "annual"
 
     def test_hourly_rate(self):
         text = "Pay range: $25-35 per hour"
@@ -34,11 +28,12 @@ class TestExtractSalaryInfo:
         assert info.frequency == "hourly"
 
     def test_cad_currency(self):
-        # Use the format that the extractor's first pattern is designed for
-        text = "The pay range for this role is: 158,900 - 198,600 CAD per year"
+        text = "The full salary range for this role is $158,900 to $198,600 to $238,300 CAD"
         info = extract_salary_info(text)
         assert info is not None
         assert info.currency == "CAD"
+        assert info.min_amount == 158900
+        assert info.max_amount == 238300
 
     def test_no_salary_returns_none(self):
         text = "Great opportunity to work with a talented team."
@@ -61,22 +56,19 @@ class TestExtractSalaryInfo:
         assert info.frequency == "weekly"
 
     def test_biweekly_frequency(self):
-        # Use a salary-prefixed format for the bi-weekly pattern to match
-        text = "Salary ranging from $1,200 to $1,500 bi-weekly"
+        text = "The salary is ranging from $12,000 to $15,000 bi-weekly"
         info = extract_salary_info(text)
         assert info is not None
         assert info.frequency == "bi-weekly"
+        assert info.min_amount == 12000
+        assert info.max_amount == 15000
 
     def test_starting_at_single_amount(self):
-        # The extractor pattern expects "starting at $NNK per year" format
         text = "Starting at $90K per year"
         info = extract_salary_info(text)
-        if info is not None:
-            assert info.min_amount >= 80000
-        else:
-            # Fallback: verify the comma-separated single amount works
-            info2 = extract_salary_info("Starting salary is $90,000 per year")
-            assert info2 is not None
+        assert info is not None
+        assert info.min_amount == 90000
+        assert info.frequency == "annual"
 
     def test_unrealistic_hourly_filtered(self):
         # $1/hr is below the $5 minimum for hourly
