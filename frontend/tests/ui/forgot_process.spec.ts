@@ -1,14 +1,9 @@
-import { test, expect } from '@playwright/test';
-import path from 'path';
+import { test, expect } from '@playwright/test'
 import { loginAsTestUser } from './helpers'
+import { BASE_URL } from './test-config'
+import path from 'path';
+import fs from 'fs';
 
-const TEST_ENV = process.env.ENV || 'prod'; // Default to production
-const BASE_URL = TEST_ENV === 'dev' 
-  ? 'http://localhost:3000' 
-  : 'https://findmydreamjobs.com'; 
-
-console.log("Base URL: ", BASE_URL)
-console.log("Test Environment: ", TEST_ENV)
 // Capture start time
 const startTime = Date.now();
 const formattedTime = new Intl.DateTimeFormat("en-US", {
@@ -26,7 +21,7 @@ console.log("Test Started at:", formattedTime);
 
 test('upload resume through selection box', async ({ page }) => {
   
-  await loginAsTestUser(page, TEST_ENV)  
+  await loginAsTestUser(page)  
 
   /// Click on Match button
   await page.getByRole('link', { name: 'Resume' }).click()
