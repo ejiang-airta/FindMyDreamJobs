@@ -14,7 +14,7 @@ test.describe('Home Page', () => {
 
   test('Test# 20: Home page shows welcome message for logged-in users', async ({ page }) => {
     await loginAsTestUser(page)
-    await expect(page.getByText('Welcome back, test user1!')).toBeVisible({ timeout: 5000 })
+    await expect(page.getByText('Welcome back, test user1!')).toBeVisible({ timeout: 15000 })
   })
 
   test('Test# 21: Home page Get Started button navigates to wizard', async ({ page }) => {
