@@ -12,7 +12,7 @@ test.describe('Core Application Flows', () => {
 
     // Navigate to the Resume upload page
     await page.getByRole('link', { name: 'Resume' }).click()
-    await page.waitForLoadState('networkidle')
+    // Wait for the specific heading to ensure the page logic is loaded
     await expect(page.getByRole('heading', { name: /Upload Resume/ })).toBeVisible({ timeout: 20000 })
 
     // Copy example file to a temp name to avoid duplicate-name errors
@@ -21,13 +21,16 @@ test.describe('Core Application Flows', () => {
     const newFilePath = path.join(__dirname, `./data/example_${randomNumber}.docx`)
     fs.copyFileSync(originalFilePath, newFilePath)
 
-    // Upload the file
-    const fileInput = page.locator('input[type="file"]')
-    await fileInput.setInputFiles(newFilePath)
+    // ✅ FIX: Use the fileChooser listener to handle the upload reliably
+    const fileChooserPromise = page.waitForEvent('filechooser')
+    await page.locator('input[type="file"]').click() // Trigger the dialog
+    const fileChooser = await fileChooserPromise
+    await fileChooser.setFiles(newFilePath)
 
-    await page.waitForLoadState('networkidle')
-    await page.waitForTimeout(500)
-    await page.getByRole('button', { name: 'Upload Resume' }).click()
+    // ✅ FIX: Wait for the button to be clickable (not just present)
+    const uploadButton = page.getByRole('button', { name: 'Upload Resume' })
+    await expect(uploadButton).toBeEnabled({ timeout: 10000 })
+    await uploadButton.click()
 
     // Wait for success message
     await expect(page.locator('body')).toContainText('Resume uploaded successfully!', {
@@ -60,34 +63,27 @@ test.describe('Core Application Flows', () => {
     await page.getByRole('link', { name: 'Optimize' }).click()
     await expect(page.getByRole('heading', { name: /Optimize Resume/ })).toBeVisible({ timeout: 20000 })
 
-    // Select a resume from dropdown
-    await page.waitForTimeout(500)
+    // --- Select a Resume ---
     await page.click('text=Choose your resume')
-    await page.waitForSelector('[role="listbox"]', { state: 'visible' })
+    
+    // Use a locator that specifically looks for the option inside the visible listbox
+    const resumeOption = page.locator('[role="listbox"] >> text=/Resume #/').first()
+    
+    // Playwright will automatically wait/retry for this to be visible and actionable
+    await resumeOption.click()
 
-    const resumeOptions = page.locator('text=/Resume #/')
-    const firstResumeOption = (await resumeOptions.all())[0]
-    // Retry clicking up to 3 times for flaky dropdowns
-    let clicked = false
-    for (let i = 0; i < 3; i++) {
-      try {
-        await firstResumeOption.click()
-        clicked = true
-        break
-      } catch (e) {
-        if (i < 2) await page.waitForTimeout(500)
-      }
-    }
-    if (!clicked) throw new Error('Failed to click the first resume option after 3 attempts')
-
-    // Select a job from dropdown
+    // --- Select a Job ---
     await page.click('text=Choose a job')
-    await page.waitForSelector('[role="listbox"]', { state: 'visible' })
-    const firstJobOption = (await page.locator('text=/Job #/').all())[0]
-    await firstJobOption.click()
+    
+    // Scope the search to the listbox to avoid clicking background elements
+    const jobOption = page.locator('[role="listbox"] >> text=/Job #/').first()
+    await jobOption.click()
 
-    // Run optimization
-    await page.getByRole('button', { name: 'Run Optimization' }).click()
+    // --- Run optimization ---
+    const runBtn = page.getByRole('button', { name: 'Run Optimization' })
+    await expect(runBtn).toBeEnabled()
+    await runBtn.click()
+    
     await expect(page.getByRole('heading', { name: /Optimized Resume Preview/ })).toBeVisible({ timeout: 20000 })
     await expect(page.locator('body')).toContainText('Resume optimized successfully!', {
       timeout: 20000

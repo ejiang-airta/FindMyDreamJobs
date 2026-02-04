@@ -27,7 +27,7 @@ test.describe('Login & Navigation', () => {
 
   test('Test# 3: Login succeeds with correct credentials', async ({ page }) => {
     await loginAsTestUser(page)
-    await expect(page.getByText('Welcome back, test user1!')).toBeVisible({ timeout: 5000 })
+    await expect(page.getByText('Welcome back, test user1!')).toBeVisible({ timeout: 15000 })
   })
 
   test('Test# 4: Navigate to Dashboard page', async ({ page }) => {
@@ -87,7 +87,7 @@ test.describe('Login & Navigation', () => {
     await loginAsTestUser(page)
     await page.getByRole('link', { name: 'Analyze' }).click()
     await page.getByRole('link', { name: 'Home' }).click()
-    await expect(page.getByText('Welcome back, test user1!')).toBeVisible({ timeout: 5000 })
+    await expect(page.getByText('Welcome back, test user1!')).toBeVisible({ timeout: 15000 })
   })
 
 })

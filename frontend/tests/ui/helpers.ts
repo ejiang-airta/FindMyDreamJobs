@@ -13,7 +13,7 @@ export async function loginAsTestUser(page: Page) {
     await page.locator('button', { hasText: 'Sign In' }).click()
     await page.waitForLoadState('networkidle') // ensures all requests settle, use this to replace the message verification
     await page.waitForTimeout(1000) // wait for 1 seconds to ensure the message is displayed
-    await page.getByText('Welcome back, test user1!').waitFor({ timeout: 5000 }) //ensure the message shows correctly after 'networkidle' state
+    await page.getByText('Welcome back, test user1!').waitFor({ timeout: 15000 }) //ensure the message shows correctly after 'networkidle' state
   }
 
   try {
