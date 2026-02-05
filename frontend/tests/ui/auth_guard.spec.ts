@@ -20,7 +20,7 @@ const protectedRoutes = [
 test.describe('Auth Guards', () => {
 
   for (const [index, route] of protectedRoutes.entries()) {
-    test(`auth_guard-Test-${36 + index}-Protects-${route.replace('/', '')}`, async ({ page }) => {
+    test(`Test# ${36 + index}: No access to ${route} re-login`, async ({ page }) => {
       await page.goto(`${BASE_URL}${route}`, { waitUntil: 'domcontentloaded', timeout: 60000 })
 
       // Should redirect to login or show sign-in message

@@ -2,9 +2,9 @@
 import { test, expect } from '@playwright/test'
 import { BASE_URL } from './test-config'
 
-test.describe('About Page', () => {
+test.describe('About', () => {
 
-  test('about-Test-32-Page-renders-mission-values', async ({ page }) => {
+  test('Test# 32: About page renders mission and values', async ({ page }) => {
     await page.goto(`${BASE_URL}/about`, { waitUntil: 'domcontentloaded', timeout: 60000 })
 
     await expect(page.getByRole('heading', { name: /Our Mission/ })).toBeVisible()

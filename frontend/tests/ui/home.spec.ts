@@ -3,21 +3,21 @@ import { test, expect } from '@playwright/test'
 import { loginAsTestUser } from './helpers'
 import { BASE_URL } from './test-config'
 
-test.describe('Home Page', () => {
+test.describe('Home', () => {
 
-  test('home-Test-19-Page-renders-unauthenticated', async ({ page }) => {
+  test('Test# 19: Home page renders for unauthenticated users', async ({ page }) => {
     await page.goto(`${BASE_URL}`, { waitUntil: 'domcontentloaded', timeout: 60000 })
 
     // Hero section heading should be visible (use getByRole to avoid strict mode violation)
     await expect(page.getByRole('heading', { name: 'Find Your Dream Job' })).toBeVisible({ timeout: 10000 })
   })
 
-  test('home-Test-20-Welcome-message-logged-in', async ({ page }) => {
+  test('Test# 20: Welcome message for logged-in users', async ({ page }) => {
     await loginAsTestUser(page)
     await expect(page.getByText('Welcome back, test user1!')).toBeVisible({ timeout: 15000 })
   })
 
-  test('home-Test-21-Get-Started-to-wizard', async ({ page }) => {
+  test('Test# 21: Get Started navigates to wizard', async ({ page }) => {
     await loginAsTestUser(page)
 
     const getStartedBtn = page.locator('button', { hasText: /Get Started/i })
@@ -27,7 +27,7 @@ test.describe('Home Page', () => {
     }
   })
 
-  test('home-Test-22-Learn-More-to-about', async ({ page }) => {
+  test('Test# 22: Learn More navigates to about', async ({ page }) => {
     await page.goto(`${BASE_URL}`, { waitUntil: 'domcontentloaded', timeout: 60000 })
     await page.waitForTimeout(1000)
 

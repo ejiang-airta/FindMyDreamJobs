@@ -2,9 +2,9 @@
 import { test, expect } from '@playwright/test'
 import { BASE_URL, BACKEND_URL } from './test-config'
 
-test.describe('Signup Page', () => {
+test.describe('Signup', () => {
 
-  test('signup-Test-28-Page-renders-form-fields', async ({ page }) => {
+  test('Test# 28: Signup page renders with all form fields', async ({ page }) => {
     await page.goto(`${BASE_URL}/signup`, { waitUntil: 'domcontentloaded', timeout: 60000 })
 
     await expect(page.getByRole('heading', { name: /Create New Account/ })).toBeVisible()
@@ -14,7 +14,7 @@ test.describe('Signup Page', () => {
     await expect(page.locator('button', { hasText: 'Create Account' })).toBeVisible()
   })
 
-  test('signup-Test-29-Link-to-login-page', async ({ page }) => {
+  test('Test# 29: Signup page has link to login page', async ({ page }) => {
     await page.goto(`${BASE_URL}/signup`, { waitUntil: 'domcontentloaded', timeout: 60000 })
 
     const signInLink = page.locator('a', { hasText: 'Sign In' })
@@ -23,7 +23,7 @@ test.describe('Signup Page', () => {
     await expect(page).toHaveURL(/.*login/)
   })
 
-  test('signup-Test-30-Missing-fields-alert', async ({ page }) => {
+  test('Test# 30: Signup with missing fields shows alert', async ({ page }) => {
     page.on('dialog', async dialog => {
       expect(dialog.message()).toContain('Please enter all fields.')
       await dialog.dismiss()
@@ -35,7 +35,7 @@ test.describe('Signup Page', () => {
     await page.locator('button', { hasText: 'Create Account' }).click()
   })
 
-  test('signup-Test-31-Full-signup-workflow', async ({ page }) => {
+  test('Test# 31: Full signup workflow', async ({ page }) => {
     // Generate unique email to avoid conflicts with existing users
     const timestamp = Date.now()
     const testEmail = `testuser_${timestamp}@example.com`
@@ -84,6 +84,17 @@ test.describe('Signup Page', () => {
     expect(requestBody.email).toBe(testEmail)
     expect(requestBody.password).toBe(testPassword)
     expect(requestBody.full_name).toBe(testName)
+
+    // NEW: Wait for signup success (either toast or redirect)
+    await page.waitForLoadState('networkidle')
+
+    // Verify we're either on home page or see success message
+    const urlOrMessage = await Promise.race([
+      page.waitForURL(/\/(home|dashboard|$)/, { timeout: 10000 }).then(() => 'redirected'),
+      page.locator('body').filter({ hasText: /signed up|success|created/i }).waitFor({ timeout: 10000 }).then(() => 'message')
+    ]).catch(() => null)
+
+    expect(urlOrMessage).toBeTruthy()
   })
 
 })

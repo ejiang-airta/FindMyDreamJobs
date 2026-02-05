@@ -35,9 +35,9 @@ const mockJobResults = {
   ]
 }
 
-test.describe('Job Search', () => {
+test.describe('Jobs', () => {
 
-  test('job_search-Test-23-Search-and-see-results', async ({ page }) => {
+  test('Test# 23: User search jobs and see results', async ({ page }) => {
     await loginAsTestUser(page)
 
     // Intercept the search-jobs API call with mock data
@@ -59,7 +59,7 @@ test.describe('Job Search', () => {
     await expect(page.locator('text=Another Corp')).toBeVisible()
   })
 
-  test('job_search-Test-24-Search-no-results', async ({ page }) => {
+  test('Test# 24: Search with no results shows 0 count', async ({ page }) => {
     await loginAsTestUser(page)
 
     // Intercept with empty results
@@ -79,7 +79,7 @@ test.describe('Job Search', () => {
     await expect(page.locator('text=Showing 0 jobs')).toBeVisible({ timeout: 10000 })
   })
 
-  test('job_search-Test-25-API-error-handling', async ({ page }) => {
+  test('Test# 25: Search handles API errors gracefully', async ({ page }) => {
     await loginAsTestUser(page)
 
     // Intercept with error response
@@ -100,7 +100,7 @@ test.describe('Job Search', () => {
     await expect(page.getByPlaceholder('Job title or keywords')).toBeVisible()
   })
 
-  test('job_search-Test-26-Analyze-navigates-with-JD', async ({ page }) => {
+  test('Test# 26: Analyze button with JD prefill', async ({ page }) => {
     await loginAsTestUser(page)
 
     // Intercept the search-jobs API call with mock data
@@ -135,7 +135,7 @@ test.describe('Job Search', () => {
     expect(textareaValue).toContain('We are looking for a QA Engineer')
   })
 
-  test('job_search-Test-27-Match-scores-color-coding', async ({ page }) => {
+  test('Test# 27: Match scores display with color coding', async ({ page }) => {
     await loginAsTestUser(page)
 
     // Intercept the search-jobs API call

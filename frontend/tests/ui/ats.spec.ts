@@ -3,16 +3,16 @@ import { test, expect } from '@playwright/test'
 import { loginAsTestUser } from './helpers'
 import { BASE_URL } from './test-config'
 
-test.describe('ATS Score Page', () => {
+test.describe('ATS', () => {
 
-  test('ats-Test-33-Page-renders-authenticated', async ({ page }) => {
+  test('Test# 33: ATS page renders for authenticated user', async ({ page }) => {
     await loginAsTestUser(page)
 
     await page.goto(`${BASE_URL}/ats`, { waitUntil: 'domcontentloaded' })
     await expect(page.getByRole('heading', { name: /ATS/ })).toBeVisible({ timeout: 8000 })
   })
 
-  test('ats-Test-34-Validation-error-invalid-resume', async ({ page }) => {
+  test('Test# 34: ATS validation error', async ({ page }) => {
     await loginAsTestUser(page)
 
     await page.goto(`${BASE_URL}/ats`, { waitUntil: 'domcontentloaded' })
@@ -31,7 +31,7 @@ test.describe('ATS Score Page', () => {
     }
   })
 
-  test('ats-Test-35-Redirect-unauthenticated', async ({ page }) => {
+  test('Test# 35: ATS page redirects unauthenticated users', async ({ page }) => {
     await page.goto(`${BASE_URL}/ats`, { waitUntil: 'domcontentloaded', timeout: 60000 })
     // Should show unauthorized message or redirect to login
     await expect(page.locator('body')).toContainText(/Unauthorized|sign in|login/i, {

@@ -5,15 +5,19 @@ import { BASE_URL } from './test-config'
 import path from 'path'
 import fs from 'fs'
 
-test.describe('Core Application Flows', () => {
+test.describe('Core App Flow', () => {
 
-  test('app_flow-Test-13-User-can-upload-resume', async ({ page }) => {
+  test('Test# 13: User can upload a resume', async ({ page }) => {
     await loginAsTestUser(page)
 
     // Navigate to the Resume upload page
     await page.getByRole('link', { name: 'Resume' }).click()
     // Wait for the specific heading to ensure the page logic is loaded
     await expect(page.getByRole('heading', { name: /Upload Resume/ })).toBeVisible({ timeout: 20000 })
+
+    // Wait for userId to be loaded (prevents race condition in CI)
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(1000)
 
     // Copy example file to a temp name to avoid duplicate-name errors
     const randomNumber = Math.floor(Math.random() * 10000)
@@ -42,7 +46,7 @@ test.describe('Core Application Flows', () => {
     }
   })
 
-  test('app_flow-Test-14-Analyze-job-description', async ({ page }) => {
+  test('Test# 14: User can analyze a job description', async ({ page }) => {
     await loginAsTestUser(page)
 
     await page.click('text=Analyze')
@@ -56,7 +60,7 @@ test.describe('Core Application Flows', () => {
     })
   })
 
-  test('app_flow-Test-15-Optimize-resume', async ({ page }) => {
+  test('Test# 15: User can optimize resume', async ({ page }) => {
     await loginAsTestUser(page)
 
     await page.getByRole('link', { name: 'Optimize' }).click()
@@ -89,7 +93,7 @@ test.describe('Core Application Flows', () => {
     })
   })
 
-  test('app_flow-Test-16-Apply-to-job', async ({ page }) => {
+  test('Test# 16: User can apply to a job', async ({ page }) => {
     await loginAsTestUser(page)
 
     await page.getByRole('link', { name: 'Apply' }).click()
@@ -118,7 +122,7 @@ test.describe('Core Application Flows', () => {
     })
   })
 
-  test('app_flow-Test-17-Forgot-password-flow', async ({ page }) => {
+  test('Test# 17: Forgot password flow works', async ({ page }) => {
     await page.goto(`${BASE_URL}/login`)
     await page.click('text=Forgot your password?')
     await expect(page.locator(':text("Reset your password")')).toBeVisible({ timeout: 20000 })
@@ -137,7 +141,7 @@ test.describe('Core Application Flows', () => {
     await expect(page).toHaveURL(`${BASE_URL}`, { timeout: 20000 })
   })
 
-  test('app_flow-Test-18-Unauthorized-redirect', async ({ page }) => {
+  test('Test# 18: Unauthorized and re-login', async ({ page }) => {
     await page.goto(`${BASE_URL}/dashboard`)
     await expect(page.locator('body')).toContainText('Please sign in or create an account to get started', {
       timeout: 20000
