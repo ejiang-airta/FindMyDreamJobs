@@ -13,6 +13,7 @@ from datetime import datetime, timezone
 # Set dummy env vars BEFORE importing app (OpenAI client initializes at import time)
 os.environ.setdefault("OPENAI_API_KEY", "sk-test-dummy-key-for-testing")
 os.environ.setdefault("RAPIDAPI_KEY", "test-dummy-rapidapi-key")
+os.environ.setdefault("JDI_ENCRYPTION_KEY", "8lE8cmIAZvhh_cDkVAJUhec8r-xpvfR6r9qj6heemTs=")  # dummy Fernet key for tests
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -95,8 +96,11 @@ def client(db_session):
     from app.routes import ats as ats_mod
     from app.routes import ai_optimization as ai_mod
     from app.routes import user as user_mod
+    from app.routes import integration as integration_mod
+    from app.routes import jdi as jdi_mod
+    from app.routes import user_profile as user_profile_mod
 
-    for mod in [resume_mod, match_mod, app_mod, ats_mod, ai_mod, user_mod]:
+    for mod in [resume_mod, match_mod, app_mod, ats_mod, ai_mod, user_mod, integration_mod, jdi_mod, user_profile_mod]:
         if hasattr(mod, "get_db"):
             app.dependency_overrides[mod.get_db] = _override_get_db
 

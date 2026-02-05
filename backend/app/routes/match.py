@@ -28,6 +28,11 @@ class MatchRequest(BaseModel):
     resume_id: int
     job_id: int
 
+# ✅ Request Model for `/quick-match-score` (for search results without saved Job)
+class QuickMatchRequest(BaseModel):
+    user_id: int
+    job_description: str
+
 # 🔹 API: Calculate Resume-JD Match Score
 @router.post("/match-score", tags=["Job Matches"])
 def calculate_match(request: MatchRequest, db: Session = Depends(get_db)):
@@ -143,3 +148,31 @@ def get_user_matches(user_id: int, db: Session = Depends(get_db)):
     )
 
     return [dict(m._mapping) for m in matches]
+
+# 🔹 API: Quick Match Score for Search Results (without saved Job)
+@router.post("/quick-match-score", tags=["Job Matches"])
+def quick_match_score(request: QuickMatchRequest, db: Session = Depends(get_db)):
+    """
+    Calculate match score for a job description against user's best resume.
+    Used for displaying match scores on search results before job is saved.
+    """
+    # Get user's most recent resume (or could be modified to use all resumes)
+    resume = db.query(Resume).filter(Resume.user_id == request.user_id).order_by(Resume.created_at.desc()).first()
+
+    if not resume:
+        return {"match_score": 0, "message": "No resume found for user"}
+
+    resume_text = resume.parsed_text or ""
+    job_description = request.job_description or ""
+
+    # Extract keywords from job description
+    jd_keywords = list(extract_skills_with_frequency(job_description).get("skills", []))
+    jd_keyword_strings = [skill["skill"] if isinstance(skill, dict) else skill for skill in jd_keywords]
+
+    # Calculate scores using same logic as JDI
+    _, match_score, _ = calculate_scores(resume_text, job_description, jd_keyword_strings)
+
+    return {
+        "match_score": round(match_score),
+        "resume_used": resume.resume_name
+    }

@@ -63,6 +63,9 @@ const OptimizeResume: React.FC<OptimizeProps> = ({ userId, isWizard = false, onS
   useEffect(() => {
     const fetchDropdowns = async () => {
       try {
+        console.log("BACKEND_BASE_URL =", BACKEND_BASE_URL)
+        console.log("Optimize URL =", `${BACKEND_BASE_URL}/optimize-resume`)
+
         const [res1, res2] = await Promise.all([
           fetch(`${BACKEND_BASE_URL}/resumes/by-user/${userId}`),
           fetch(`${BACKEND_BASE_URL}/jobs/by-user/${userId}`)

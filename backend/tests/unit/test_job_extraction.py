@@ -63,6 +63,26 @@ class TestExtractCompanyName:
         company = extract_company_name(text)
         assert "google" in company.lower()
 
+    def test_why_work_at_pattern(self):
+        """Test 'Why Work at [Company]?' pattern - common JD section header."""
+        text = "Senior Software Engineer\n\nWhy Work at Ross Video?\n\nWe offer great benefits..."
+        company = extract_company_name(text)
+        assert "ross video" in company.lower()
+
+    def test_why_work_for_pattern(self):
+        """Test 'Why Work for [Company]?' variant."""
+        text = "Position: Data Analyst\n\nWhy Work for Acme Corp?\n\nJoin our team..."
+        company = extract_company_name(text)
+        assert "acme" in company.lower()
+
+    def test_why_work_does_not_match_as_company(self):
+        """Ensure 'Why Work' itself is not extracted as company name."""
+        text = "Software Engineer at Tech Company\n\nWhy work here? We value our employees."
+        company = extract_company_name(text)
+        # Should NOT be 'Why Work' or 'Why'
+        assert company.lower() != "why work"
+        assert company.lower() != "why"
+
     def test_at_pattern(self):
         text = "At Amazon, we strive to be the most customer-centric company."
         company = extract_company_name(text)

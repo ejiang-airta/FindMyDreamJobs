@@ -5,14 +5,14 @@ import { BASE_URL } from './test-config'
 
 test.describe('ATS Score Page', () => {
 
-  test('Test# 30: ATS page renders for authenticated user', async ({ page }) => {
+  test('ats-Test-33-Page-renders-authenticated', async ({ page }) => {
     await loginAsTestUser(page)
 
     await page.goto(`${BASE_URL}/ats`, { waitUntil: 'domcontentloaded' })
     await expect(page.getByRole('heading', { name: /ATS/ })).toBeVisible({ timeout: 8000 })
   })
 
-  test('Test# 31: ATS page shows validation error for invalid resume ID', async ({ page }) => {
+  test('ats-Test-34-Validation-error-invalid-resume', async ({ page }) => {
     await loginAsTestUser(page)
 
     await page.goto(`${BASE_URL}/ats`, { waitUntil: 'domcontentloaded' })
@@ -31,7 +31,7 @@ test.describe('ATS Score Page', () => {
     }
   })
 
-  test('Test# 32: ATS page redirects unauthenticated users', async ({ page }) => {
+  test('ats-Test-35-Redirect-unauthenticated', async ({ page }) => {
     await page.goto(`${BASE_URL}/ats`, { waitUntil: 'domcontentloaded', timeout: 60000 })
     // Should show unauthorized message or redirect to login
     await expect(page.locator('body')).toContainText(/Unauthorized|sign in|login/i, {

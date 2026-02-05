@@ -23,4 +23,9 @@ itsdangerous    # for creating tokens
 python-docx # for creating word documents
 pytest  # for testing
 requests-mock # for mocking requests in tests
-pandas==2.2.3 
+pandas==2.2.3
+# JDI (Job Daily Intelligence) dependencies
+google-auth-oauthlib     # Gmail OAuth flow
+google-api-python-client # Gmail API client
+cryptography             # Fernet encryption for OAuth tokens
+trafilatura              # Fallback HTML→text extraction for JD pages

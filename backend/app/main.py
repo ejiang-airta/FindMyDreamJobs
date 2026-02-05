@@ -1,7 +1,7 @@
 # File: /backend/app/main.py
 # Main entry point for the FastAPI application
 from fastapi import FastAPI
-from app.routes import user, job, resume, application, match, auth, ai_optimization, ats, dashboard, download, job_search
+from app.routes import user, job, resume, application, match, auth, ai_optimization, ats, dashboard, download, job_search, integration, jdi, user_profile
 from fastapi.middleware.cors import CORSMiddleware
 import logging
 import sys
@@ -82,6 +82,9 @@ app.include_router(resume.router)
 app.include_router(download.router)
 app.include_router(user.router)
 app.include_router(job_search.router)       # ✅ Job Search API
+app.include_router(integration.router)      # ✅ Gmail Integration API (JDI)
+app.include_router(jdi.router)              # ✅ JDI Candidate Feed API
+app.include_router(user_profile.router)     # ✅ JDI User Profile/Preferences API
 
 
 

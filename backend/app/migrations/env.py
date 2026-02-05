@@ -13,7 +13,7 @@ print
 from app.config.settings import DATABASE_URL
 from app.database.connection import Base  # ✅ Ensure Base is imported
 # Import all models so Alembic can see them
-from app.models import user, resume, job, application, match # ✅ Import all models or else Alembic can't see them
+from app.models import user, resume, job, application, match, user_profile, user_integration, jdi_candidate  # ✅ Import all models or else Alembic can't see them
 
 # Alembic Config
 config = context.config

@@ -80,13 +80,20 @@ HEADING_JUNK = {
 }
 
 COMPANY_BAD_WORDS = {
-    "job", "jobs", "role", "position", "team", "engineering", "software", 
-    "technology", "requirements", "qualifications", "responsibilities", 
+    "job", "jobs", "role", "position", "team", "engineering", "software",
+    "technology", "requirements", "qualifications", "responsibilities",
     "overview", "ai", "react", "oracle", ".net", "c#", "background",
-    "building", "going", "key responsibilities", "the opportunity", 
+    "building", "going", "key responsibilities", "the opportunity",
     "us", "the company", "our company", "our mission", "our team",
     "the role", "the position", "who we are", "about the",
-    "culture", "description", "summary"
+    "culture", "description", "summary",
+    # Common JD section headers that get misidentified as companies
+    "why work", "what", "we do", "your role", "base", "line", "title",
+    "this", "entity", "humans", "job summary", "discover",
+    # More common section headers
+    "about you", "about this", "about", "who you are", "what you'll do",
+    "what you will do", "benefits", "perks", "compensation", "apply now",
+    "how to apply", "skills", "experience", "education", "duties",
 }
 
 
@@ -145,9 +152,9 @@ def _clean_title_output(title: str) -> str:
     if re.search(r"\s+for\s+(our|the)\s", title, re.IGNORECASE):
         title = re.split(r"\s+for\s+(our|the)\s", title, flags=re.IGNORECASE)[0]
     
-    # Pattern: "with consulting/experience"
-    if re.search(r"\s+with\s+(consulting|experience)", title, re.IGNORECASE):
-        title = re.split(r"\s+with\s+(consulting|experience)", title, flags=re.IGNORECASE)[0]
+    # Pattern: "with consulting/experience/deep/strong/etc" - description starters
+    if re.search(r"\s+with\s+(consulting|experience|deep|strong|extensive|proven|excellent|a focus)", title, re.IGNORECASE):
+        title = re.split(r"\s+with\s+(consulting|experience|deep|strong|extensive|proven|excellent|a focus)", title, flags=re.IGNORECASE)[0]
 
     # Pattern: "focused on"
     if re.search(r"\s+focused\s+on", title, re.IGNORECASE):
@@ -196,22 +203,45 @@ def _has_title_role_word(text: str) -> bool:
 def _is_complete_title(text: str) -> bool:
     """
     Validate that this looks like a COMPLETE title, not a fragment.
-    
+
     A complete title should:
     1. Have at least ONE MUST_HAVE role word (Director, Manager, Engineer, etc.)
     2. Not be a description or qualification
     3. Actually look like a job title structure
+    4. Start with a valid title starter word
     """
     if not text or len(text) < 5:
         return False
-    
+
     text_lower = text.lower().strip()
     words = text_lower.split()
-    
+
     # CRITICAL: Must have at least ONE required role word
     if not _has_title_role_word(text):
         return False
-    
+
+    # Valid title starter words - titles should start with one of these
+    valid_title_starters = {
+        # Seniority levels
+        "senior", "sr", "junior", "jr", "mid", "mid-level", "entry", "entry-level",
+        "principal", "staff", "lead", "associate", "assistant",
+        # Leadership titles
+        "director", "manager", "head", "chief", "vp", "vice", "avp", "svp", "evp",
+        "president", "officer", "cto", "cio", "ceo", "cfo", "coo",
+        # Technical roles
+        "software", "data", "devops", "cloud", "platform", "infrastructure",
+        "backend", "frontend", "fullstack", "full-stack", "full", "qa", "qe", "sdet",
+        "security", "network", "database", "systems", "solutions", "technical",
+        "engineering", "product", "project", "program", "it", "information",
+        # Roles
+        "engineer", "developer", "architect", "analyst", "scientist",
+        "specialist", "consultant", "administrator", "coordinator", "supervisor",
+    }
+
+    # Check if first word is a valid starter
+    if words[0] not in valid_title_starters:
+        return False
+
     # Should not be a description phrase
     description_indicators = [
         "leader of", "leader in",
@@ -222,30 +252,32 @@ def _is_complete_title(text: str) -> bool:
         "you will", "who will", "we are", "who we are",
         # Add specific failures from screenshots
         "to define", "training sessions", "by example",
-        "successful candidate", "similar role"
+        "successful candidate", "similar role",
+        # Job aggregator junk
+        "together", "gain full", "exclusive", "premium",
     ]
-    
+
     for indicator in description_indicators:
         if indicator in text_lower:
             return False
-    
+
     # Check word count (titles are typically 2-10 words)
     if len(words) < 2 or len(words) > 12:
         return False
-    
+
     # Check if it starts with a verb (likely a responsibility, not title)
     # BUT allow "Lead" and "Architect" as they can be titles
-    verb_starts = ["define", "execute", "build", "develop", "ensure", "orchestrate", 
+    verb_starts = ["define", "execute", "build", "develop", "ensure", "orchestrate",
                    "drive", "manage", "oversee", "provide", "create", "deliver",
                    "establish", "implement", "coordinate", "support", "enhance"]
-    
+
     if words[0] in verb_starts and len(words) > 5:
         return False
-    
+
     # Reject if it's just the role word alone
     if len(words) == 1 and words[0] in TITLE_MUST_HAVE_WORDS:
         return False
-    
+
     return True
 
 
@@ -502,9 +534,20 @@ def _is_valid_company_name(text: str) -> bool:
         "the team", "the role", "the position", "the opportunity",
         "the job", "the company", "our team", "our mission",
         "our company", "about us", "who we are", "what we do",
-        "summary", "description", "overview"
+        "summary", "description", "overview",
+        # Job aggregator marketing words
+        "gain", "home", "jobs", "premium", "verified", "exclusive",
+        "access", "explore", "advantage", "win", "craft", "shortcut",
+        # Common JD section headers
+        "why work", "what", "we do", "your role", "base", "line", "title",
+        "this", "entity", "humans", "job summary", "responsibilities",
+        "requirements", "qualifications", "us", "discover",
+        # More common section headers
+        "about you", "about this", "about", "who you are", "benefits",
+        "perks", "compensation", "how to apply", "skills", "experience",
+        "education", "duties", "apply now", "untitled", "unknown",
     }
-    
+
     if text_lower in junk_phrases:
         return False
     
@@ -553,12 +596,34 @@ def extract_company_name(text: str, known_companies: List[str] = None) -> str:
                 if re.search(r'\b' + re.escape(co) + r'\b', text[:2000], re.IGNORECASE):
                     return _clean_spaces(co)
 
-    # Priority 1: "About [Company]" pattern (very high confidence)
-    about_match = re.search(r"(?i)About\s+([A-Z][A-Za-z0-9\s&\.]+?)(?:\s*\n|:|$)", text[:1500])
+    # Priority 1: "Why Work at [Company]?" pattern (very high confidence)
+    # Pattern must capture company name AFTER "at/for/with" and BEFORE "?" or "We" or newline
+    why_work_match = re.search(
+        r"(?i)Why\s+Work\s+(?:at|for|with)\s+([A-Z][A-Za-z0-9\s&\.\-']+?)\s*(?:\?|\s+We\b|\s*\n|$)",
+        text[:2000]
+    )
+    if why_work_match:
+        cand = why_work_match.group(1).strip().rstrip('?').strip()
+        # Additional validation - company name should be substantial
+        if len(cand) > 2 and _is_valid_company_name(cand):
+            return _clean_spaces(cand)
+
+    # Priority 2: "About [Company]" pattern (very high confidence)
+    # Look for patterns like "About Apply Digital" or "ABOUT APPLY DIGITAL"
+    # Match until we hit "is/was/are/has" or a newline
+    about_match = re.search(r"(?i)About\s+([A-Z][A-Za-z0-9\s&\.]+?)(?:\s+(?:is|was|are|has|provides|offers)\b|\s*\n|:|$)", text[:1500])
     if about_match:
         cand = about_match.group(1).strip()
-        # Remove trailing noise
-        cand = re.split(r'\s+(is|was|are|were|has|have|provides|offers|specializes)', cand)[0].strip()
+        # Handle "APPLY DIGITAL Apply Digital" -> extract "Apply Digital" (title case version)
+        # Check if text contains a duplicated company name (all caps + title case)
+        words = cand.split()
+        if len(words) >= 4:
+            # Look for pattern where first N words are ALL CAPS and next N words are Title Case equivalent
+            mid = len(words) // 2
+            first_half = ' '.join(words[:mid])
+            second_half = ' '.join(words[mid:])
+            if first_half.upper() == first_half and first_half.lower() == second_half.lower():
+                cand = second_half  # Use title case version
         if _is_valid_company_name(cand):
             return _clean_spaces(cand)
 
@@ -641,12 +706,49 @@ def extract_location(text: str) -> str:
     if m:
         return _clean_spaces(m.group(0))
 
-    # spaCy fallback
+    # Look for "based in [location]" pattern (very common in JDs)
+    based_in = re.search(r"(?i)(?:based in|located in|position is in)\s+(?:the\s+)?([A-Z][A-Za-z\s,]+?)(?:\s+(?:Area|or|region)|[,\.]|$)", text)
+    if based_in:
+        loc_text = based_in.group(1).strip()
+        if len(loc_text) > 3 and len(loc_text) < 60:
+            return _clean_spaces(loc_text)
+
+    # Look for "remote" indicators with location context
+    remote_match = re.search(r"(?i)(remote|hybrid)[/\s\-]*(?:friendly|first)?\s*(?:in|from|within)?\s*([A-Z][A-Za-z\s,]+?)(?:\s+or|\.|,|$)", text)
+    if remote_match:
+        loc_part = remote_match.group(2).strip() if remote_match.group(2) else ""
+        if loc_part and len(loc_part) > 3 and len(loc_part) < 60:
+            return f"Remote ({_clean_spaces(loc_part)})"
+        return "Remote"
+
+    # Look for "LOCATION:" pattern (common in JDs) - but with better extraction
+    loc_label = re.search(r"(?i)LOCATION:?\s*(?:This role is\s+)?(?:based in|located in)?\s*([A-Z][A-Za-z\s,\-]+?)(?:\s+(?:Area|or|region)|[,\.]|$)", text)
+    if loc_label:
+        loc_text = loc_label.group(1).strip()
+        # Clean up common suffixes
+        loc_text = re.split(r'\s+(is|The position|The preferred|This role)', loc_text)[0].strip()
+        if len(loc_text) > 3 and len(loc_text) < 100:
+            return _clean_spaces(loc_text)
+
+    # spaCy fallback - but filter out common misclassifications
+    tech_terms_not_locations = {
+        "ai", "ml", "nfl", "api", "aws", "gcp", "ui", "ux", "qa", "it",
+        "saas", "paas", "iaas", "sdk", "sql", "nosql", "css", "html",
+        "kubernetes", "docker", "react", "angular", "vue",
+    }
+
     if nlp is not None:
         try:
             doc = nlp(text[:5000])
             for ent in doc.ents:
                 if ent.label_ in {"GPE", "LOC"}:
+                    ent_lower = ent.text.strip().lower()
+                    # Skip tech terms that spaCy misclassifies
+                    if ent_lower in tech_terms_not_locations:
+                        continue
+                    # Skip very short entities (likely errors)
+                    if len(ent.text.strip()) < 3:
+                        continue
                     return ent.text.strip()
         except Exception:
             pass

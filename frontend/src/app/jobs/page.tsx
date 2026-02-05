@@ -4,7 +4,7 @@
 
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
-import { MapPin, CalendarDays, Bookmark, BarChart3, Send, WalletIcon } from "lucide-react"
+import { MapPin, CalendarDays, Bookmark, BarChart3, Send, WalletIcon, Sparkles } from "lucide-react"
 import axios from "axios"
 import { BACKEND_BASE_URL } from "@/lib/env"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge"
 import { AppButton } from '@/components/ui/AppButton'
 import { toast } from 'sonner'
 import { Protected } from '@/components/Protected'
+import { JDIFeed } from '@/components/JDIFeed'
 
 
 // This ensures page is only accessible to authenticated users:
@@ -33,8 +34,10 @@ function JobsPage() {
   const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set())
   const [analyzedJobIds, setAnalyzedJobIds] = useState<Set<string>>(new Set())
   const [appliedJobIds, setAppliedJobIds] = useState<Set<string>>(new Set())
+  const [newJobIds, setNewJobIds] = useState<Set<string>>(new Set())
   const [showFullDescription, setShowFullDescription] = useState<{ [jobId: string]: boolean }>({})
   const [savedJobsList, setSavedJobsList] = useState<any[]>([]);
+  const [matchScores, setMatchScores] = useState<{ [jobId: string]: number }>({})
   const router = useRouter()
 
   useEffect(() => {
@@ -48,20 +51,22 @@ function JobsPage() {
           setSavedJobIds(ids);
         })
         .catch(err => console.error("Failed to fetch saved jobs:", err));
+
+      // Load user-specific data from localStorage (scoped by user_id)
+      const analyzed = localStorage.getItem(`analyzed_jobs_${uid}`)
+      if (analyzed) setAnalyzedJobIds(new Set(JSON.parse(analyzed)))
+
+      const applied = localStorage.getItem(`applied_jobs_${uid}`)
+      if (applied) setAppliedJobIds(new Set(JSON.parse(applied)))
+
+      const storedQuery = localStorage.getItem(`last_query_${uid}`) || ""
+      const storedLocation = localStorage.getItem(`last_location_${uid}`) || ""
+      const storedResults = localStorage.getItem(`last_results_${uid}`)
+
+      setQuery(storedQuery)
+      setLocation(storedLocation)
+      if (storedResults) setJobs(JSON.parse(storedResults))
     }
-    const analyzed = localStorage.getItem("analyzed_jobs")
-    if (analyzed) setAnalyzedJobIds(new Set(JSON.parse(analyzed)))
-
-    const applied = localStorage.getItem("applied_jobs")
-    if (applied) setAppliedJobIds(new Set(JSON.parse(applied)))
-
-    const storedQuery = localStorage.getItem("last_query") || ""
-    const storedLocation = localStorage.getItem("last_location") || ""
-    const storedResults = localStorage.getItem("last_results")
-
-    setQuery(storedQuery)
-    setLocation(storedLocation)
-    if (storedResults) setJobs(JSON.parse(storedResults))
   }, [])
 
 
@@ -72,9 +77,10 @@ function JobsPage() {
   }, [activeTab, userId]);
 
   const persistSearch = (query: string, location: string, results: any[]) => {
-    localStorage.setItem("last_query", query)
-    localStorage.setItem("last_location", location)
-    localStorage.setItem("last_results", JSON.stringify(results))
+    if (!userId) return
+    localStorage.setItem(`last_query_${userId}`, query)
+    localStorage.setItem(`last_location_${userId}`, location)
+    localStorage.setItem(`last_results_${userId}`, JSON.stringify(results))
   }
 
   const searchJobs = async () => {
@@ -86,6 +92,21 @@ function JobsPage() {
       const results = res.data.results || []
       setJobs(results)
       persistSearch(query, location, results)
+
+      // Calculate which jobs are "new" (posted in last 7 days)
+      const sevenDaysAgo = new Date()
+      sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
+      const newJobs = new Set<string>()
+
+      results.forEach((job: any) => {
+        if (job.job_posted_at_datetime_utc) {
+          const postedDate = new Date(job.job_posted_at_datetime_utc)
+          if (postedDate >= sevenDaysAgo) {
+            newJobs.add(job.job_id)
+          }
+        }
+      })
+      setNewJobIds(newJobs)
     } catch (e) {
       console.error("Job fetch failed", e)
     }
@@ -105,38 +126,84 @@ function JobsPage() {
   };
 
 
-  const handleAnalyze = async (job: any) => {
+  const handleAnalyze = (job: any) => {
+    // Store job description in localStorage for the analyze page to pick up
+    const jdText = job.job_description || job.description || ""
+    localStorage.setItem("jdi_analyze_jd", jdText)
+
+    // Mark job as analyzed immediately (consistent with Apply and Save behavior)
+    if (userId && job.job_id) {
+      const updated = new Set(analyzedJobIds)
+      updated.add(job.job_id)
+      setAnalyzedJobIds(updated)
+      localStorage.setItem(`analyzed_jobs_${userId}`, JSON.stringify(Array.from(updated)))
+    }
+
+    // Navigate to analyze page
+    router.push("/analyze")
+  }
+
+  const calculateMatchScore = async (jobId: string, jobDescription: string) => {
+    if (!userId || !jobDescription || matchScores[jobId]) return
+
     try {
-      const response = await axios.post(`${BACKEND_BASE_URL}/analyze-searched-job`, {
-        job_title: job.job_title || "N/A",
-        employer_name: job.employer_name || "N/A",
-        job_description: job.description,
-        job_location: job.job_location || null,
-        salary: job.salary || null,
-        job_link: job.redirect_url,
-        user_id: parseInt(userId || "0"),
+      const response = await axios.post(`${BACKEND_BASE_URL}/quick-match-score`, {
+        user_id: parseInt(userId),
+        job_description: jobDescription
       })
 
-      if (response.status === 200) {
-        const jobId = job.job_id || job.id || job.redirect_url
-        const updated = new Set(analyzedJobIds)
-        updated.add(jobId)
-        setAnalyzedJobIds(updated)
-        localStorage.setItem("analyzed_jobs", JSON.stringify(Array.from(updated)))
-        toast.success("✅ Job analyzed and saved!")
+      if (response.data.match_score !== undefined) {
+        setMatchScores(prev => ({
+          ...prev,
+          [jobId]: response.data.match_score
+        }))
       }
     } catch (err) {
-      console.error("Analyze failed", err)
-      alert("Failed to analyze job description")
+      console.error("Failed to calculate match score", err)
+      // Set default score on error
+      setMatchScores(prev => ({
+        ...prev,
+        [jobId]: 0
+      }))
     }
   }
+
+  // Calculate match scores when jobs or activeTab changes
+  useEffect(() => {
+    if (!userId || activeTab === 'jdi') return
+
+    // Determine which jobs to score based on active tab
+    let jobsToScore: any[] = []
+    if (activeTab === 'saved') {
+      jobsToScore = savedJobsList
+    } else if (activeTab === 'analyzed') {
+      jobsToScore = jobs.filter(job => analyzedJobIds.has(job.job_id))
+    } else if (activeTab === 'applied') {
+      jobsToScore = jobs.filter(job => appliedJobIds.has(job.job_id))
+    } else if (activeTab === 'new') {
+      jobsToScore = jobs.filter(job => newJobIds.has(job.job_id))
+    } else {
+      jobsToScore = jobs
+    }
+
+    // Calculate scores for visible jobs
+    jobsToScore.forEach(job => {
+      const jobId = job.job_id
+      const jobDescription = job.job_description || ""
+      if (jobDescription && !matchScores[jobId]) {
+        calculateMatchScore(jobId, jobDescription)
+      }
+    })
+  }, [jobs, savedJobsList, activeTab, userId, analyzedJobIds, appliedJobIds, newJobIds])
 
   const handleApply = (url: string, jobId: string) => {
     if (url) window.open(url, "_blank")
     const updated = new Set(appliedJobIds)
     updated.add(jobId)
     setAppliedJobIds(updated)
-    localStorage.setItem("applied_jobs", JSON.stringify(Array.from(updated)))
+    if (userId) {
+      localStorage.setItem(`applied_jobs_${userId}`, JSON.stringify(Array.from(updated)))
+    }
   }
 
   const handleSave = async (job: any) => {
@@ -193,6 +260,7 @@ function JobsPage() {
         switch (activeTab) {
           case 'analyzed': return analyzedJobIds.has(jobId);
           case 'applied': return appliedJobIds.has(jobId);
+          case 'new': return newJobIds.has(jobId);
           default: return true;
         }
       });
@@ -203,7 +271,7 @@ function JobsPage() {
       case 'saved': return savedJobIds.size
       case 'analyzed': return analyzedJobIds.size
       case 'applied': return appliedJobIds.size
-      case 'new': return 0
+      case 'new': return newJobIds.size
       default: return jobs.length
     }
   }
@@ -224,14 +292,21 @@ function JobsPage() {
       </div>
 
       <div className="flex gap-4 text-sm font-medium text-muted-foreground border-b pb-2">
-        {["all", "saved", "analyzed", "applied", "new"].map(tab => (
+        {["all", "saved", "analyzed", "applied", "new", "jdi"].map(tab => (
           <div key={tab} onClick={() => setActiveTab(tab)}
-            className={`cursor-pointer px-3 py-1 rounded-md transition ${activeTab === tab ? 'bg-blue-100 text-blue-700 font-semibold' : ''}`}>{
-              tab === 'all' ? `All Jobs (${getTabCount(tab)})` : `${tab.charAt(0).toUpperCase() + tab.slice(1)} (${getTabCount(tab)})`
+            className={`cursor-pointer px-3 py-1 rounded-md transition flex items-center gap-1 ${activeTab === tab ? 'bg-blue-100 text-blue-700 font-semibold' : ''}`}>{
+              tab === 'jdi' ? (
+                <><Sparkles className="h-3.5 w-3.5" /> JDI</>
+              ) : tab === 'all' ? `All Jobs (${getTabCount(tab)})` : `${tab.charAt(0).toUpperCase() + tab.slice(1)} (${getTabCount(tab)})`
             }</div>
         ))}
       </div>
 
+      {/* JDI Feed — renders when JDI tab is active */}
+      {activeTab === 'jdi' && userId ? (
+        <JDIFeed userId={userId} />
+      ) : (
+      <>
       <div className="text-muted-foreground text-sm">Showing {tabFilteredJobs.length} jobs</div>
 
       <div className="space-y-6">
@@ -248,7 +323,17 @@ function JobsPage() {
                   <p className="text-muted-foreground">{job.employer_name}</p>
                 </div>
                 <div className="flex flex-col items-end space-y-1">
-                  <Badge className="bg-green-100 text-green-800">94% Match</Badge>
+                  {matchScores[jobId] !== undefined ? (
+                    <Badge className={
+                      matchScores[jobId] >= 80 ? "bg-green-100 text-green-800" :
+                      matchScores[jobId] >= 60 ? "bg-yellow-100 text-yellow-800" :
+                      "bg-orange-100 text-orange-800"
+                    }>
+                      {matchScores[jobId]}% Match
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-gray-100 text-gray-600">Calculating...</Badge>
+                  )}
                   <span className="text-xs text-gray-400">
                     {postedAt ? new Date(postedAt).toLocaleDateString() : "Unknown"}
                   </span>
@@ -326,6 +411,8 @@ function JobsPage() {
           )
         })}
       </div>
+      </>
+      )}
     </div>
   )
 }

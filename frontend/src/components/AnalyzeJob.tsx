@@ -74,9 +74,16 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
   }
 
   useEffect(() => {
-      // Only runs in the browser
+    // Only runs in the browser
     const id = localStorage.getItem('user_id')
     setUserId(id)
+
+    // Check for JD passed from JDI "Analyze Deeper" button
+    const jdiJd = localStorage.getItem('jdi_analyze_jd')
+    if (jdiJd) {
+      setJobDescriptionLocal(jdiJd)
+      localStorage.removeItem('jdi_analyze_jd') // Clear after reading
+    }
   }, [])
 
   const handleSubmit = async () => {

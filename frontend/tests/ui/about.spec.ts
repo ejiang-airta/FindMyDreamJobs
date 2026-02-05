@@ -4,7 +4,7 @@ import { BASE_URL } from './test-config'
 
 test.describe('About Page', () => {
 
-  test('Test# 29: About page renders mission and values', async ({ page }) => {
+  test('about-Test-32-Page-renders-mission-values', async ({ page }) => {
     await page.goto(`${BASE_URL}/about`, { waitUntil: 'domcontentloaded', timeout: 60000 })
 
     await expect(page.getByRole('heading', { name: /Our Mission/ })).toBeVisible()

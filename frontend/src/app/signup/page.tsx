@@ -69,16 +69,13 @@ export default function SignupPage() {
           onChange={(e) => setEmail(e.target.value)}
         />
         
-        {/* adding the password input field here which contains the eye icon: */}
-        <Input type="password" name="password" placeholder="Create a password" />
-        
-        {/* <PasswordInput
+        <Input
           type="password"
+          name="password"
           placeholder="Create a password"
-          name="password" required
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-        /> */}
+        />
         <Button className="w-full" onClick={handleSignup}>
           Create Account
         </Button>
