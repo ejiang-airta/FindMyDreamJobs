@@ -59,43 +59,12 @@ async def startup_event():
     for route in app.routes:
         app_logger.info(f"{route.path} → {route.methods}")
 
-    # 🧪 Seed E2E test user in preview/dev environments
-    env = os.getenv("ENV", "production")
-    if env in ["preview", "development"]:
-        from app.database.connection import SessionLocal
-        from app.models.user import User
-        from app.utils.auth_token import pwd_context
-
-        db = SessionLocal()
-        try:
-            # Check if E2E test user exists (credentials from frontend/tests/ui/helpers.ts)
-            test_user = db.query(User).filter(User.email == "testuser@abc.com").first()
-
-            if not test_user:
-                # Create test user with exact credentials from helpers.ts
-                hashed_pw = pwd_context.hash("test123")
-                user = User(
-                    email="testuser@abc.com",
-                    full_name="test user1",
-                    hashed_password=hashed_pw
-                )
-                db.add(user)
-                db.commit()
-                app_logger.info("✅ E2E test user seeded: testuser@abc.com")
-            else:
-                app_logger.info("✅ E2E test user already exists: testuser@abc.com")
-        except Exception as e:
-            app_logger.error(f"❌ Failed to seed E2E test user: {e}")
-            db.rollback()
-        finally:
-            db.close()
-
     # 🚀 Only ping in production
     if os.getenv("ENVIRONMENT") == "production":
         await asyncio.sleep(3)
         try:
             async with httpx.AsyncClient() as client:
-                res = await client.get("https://findmydreamjobs.onrender.com")
+                res = await client.get("https://findmydreamjobs.onrender.com") 
                 app_logger.info(f"🌐 Self-ping OK: {res.status_code}")
         except Exception as e:
             app_logger.warning(f"🚫 Failed self-ping: {e}")
