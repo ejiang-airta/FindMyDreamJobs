@@ -135,7 +135,7 @@ test.describe('Jobs', () => {
     expect(textareaValue).toContain('We are looking for a QA Engineer')
   })
 
-  test('Test# 27: Match scores display with color coding', async ({ page }) => {
+  test('Test# 27: Match scores display in color coding', async ({ page }) => {
     await loginAsTestUser(page)
 
     // Intercept the search-jobs API call

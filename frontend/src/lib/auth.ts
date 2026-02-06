@@ -23,6 +23,9 @@ export const authOptions: NextAuthOptions = {
       },  
       async authorize(credentials) {
         try {
+          console.log("🔍 Attempting login to:", `${BACKEND_BASE_URL}/auth/login`)
+          console.log("🔍 Email:", credentials?.email)
+
           const response = await fetch(`${BACKEND_BASE_URL}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -32,19 +35,26 @@ export const authOptions: NextAuthOptions = {
             }),
           })
 
+          console.log("🔍 Response status:", response.status)
+          console.log("🔍 Response OK:", response.ok)
+
           // ✅ Only parse JSON if the response is OK
           if (!response.ok) {
             const text = await response.text()
             console.error("❌ Login failed:", text)
+            console.error("❌ Response headers:", Array.from(response.headers.entries()))
             return null
           }
 
           const user = await response.json()
+          console.log("✅ Login successful, user:", JSON.stringify(user, null, 2))
+
           if (response.ok && user) {
             // ✅ Save token and user_id for later use
             if (typeof window !== "undefined") {
               localStorage.setItem("token", user.token)
               localStorage.setItem("user_id", user.user_id?.toString() || "")
+              console.log("✅ Saved to localStorage - token:", user.token ? "present" : "undefined")
             }
           // ✅ Optional: store user_id in localStorage (only works client-side)
           if (typeof window !== "undefined" && user?.user_id) {
@@ -55,6 +65,7 @@ export const authOptions: NextAuthOptions = {
           return null
         } catch (err) {
           console.error("❌ Login error:", err)
+          console.error("❌ Error stack:", (err as Error).stack)
           return null
         }
       },

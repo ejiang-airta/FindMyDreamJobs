@@ -46,7 +46,7 @@ test.describe('Core App Flow', () => {
     }
   })
 
-  test('Test# 14: User can analyze a job description', async ({ page }) => {
+  test('Test# 14: User can analyze a JD', async ({ page }) => {
     await loginAsTestUser(page)
 
     await page.click('text=Analyze')
