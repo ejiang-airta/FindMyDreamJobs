@@ -7,17 +7,15 @@ from sqlalchemy.orm import declarative_base
 Base = declarative_base()  # ✅ Ensure this line exists
 
 
-# ✅ ADD CONNECTION POOL CONFIGURATION
+# ✅ CORRECT CONNECTION POOL CONFIGURATION
 engine = create_engine(
     DATABASE_URL,
-    poolclass=QueuePool,           # Explicit pool class
-    pool_size=5,                   # Max concurrent connections
-    max_overflow=10,               # Extra connections when pool is full
-    pool_pre_ping=True,            # Test connections before use
-    connect_args={
-        "connect_timeout": 10,     # Fail fast instead of hanging
-        "options": "-c statement_timeout=30000"  # 30s query timeout
-    }
+    poolclass=QueuePool,
+    pool_size=5,
+    max_overflow=10,
+    pool_pre_ping=True,
+    pool_recycle=3600,  # Recycle connections after 1 hour
+    connect_args={"connect_timeout": 10}  # Only driver-level timeout
 )
 SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
 
