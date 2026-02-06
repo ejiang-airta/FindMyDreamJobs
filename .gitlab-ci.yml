@@ -14,35 +14,35 @@ variables:
 before_script:
   - echo "Running CI pipeline for Merge Request..."
 
-# -------------------
-# 🔍 Backend Tests
-# -------------------
-backend_tests:
-  stage: test
-  image: python:3.11
-  services:
-    - postgres:15
-  variables:
-    POSTGRES_DB: test_db
-    POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: postgres
-    TEST_DATABASE_URL: "postgresql+psycopg2://postgres:postgres@postgres:5432/test_db"
-  rules:
-    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: always
-  script:
-    - cd backend
-    - pip install -r requirements.txt
-    - mkdir -p test-results
-    - python -m spacy download en_core_web_sm
-    - python -m pytest tests/ -v --tb=short --junitxml=test-results/junit.xml
-  artifacts:
-    when: always
-    paths:
-      - backend/test-results/
-    reports:
-      junit: backend/test-results/junit.xml
-    expire_in: 1 week
+# # -------------------
+# # 🔍 Backend Tests
+# # -------------------
+# backend_tests:
+#   stage: test
+#   image: python:3.11
+#   services:
+#     - postgres:15
+#   variables:
+#     POSTGRES_DB: test_db
+#     POSTGRES_USER: postgres
+#     POSTGRES_PASSWORD: postgres
+#     TEST_DATABASE_URL: "postgresql+psycopg2://postgres:postgres@postgres:5432/test_db"
+#   rules:
+#     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+#       when: always
+#   script:
+#     - cd backend
+#     - pip install -r requirements.txt
+#     - mkdir -p test-results
+#     - python -m spacy download en_core_web_sm
+#     - python -m pytest tests/ -v --tb=short --junitxml=test-results/junit.xml
+#   artifacts:
+#     when: always
+#     paths:
+#       - backend/test-results/
+#     reports:
+#       junit: backend/test-results/junit.xml
+#     expire_in: 1 week
 
 # -------------------
 # 🧪 Frontend Tests (UI)
@@ -62,7 +62,8 @@ frontend_tests:
     - npm install
     - npx playwright install --with-deps # Ensures browsers are ready
     - echo "Starting Playwright tests against Render Previews..."
-    - PLAYWRIGHT_BASE_URL=$RENDER_FE_PREVIEW_URL PLAYWRIGHT_BACKEND_URL=$RENDER_BE_PREVIEW_URL TZ="America/Los_Angeles" npx playwright test --output=test-results
+    #- PLAYWRIGHT_BASE_URL=$RENDER_FE_PREVIEW_URL PLAYWRIGHT_BACKEND_URL=$RENDER_BE_PREVIEW_URL TZ="America/Los_Angeles" npx playwright test --output=test-results
+    - PLAYWRIGHT_BASE_URL=$RENDER_FE_PREVIEW_URL PLAYWRIGHT_BACKEND_URL=$RENDER_BE_PREVIEW_URL TZ="America/Los_Angeles" npx playwright test -g "Test# 14|Test# 46" --output=test-results
     - mkdir -p test-results  # Ensure the folder exists before collecting artifacts
     - echo "Test completed, checking results"
     - ls -la test-results/

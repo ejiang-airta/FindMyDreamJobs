@@ -62,7 +62,7 @@ async def startup_event():
     # 🧪 Seed E2E test user in preview/dev environments
     env = os.getenv("ENV", "production")
     if env in ["preview", "development"]:
-        from app.database.session import SessionLocal
+        from app.database.connection import SessionLocal
         from app.models.user import User
         from app.utils.auth_token import pwd_context
 
