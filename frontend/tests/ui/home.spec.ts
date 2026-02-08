@@ -5,7 +5,7 @@ import { BASE_URL } from './test-config'
 
 test.describe('Home', () => {
 
-  test('Test# 19: Home page renders for unauthenticated users', async ({ page }) => {
+  test('Test# 19: Home page renders for guest users', async ({ page }) => {
     await page.goto(`${BASE_URL}`, { waitUntil: 'domcontentloaded', timeout: 60000 })
 
     // Hero section heading should be visible (use getByRole to avoid strict mode violation)

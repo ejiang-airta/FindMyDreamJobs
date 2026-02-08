@@ -25,7 +25,7 @@ test.describe('Login', () => {
     await page.locator('button', { hasText: 'Sign In' }).click()
   })
 
-  test('Test# 3: Login succeeds with correct credentials', async ({ page }) => {
+  test('Test# 3: Login succeeds with right credentials', async ({ page }) => {
     await loginAsTestUser(page)
     await expect(page.getByText('Welcome back, test user1!')).toBeVisible({ timeout: 15000 })
   })

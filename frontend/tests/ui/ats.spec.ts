@@ -31,7 +31,7 @@ test.describe('ATS', () => {
     }
   })
 
-  test('Test# 35: ATS page redirects unauthenticated users', async ({ page }) => {
+  test('Test# 35: ATS page redirects users to login', async ({ page }) => {
     await page.goto(`${BASE_URL}/ats`, { waitUntil: 'domcontentloaded', timeout: 60000 })
     // Should show unauthorized message or redirect to login
     await expect(page.locator('body')).toContainText(/Unauthorized|sign in|login/i, {

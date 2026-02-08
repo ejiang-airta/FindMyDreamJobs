@@ -210,7 +210,7 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
             <div>
               <label className="text-sm font-medium">Job Title</label>
               <Input
-                value={jobDraft.job_title}
+                value={jobDraft?.job_title ?? ''}
                 onChange={(e) => setJobDraft({ ...jobDraft, job_title: e.target.value })}
                 placeholder="e.g., Senior Director, Engineering"
               />
@@ -219,7 +219,7 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
             <div>
               <label className="text-sm font-medium">Company</label>
               <Input
-                value={jobDraft.company_name}
+                value={jobDraft?.company_name ?? ''}
                 onChange={(e) => setJobDraft({ ...jobDraft, company_name: e.target.value })}
                 placeholder="e.g., Arctic Wolf"
               />
@@ -228,7 +228,7 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
             <div>
               <label className="text-sm font-medium">Salary Range</label>
               <Input
-                value={jobDraft.salary}
+                value={jobDraft?.salary ?? ''}
                 onChange={(e) => setJobDraft({ ...jobDraft, salary: e.target.value })}
                 placeholder="e.g., 180k–220k CAD"
               />
@@ -237,7 +237,7 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
             <div>
               <label className="text-sm font-medium">Location</label>
               <Input
-                value={jobDraft.location}
+                value={jobDraft?.location ?? ''}
                 onChange={(e) => setJobDraft({ ...jobDraft, location: e.target.value })}
                 placeholder="e.g., Vancouver, BC / Remote (Canada)"
               />
@@ -246,7 +246,7 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
             <div>
               <label className="text-sm font-medium">Job Link URL</label>
               <Input
-                value={jobDraft.job_link}
+                value={jobDraft?.job_link ?? ''}
                 onChange={(e) => setJobDraft({ ...jobDraft, job_link: e.target.value })}
                 placeholder='e.g., "https://www.linkedin.com/jobs/view/4336963628/"'
               />
@@ -254,7 +254,7 @@ const AnalyzeJob: React.FC<AnalyzeJobProps> = ({ isWizard = false, onSuccess }) 
             <div>
               <label className="text-sm font-medium"># of Applicants</label>
               <Input
-                value={jobDraft.applicants_count}
+                value={jobDraft?.applicants_count ?? ''}
                 onChange={(e) => setJobDraft({ ...jobDraft,applicants_count: e.target.value })}
                 placeholder='e.g., "100+"'
               />

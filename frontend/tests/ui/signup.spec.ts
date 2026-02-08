@@ -4,7 +4,7 @@ import { BASE_URL, BACKEND_URL } from './test-config'
 
 test.describe('Signup', () => {
 
-  test('Test# 28: Signup page renders with all form fields', async ({ page }) => {
+  test('Test# 28: Signup page renders with all fields', async ({ page }) => {
     await page.goto(`${BASE_URL}/signup`, { waitUntil: 'domcontentloaded', timeout: 60000 })
 
     await expect(page.getByRole('heading', { name: /Create New Account/ })).toBeVisible()
@@ -23,7 +23,7 @@ test.describe('Signup', () => {
     await expect(page).toHaveURL(/.*login/)
   })
 
-  test('Test# 30: Signup with missing fields shows alert', async ({ page }) => {
+  test('Test# 30: Missing fields in signup show alert', async ({ page }) => {
     page.on('dialog', async dialog => {
       expect(dialog.message()).toContain('Please enter all fields.')
       await dialog.dismiss()
