@@ -39,8 +39,8 @@ services:
     # ✅ Monorepo: use repo root so any change triggers preview build
     rootDir: .
     buildCommand: cd frontend && npm install && npm run build
-    startCommand: cd frontend && npm run start
-
+    startCommand: cd frontend && NEXTAUTH_URL=$RENDER_EXTERNAL_URL npm run start
+    
     envVars:
       - fromGroup: eugene-env-group
       # Production: use internal hostname
