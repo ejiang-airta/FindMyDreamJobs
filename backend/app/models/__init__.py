@@ -4,3 +4,6 @@ from .job import Job
 from .application import Application
 from .match import JobMatch
 from .saved_job import SavedJob
+from .user_profile import UserProfile
+from .user_integration import UserIntegration
+from .jdi_candidate import JDICandidate

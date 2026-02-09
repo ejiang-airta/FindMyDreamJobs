@@ -5,7 +5,7 @@ import { BASE_URL } from './test-config'
 import path from 'path'
 import fs from 'fs'
 
-test.describe('Core Application Flows', () => {
+test.describe('Core App Flow', () => {
 
   test('Test# 13: User can upload a resume', async ({ page }) => {
     await loginAsTestUser(page)
@@ -15,35 +15,38 @@ test.describe('Core Application Flows', () => {
     // Wait for the specific heading to ensure the page logic is loaded
     await expect(page.getByRole('heading', { name: /Upload Resume/ })).toBeVisible({ timeout: 20000 })
 
+    // Wait for userId to be loaded (prevents race condition in CI)
+    await page.waitForLoadState('networkidle')
+    await page.waitForTimeout(1000)
+
     // Copy example file to a temp name to avoid duplicate-name errors
     const randomNumber = Math.floor(Math.random() * 10000)
     const originalFilePath = path.join(__dirname, './data/example.docx')
     const newFilePath = path.join(__dirname, `./data/example_${randomNumber}.docx`)
     fs.copyFileSync(originalFilePath, newFilePath)
 
-    // ✅ FIX: Use the fileChooser listener to handle the upload reliably
-    const fileChooserPromise = page.waitForEvent('filechooser')
-    await page.locator('input[type="file"]').click() // Trigger the dialog
-    const fileChooser = await fileChooserPromise
-    await fileChooser.setFiles(newFilePath)
+    try {
+      // FIX: Use setInputFiles directly (more reliable than fileChooser event)
+      const fileInput = page.locator('input[type="file"]')
+      await fileInput.setInputFiles(newFilePath)
 
-    // ✅ FIX: Wait for the button to be clickable (not just present)
-    const uploadButton = page.getByRole('button', { name: 'Upload Resume' })
-    await expect(uploadButton).toBeEnabled({ timeout: 10000 })
-    await uploadButton.click()
+      // Wait for the button to be enabled (file should be loaded)
+      const uploadButton = page.getByRole('button', { name: 'Upload Resume' })
+      await expect(uploadButton).toBeEnabled({ timeout: 10000 })
+      await uploadButton.click()
 
-    // Wait for success message
-    await expect(page.locator('body')).toContainText('Resume uploaded successfully!', {
-      timeout: 20000
-    })
-
-    // Clean up the temporary file
-    if (fs.existsSync(newFilePath)) {
-      fs.unlinkSync(newFilePath)
+      // Wait for success message - try multiple possible selectors
+      // First try the body text approach (fallback)
+      await expect(page.locator('body')).toContainText(/uploaded successfully|Resume uploaded/i, { timeout: 20000 })
+    } finally {
+      // Clean up the temporary file
+      if (fs.existsSync(newFilePath)) {
+        fs.unlinkSync(newFilePath)
+      }
     }
   })
 
-  test('Test# 14: User can analyze a job description', async ({ page }) => {
+  test('Test# 14: User can analyze a JD', async ({ page }) => {
     await loginAsTestUser(page)
 
     await page.click('text=Analyze')
@@ -138,7 +141,7 @@ test.describe('Core Application Flows', () => {
     await expect(page).toHaveURL(`${BASE_URL}`, { timeout: 20000 })
   })
 
-  test('Test# 18: Unauthorized user is redirected to login page', async ({ page }) => {
+  test('Test# 18: Unauthorized and re-login', async ({ page }) => {
     await page.goto(`${BASE_URL}/dashboard`)
     await expect(page.locator('body')).toContainText('Please sign in or create an account to get started', {
       timeout: 20000

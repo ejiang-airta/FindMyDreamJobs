@@ -40,7 +40,7 @@ services:
     rootDir: .
     buildCommand: cd frontend && npm install && npm run build
     startCommand: cd frontend && npm run start
-
+    
     envVars:
       - fromGroup: eugene-env-group
       # Production: use internal hostname
@@ -52,6 +52,9 @@ services:
       - key: NEXTAUTH_URL
         value: https://findmydreamjobs.onrender.com
         previewValue: https://findmydreamjobs-pr-${RENDER_PR_NUMBER}.onrender.com
+
+      - key: NEXTAUTH_SECRET
+        value: 0ywfHoMFgb7YJmgF6qewNNpFO4X7GX7Mvc6aKONxKhg=
 
     previews:
       generation: automatic

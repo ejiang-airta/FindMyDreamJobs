@@ -35,9 +35,9 @@ const mockJobResults = {
   ]
 }
 
-test.describe('Job Search', () => {
+test.describe('Jobs', () => {
 
-  test('Test# 23: User can search for jobs and see results', async ({ page }) => {
+  test('Test# 23: User search jobs and see results', async ({ page }) => {
     await loginAsTestUser(page)
 
     // Intercept the search-jobs API call with mock data
@@ -59,7 +59,7 @@ test.describe('Job Search', () => {
     await expect(page.locator('text=Another Corp')).toBeVisible()
   })
 
-  test('Test# 24: Search with no results shows zero count', async ({ page }) => {
+  test('Test# 24: Search with no results shows 0 count', async ({ page }) => {
     await loginAsTestUser(page)
 
     // Intercept with empty results
@@ -98,6 +98,91 @@ test.describe('Job Search', () => {
     // The page should not crash — verify it's still functional
     await page.waitForTimeout(3000)
     await expect(page.getByPlaceholder('Job title or keywords')).toBeVisible()
+  })
+
+  test('Test# 26: Analyze button with JD prefill', async ({ page }) => {
+    await loginAsTestUser(page)
+
+    // Intercept the search-jobs API call with mock data
+    await page.route(`**/search-jobs**`, route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(mockJobResults),
+      })
+    })
+
+    // Navigate to jobs page and search
+    await page.getByRole('link', { name: 'Jobs' }).click()
+    await page.getByPlaceholder('Job title or keywords').fill('QA Engineer')
+    await page.getByRole('button', { name: 'Search Jobs' }).click()
+
+    // Wait for results
+    await expect(page.getByRole('heading', { name: 'QA Engineer' })).toBeVisible({ timeout: 10000 })
+
+    // Click the Analyze button on the first job card
+    await page.getByRole('button', { name: 'Analyze' }).first().click()
+
+    // Should navigate to /analyze page
+    await expect(page).toHaveURL(/.*\/analyze/, { timeout: 5000 })
+
+    // The job description should be pre-filled in the textarea
+    const textarea = page.getByPlaceholder('Please copy and paste job description here...')
+    await expect(textarea).toBeVisible()
+
+    // Check that the textarea contains the job description
+    const textareaValue = await textarea.inputValue()
+    expect(textareaValue).toContain('We are looking for a QA Engineer')
+  })
+
+  test('Test# 27: Match scores display in color coding', async ({ page }) => {
+    await loginAsTestUser(page)
+
+    // Intercept the search-jobs API call
+    await page.route(`**/search-jobs**`, route => {
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify(mockJobResults),
+      })
+    })
+
+    // Intercept the quick-match-score API calls with different scores
+    let callCount = 0
+    await page.route(`**/quick-match-score`, route => {
+      callCount++
+      // Return different scores for each job to test color coding
+      const score = callCount === 1 ? 85 : 65 // First job: 85% (green), second: 65% (yellow)
+      route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          match_score: score,
+          resume_used: 'Test Resume'
+        }),
+      })
+    })
+
+    // Navigate to jobs page and search
+    await page.getByRole('link', { name: 'Jobs' }).click()
+    await page.getByPlaceholder('Job title or keywords').fill('QA Engineer')
+    await page.getByRole('button', { name: 'Search Jobs' }).click()
+
+    // Wait for results
+    await expect(page.getByRole('heading', { name: 'QA Engineer' })).toBeVisible({ timeout: 10000 })
+
+    // Wait for match scores to be calculated and displayed
+    await expect(page.locator('text=85% Match')).toBeVisible({ timeout: 8000 })
+    await expect(page.locator('text=65% Match')).toBeVisible({ timeout: 8000 })
+
+    // Verify color coding by checking badge classes
+    // Green badge for 85% (≥80%)
+    const greenBadge = page.locator('.bg-green-100').filter({ hasText: '85% Match' })
+    await expect(greenBadge).toBeVisible()
+
+    // Yellow badge for 65% (≥60%, <80%)
+    const yellowBadge = page.locator('.bg-yellow-100').filter({ hasText: '65% Match' })
+    await expect(yellowBadge).toBeVisible()
   })
 
 })

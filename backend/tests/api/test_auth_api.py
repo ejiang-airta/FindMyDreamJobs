@@ -81,3 +81,27 @@ class TestPasswordReset:
         })
         assert resp.status_code == 200
         mock_send.assert_called_once()
+
+
+class TestDeleteUser:
+    def test_delete_user_success(self, client, test_user):
+        """Test user deletion with cascade."""
+        response = client.post("/delete-user", json={"user_id": test_user.id})
+        assert response.status_code == 200
+        assert response.json()["message"] == f"User {test_user.id} deleted successfully"
+
+        # Verify user is gone
+        response = client.post("/auth/whoami", json={"email": test_user.email})
+        assert response.status_code == 404
+
+    def test_delete_user_not_found(self, client):
+        """Test deleting non-existent user."""
+        response = client.post("/delete-user", json={"user_id": 99999})
+        assert response.status_code == 404
+        assert "User not found" in response.json()["detail"]
+
+    def test_delete_user_missing_id(self, client):
+        """Test deleting without user_id."""
+        response = client.post("/delete-user", json={})
+        assert response.status_code == 400
+        assert "user_id is required" in response.json()["detail"]

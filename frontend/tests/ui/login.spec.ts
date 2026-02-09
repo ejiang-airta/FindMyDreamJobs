@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test'
 import { loginAsTestUser } from './helpers'
 import { BASE_URL, TEST_ENV } from './test-config'
 
-test.describe('Login & Navigation', () => {
+test.describe('Login', () => {
 
   test('Test# 1: User can visit login page', async ({ page }) => {
     await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded', timeout: 60000 })
@@ -25,7 +25,7 @@ test.describe('Login & Navigation', () => {
     await page.locator('button', { hasText: 'Sign In' }).click()
   })
 
-  test('Test# 3: Login succeeds with correct credentials', async ({ page }) => {
+  test('Test# 3: Login succeeds with right credentials', async ({ page }) => {
     await loginAsTestUser(page)
     await expect(page.getByText('Welcome back, test user1!')).toBeVisible({ timeout: 15000 })
   })
