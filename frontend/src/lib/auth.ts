@@ -7,6 +7,7 @@ import { useUserId } from "@/hooks/useUserId"
 import { BACKEND_BASE_URL } from '@/lib/env'
 
 export const authOptions: NextAuthOptions = {
+  trustHost: true,  // ✅ Auto-detect URL from request headers for preview environments
   providers: [
     // 🔐 Google login
     GoogleProvider({

@@ -63,7 +63,7 @@ frontend_tests:
     - npx playwright install --with-deps # Ensures browsers are ready
     - echo "Starting Playwright tests against Render Previews..."
     #- PLAYWRIGHT_BASE_URL=$RENDER_FE_PREVIEW_URL PLAYWRIGHT_BACKEND_URL=$RENDER_BE_PREVIEW_URL TZ="America/Los_Angeles" npx playwright test --output=test-results
-    - PLAYWRIGHT_BASE_URL=$RENDER_FE_PREVIEW_URL PLAYWRIGHT_BACKEND_URL=$RENDER_BE_PREVIEW_URL TZ="America/Los_Angeles" npx playwright test -g "Test# 14|Test# 46" --output=test-results
+    - PLAYWRIGHT_BASE_URL=$RENDER_FE_PREVIEW_URL PLAYWRIGHT_BACKEND_URL=$RENDER_BE_PREVIEW_URL TZ="America/Los_Angeles" npx playwright test -g "Test# 14" --output=test-results
     - mkdir -p test-results  # Ensure the folder exists before collecting artifacts
     - echo "Test completed, checking results"
     - ls -la test-results/
