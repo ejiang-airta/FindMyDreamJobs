@@ -18,24 +18,33 @@ An AI-powered job search assistant that helps users analyze job descriptions, ma
 * ✅ Search for jobs with title and location i.e. engineer in Vancouver
 * ✅ Evaluate ATS score for a resume
 * ✅ Get match score against a job
-* ✅ AI-optimized resume for download in .docx (watermarked if not reviewed by user) 
-* ✅ Track job applications with status 
+* ✅ AI-optimized resume for download in .docx (watermarked if not reviewed by user)
+* ✅ Track job applications with status
 * ✅ Full onboarding wizard for first-time users
 * ✅ Google or Email/Password authentication
+* ✅ **JDI (Job Daily Intelligence)** — Automated job discovery from Gmail:
+  * Connect Gmail via OAuth to scan for job alert emails (LinkedIn, Indeed, TrueUp)
+  * Automatically extract job descriptions and calculate match scores
+  * Daily shortlist of relevant jobs in dedicated JDI tab
+  * Smart resume selection and personalized match reasons
 
 ---
 
 ## 🧱 Tech Stack
 
-| Layer    | Tool                               |
-| -------- | ---------------------------------- |
-| Frontend | Next.js + Tailwind CSS + shadcn    |
-| Backend  | FastAPI (Python)                   |
-| Database | PostgreSQL (hosted on Neon)        |
-| Auth     | NextAuth.js                        |
-| Hosting  | Render.com                         |
-| CI/CD    | GitLab CI + Playwright             |
-| Testing  | Pytest (backend) + Playwright (UI) |
+| Layer       | Tool                                                          |
+| ----------- | ------------------------------------------------------------- |
+| Frontend    | Next.js 15 + React 19 + TypeScript + Tailwind CSS v4 + shadcn/ui |
+| Backend     | FastAPI (Python 3.11) + SQLAlchemy + Alembic                  |
+| Database    | PostgreSQL (Neon managed service)                             |
+| Auth        | NextAuth.js 4 (Google OAuth + Credentials)                    |
+| AI/NLP      | OpenAI GPT-4o + spaCy + scikit-learn (TF-IDF)                 |
+| Job API     | JSearch via RapidAPI                                          |
+| Email       | Gmail API (OAuth 2.0, readonly scope)                         |
+| Encryption  | Fernet (cryptography library) for token storage               |
+| Hosting     | Render.com (frontend + backend services)                      |
+| CI/CD       | GitLab CI/CD with PostgreSQL service container                |
+| Testing     | Pytest (backend: 280 tests) + Playwright v1.57 (frontend: 44 E2E tests) |
 
 ---
 
@@ -106,11 +115,13 @@ Tests run automatically in CI pipeline against Render preview environments.
 
 ## 🛣️ Roadmap
 
+- [x] **JDI (Job Daily Intelligence)** — Automated job discovery from Gmail ✅ **LIVE** (Feb 2026)
 - [ ] Add `/profile` and `/payment` pages
 - [ ] Enhance resume download formatting
-- [ ] Add job search integration (LinkedIn, Indeed)
+- [ ] Expand JDI to support more job sources (Glassdoor, ZipRecruiter, etc.)
 - [ ] Add user analytics dashboard
 - [ ] Stripe integration for paid users
+- [ ] Email digest of top JDI matches
 
 ---
 
