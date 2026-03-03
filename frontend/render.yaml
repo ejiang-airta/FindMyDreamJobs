@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: findmydreamjobs_frontend
-    env: node
-    buildCommand: npm install && npm run build
-    startCommand: npm run start
-    envVars:
-      - key: NODE_VERSION
-        value: 18.18.2
