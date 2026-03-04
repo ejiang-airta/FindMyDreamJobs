@@ -13,7 +13,7 @@ services:
 
     # ✅ Monorepo: use repo root so any change triggers preview build 
     rootDir: .
-    buildCommand: cd backend && pip install -r requirements.txt
+    buildCommand: cd backend && pip install -r requirements.txt && python -m spacy download en_core_web_sm
     startCommand: cd backend && ./start.sh
 
     envVars:
@@ -50,7 +50,7 @@ services:
         previewValue: https://findmydreamjobs-service-pr-${RENDER_PR_NUMBER}.onrender.com
 
       - key: NEXTAUTH_URL
-        value: https://findmydreamjobs.onrender.com
+        value: https://findmydreamjobs.com
         previewValue: https://findmydreamjobs-pr-${RENDER_PR_NUMBER}.onrender.com
 
       - key: NEXTAUTH_SECRET

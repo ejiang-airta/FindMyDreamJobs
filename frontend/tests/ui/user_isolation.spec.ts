@@ -2,7 +2,7 @@
 // Test to verify user data isolation - localStorage keys are properly scoped by user_id
 import { test, expect } from '@playwright/test'
 import { loginAsTestUser } from './helpers'
-import { BASE_URL, BACKEND_URL } from './test-config'
+import { BASE_URL } from './test-config'
 
 const mockJobResults = {
   results: [
@@ -84,21 +84,6 @@ test.describe('User Isolation', () => {
     await page.fill('input[type="text"]', user2Name)
     await page.fill('input[type="email"]', user2Email)
     await page.fill('input[type="password"]', 'TestPassword123!')
-
-    // Mock signup API
-    await page.route(`${BACKEND_URL}/auth/signup`, async route => {
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          id: 998,
-          user_id: 998,
-          email: user2Email,
-          full_name: user2Name,
-          message: 'User created successfully',
-        }),
-      })
-    })
 
     await page.locator('button', { hasText: 'Create Account' }).click()
     await page.waitForLoadState('networkidle')

@@ -11,7 +11,7 @@ from os import getenv
 load_dotenv()  # For local dev
 
 MAILERSEND_API_TOKEN = getenv("MAILERSEND_API_TOKEN")
-MAILERSEND_FROM=getenv("MAILERSEND_FROM", "MS_vLUg4T@findmydreamjobs.com")
+MAILERSEND_FROM=getenv("MAILERSEND_FROM", "reset_password@findmydreamjobs.com")
 SMTP_HOST = getenv("SMTP_HOST", "smtp.mailersend.net")
 SMTP_PORT = int(getenv("SMTP_PORT", "587"))
 SMTP_USERNAME = getenv("SMTP_USER","MS_vLUg4T@findmydreamjobs.com")  # e.g., MS_xxx@findmydreamjobs.com
@@ -49,7 +49,7 @@ def send_with_smtp(to_email: str, subject: str, html_body: str):
     try:
         msg = MIMEMultipart("alternative")
         msg["Subject"] = subject
-        msg["From"] = f"{DISPLAY_NAME} <{SMTP_USERNAME}>"
+        msg["From"] = f"{DISPLAY_NAME} <{MAILERSEND_FROM}>"
         msg["To"] = to_email
 
         part = MIMEText(html_body, "html")

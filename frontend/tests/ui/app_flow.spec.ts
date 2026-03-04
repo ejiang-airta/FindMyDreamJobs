@@ -85,6 +85,24 @@ test.describe('Core App Flow', () => {
     // --- Run optimization ---
     const runBtn = page.getByRole('button', { name: 'Run Optimization' })
     await expect(runBtn).toBeEnabled()
+
+    // Mock the optimize API to avoid OpenAI dependency in E2E tests
+    // (same pattern as job_search.spec.ts which mocks /search-jobs)
+    await page.route('**/optimize-resume**', async route => {
+      await route.fulfill({
+        status: 200,
+        contentType: 'application/json',
+        body: JSON.stringify({
+          resume_id: 1,
+          optimized_text: 'Mocked optimized resume content for E2E testing.',
+          ats_score_final: 85,
+          match_score_final: 78,
+          changes_summary: ['Added relevant keywords', 'Improved formatting'],
+          message: '✅ Resume optimized and scores updated successfully!'
+        })
+      })
+    })
+
     await runBtn.click()
     
     await expect(page.getByRole('heading', { name: /Optimized Resume Preview/ })).toBeVisible({ timeout: 20000 })
