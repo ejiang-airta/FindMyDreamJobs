@@ -1,6 +1,6 @@
 // File: frontend/tests/ui/signup.spec.ts
 import { test, expect } from '@playwright/test'
-import { BASE_URL, BACKEND_URL } from './test-config'
+import { BASE_URL } from './test-config'
 
 test.describe('Signup', () => {
 
@@ -54,22 +54,6 @@ test.describe('Signup', () => {
     await expect(page.locator('input[type="text"]')).toHaveValue(testName)
     await expect(page.locator('input[type="email"]')).toHaveValue(testEmail)
     await expect(page.locator('input[type="password"]')).toHaveValue(testPassword)
-
-    // FIX: Use exact URL pattern with BACKEND_URL (more reliable than wildcard)
-    await page.route(`${BACKEND_URL}/auth/signup`, async route => {
-      // Return success response matching backend format
-      await route.fulfill({
-        status: 200,
-        contentType: 'application/json',
-        body: JSON.stringify({
-          id: 999,
-          user_id: 999,
-          email: testEmail,
-          full_name: testName,
-          message: `✅ User ${testEmail.split('@')[0]} signed up!`
-        })
-      })
-    })
 
     // Click Create Account and verify signup API was called
     const [signupRequest] = await Promise.all([
