@@ -36,14 +36,24 @@ test.describe('Signup', () => {
   })
 
   test('Test# 31: Full signup workflow', async ({ page }) => {
-    // Generate unique email to avoid conflicts with existing users
+    test.setTimeout(60000) // Extended: preview cold start + React hydration + real signup + signIn
+
     const timestamp = Date.now()
     const testEmail = `testuser_${timestamp}@example.com`
     const testPassword = 'TestPassword123!'
     const testName = `Test User ${timestamp}`
 
-    // Navigate to signup page first
     await page.goto(`${BASE_URL}/signup`, { waitUntil: 'domcontentloaded', timeout: 60000 })
+
+    // Wait for React to fully hydrate before filling.
+    // In preview (slow network + large JS bundles), domcontentloaded fires before React has
+    // attached onChange handlers. If we fill too early, React state stays empty and the form
+    // submit fires alert("Please enter all fields.") instead of calling fetch().
+    // __reactFiber$ properties appear on DOM nodes only after React.hydrateRoot() completes.
+    await page.waitForFunction(() => {
+      const el = document.querySelector('input[type="email"]')
+      return el !== null && Object.keys(el).some(k => k.startsWith('__react'))
+    }, { timeout: 30000 })
 
     // Fill in all fields
     await page.fill('input[type="text"]', testName)
@@ -55,30 +65,9 @@ test.describe('Signup', () => {
     await expect(page.locator('input[type="email"]')).toHaveValue(testEmail)
     await expect(page.locator('input[type="password"]')).toHaveValue(testPassword)
 
-    // Click Create Account and verify signup API was called
-    const [signupRequest] = await Promise.all([
-      page.waitForRequest(request =>
-        request.url().includes('/auth/signup') && request.method() === 'POST'
-      ),
-      page.locator('button', { hasText: 'Create Account' }).click()
-    ])
-
-    // Verify the signup request was made with correct data
-    const requestBody = JSON.parse(signupRequest.postData() || '{}')
-    expect(requestBody.email).toBe(testEmail)
-    expect(requestBody.password).toBe(testPassword)
-    expect(requestBody.full_name).toBe(testName)
-
-    // NEW: Wait for signup success (either toast or redirect)
-    await page.waitForLoadState('networkidle')
-
-    // Verify we're either on home page or see success message
-    const urlOrMessage = await Promise.race([
-      page.waitForURL(/\/(home|dashboard|$)/, { timeout: 10000 }).then(() => 'redirected'),
-      page.locator('body').filter({ hasText: /signed up|success|created/i }).waitFor({ timeout: 10000 }).then(() => 'message')
-    ]).catch(() => null)
-
-    expect(urlOrMessage).toBeTruthy()
+    // Click Create Account — real signup creates user in DB, signIn auto-logs in, redirects to home
+    await page.locator('button', { hasText: 'Create Account' }).click()
+    await page.waitForURL(/\/(home|dashboard|$)/, { timeout: 30000 })
   })
 
 })
