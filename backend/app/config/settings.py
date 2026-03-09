@@ -37,4 +37,6 @@ DATABASE_URL = (
 )
 
 # debugging print the DATABASE_URL:
+print(f"ENV: {os.getenv('ENV')!r}")
+print(f"PREVIEW_DATABASE_URL set: {bool(os.getenv('PREVIEW_DATABASE_URL'))}")
 print(f"DATABASE_URL: {DATABASE_URL}")
