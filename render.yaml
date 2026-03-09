@@ -21,7 +21,6 @@ services:
       - key: ENV
         value: production
         previewValue: preview
-
     previews:
       generation: automatic
 
@@ -46,15 +45,12 @@ services:
       # Production: use internal hostname
       # Preview: use the preview backend's external URL
       - key: NEXT_PUBLIC_API_BASE_URL
-        value: https://findmydreamjobs-service.onrender.com
+        value: https://findmydreamjobs.onrender.com
         previewValue: https://findmydreamjobs-service-pr-${RENDER_PR_NUMBER}.onrender.com
 
       - key: NEXTAUTH_URL
         value: https://findmydreamjobs.com
         previewValue: https://findmydreamjobs-pr-${RENDER_PR_NUMBER}.onrender.com
-
-      - key: NEXTAUTH_SECRET
-        value: 0ywfHoMFgb7YJmgF6qewNNpFO4X7GX7Mvc6aKONxKhg=
 
     previews:
       generation: automatic

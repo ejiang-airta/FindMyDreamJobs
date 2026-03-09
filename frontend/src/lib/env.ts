@@ -17,8 +17,10 @@ export const BACKEND_BASE_URL = (() => {
       return 'http://127.0.0.1:8000'
     }
   }
-  // Server-side or production
-  return IS_PROD ? 'https://findmydreamjobs.onrender.com' : 'http://127.0.0.1:8000'
+  // Server-side: read env var first (set per-environment in render.yaml — preview gets preview
+  // backend URL, production gets production backend URL). Falls back to hardcoded values for
+  // local dev where NEXT_PUBLIC_API_BASE_URL is not set.
+  return process.env.NEXT_PUBLIC_API_BASE_URL || (IS_PROD ? 'https://findmydreamjobs.onrender.com' : 'http://127.0.0.1:8000')
 })()
 
 export const FRONTEND_BASE_URL = (() => {

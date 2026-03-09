@@ -65,9 +65,15 @@ test.describe('Signup', () => {
     await expect(page.locator('input[type="email"]')).toHaveValue(testEmail)
     await expect(page.locator('input[type="password"]')).toHaveValue(testPassword)
 
-    // Click Create Account — real signup creates user in DB, signIn auto-logs in, redirects to home
+    // Submit signup — real API call, real user created in the isolated preview DB.
+    // env.ts now reads NEXT_PUBLIC_API_BASE_URL server-side, so NextAuth's authorize()
+    // calls the preview backend (not production). The preview backend writes to the
+    // preview Neon DB. signIn then queries the same preview DB → finds the user →
+    // succeeds → router.push('/') fires → we navigate away from /signup.
     await page.locator('button', { hasText: 'Create Account' }).click()
-    await page.waitForURL(/\/(home|dashboard|$)/, { timeout: 30000 })
+
+    // Real E2E: signup → user created in preview DB → signIn succeeds → redirect away from /signup
+    await page.waitForURL(url => !url.toString().includes('/signup'), { timeout: 45000 })
   })
 
 })
