@@ -17,9 +17,12 @@ export const BACKEND_BASE_URL = (() => {
       return 'http://127.0.0.1:8000'
     }
   }
-  // Server-side: read env var first (set per-environment in render.yaml — preview gets preview
-  // backend URL, production gets production backend URL). Falls back to hardcoded values for
-  // local dev where NEXT_PUBLIC_API_BASE_URL is not set.
+  // Server-side: use Render's auto-set IS_PULL_REQUEST + RENDER_PR_NUMBER for preview.
+  // These are injected by Render — no render.yaml previewValue needed.
+  // (NEXT_PUBLIC_API_BASE_URL previewValue is unreliable — resolves to production URL)
+  if (process.env.IS_PULL_REQUEST === 'true' && process.env.RENDER_PR_NUMBER) {
+    return `https://findmydreamjobs-service-pr-${process.env.RENDER_PR_NUMBER}.onrender.com`
+  }
   return process.env.NEXT_PUBLIC_API_BASE_URL || (IS_PROD ? 'https://findmydreamjobs.onrender.com' : 'http://127.0.0.1:8000')
 })()
 
