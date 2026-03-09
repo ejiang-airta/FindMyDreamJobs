@@ -26,17 +26,17 @@ username = os.getenv("POSTGRES_USER", "user")
 password = os.getenv("POSTGRES_PASSWORD", "password")
 
 # In preview environments use the isolated preview DB so CI tests never write to production.
-# ENV is set to 'preview' for Render preview deployments via render.yaml previewValue.
+# IS_PULL_REQUEST=true is set automatically by Render for all preview (PR) services — no config needed.
 # PREVIEW_DATABASE_URL lives in eugene-env-group (Render dashboard) — never in git.
 # Alembic (migrations/env.py) imports DATABASE_URL from here, so it also targets the right DB.
 _default_db = f"postgresql+psycopg2://{username}:{password}@localhost/job_db"
 DATABASE_URL = (
     os.getenv("PREVIEW_DATABASE_URL")
-    if os.getenv("ENV") == "preview" and os.getenv("PREVIEW_DATABASE_URL")
+    if os.getenv("IS_PULL_REQUEST") == "true" and os.getenv("PREVIEW_DATABASE_URL")
     else os.getenv("DATABASE_URL", _default_db)
 )
 
 # debugging print the DATABASE_URL:
-print(f"ENV: {os.getenv('ENV')!r}")
+print(f"IS_PULL_REQUEST: {os.getenv('IS_PULL_REQUEST')!r}")
 print(f"PREVIEW_DATABASE_URL set: {bool(os.getenv('PREVIEW_DATABASE_URL'))}")
 print(f"DATABASE_URL: {DATABASE_URL}")
