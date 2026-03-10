@@ -1,0 +1,58 @@
+name: Keep Render Services Alive
+
+# WHY THIS EXISTS:
+# Render free-tier services spin down after 15 min of inactivity.
+# Cold starts take 50–90 seconds. cron-job.org has a hard 30-second timeout,
+# so it always "fails" on cold starts → auto-disables after 25 failures.
+# GitHub Actions has no timeout cap (we use --max-time 90) and never
+# auto-disables a workflow due to non-zero exit codes.
+
+on:
+  schedule:
+    # 6am–6pm PST, Mon–Sat (Sun excluded). All cron times are UTC (PST = UTC-8).
+    # 6am PST = 14:00 UTC | 6pm PST = 02:00 UTC next day → crosses midnight, needs 2 entries.
+    #
+    # Entry 1: Mon–Sat 14:00–23:59 UTC  = Mon–Sat 6am–3:50pm PST   ✓
+    - cron: '*/10 14-23 * * 1-6'
+    # Entry 2: Sun,Tue–Sat 00:00–02:00 UTC = Mon–Sat 4pm–6pm PST   ✓
+    #   Day 0 (Sun UTC) = Sat evening PST ✓  |  Day 1 (Mon UTC) = Sun evening PST → excluded ✓
+    - cron: '*/10 0-2 * * 0,2-6'
+    #
+    # Note: during PDT (Mar–Nov, UTC-7) the window shifts to 5am–5pm PDT — close enough.
+  workflow_dispatch:             # Allow manual trigger from GitHub Actions UI
+
+jobs:
+  ping-backend:
+    name: Ping Backend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake up FastAPI backend
+        run: |
+          echo "⏰ $(date -u '+%Y-%m-%d %H:%M:%S UTC') — pinging backend /health"
+          HTTP_CODE=$(curl \
+            --max-time 90 \
+            --silent \
+            --output /dev/null \
+            --write-out "%{http_code}" \
+            https://findmydreamjobs.onrender.com/health)
+          echo "→ HTTP $HTTP_CODE"
+          # Always exit 0: even a 503 means Render received the request and
+          # is warming up. GitHub Actions won't auto-disable on non-zero exit,
+          # but green checkmarks make the history easier to read.
+          exit 0
+
+  ping-frontend:
+    name: Ping Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wake up Next.js frontend
+        run: |
+          echo "⏰ $(date -u '+%Y-%m-%d %H:%M:%S UTC') — pinging frontend"
+          HTTP_CODE=$(curl \
+            --max-time 90 \
+            --silent \
+            --output /dev/null \
+            --write-out "%{http_code}" \
+            https://findmydreamjobs.com)
+          echo "→ HTTP $HTTP_CODE"
+          exit 0

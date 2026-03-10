@@ -3,6 +3,8 @@
 from fastapi import FastAPI
 from app.routes import user, job, resume, application, match, auth, ai_optimization, ats, dashboard, download, job_search, integration, jdi, user_profile
 from fastapi.middleware.cors import CORSMiddleware
+from app.database.connection import engine
+from sqlalchemy import text
 import logging
 import sys
 import os
@@ -10,7 +12,7 @@ from datetime import datetime
 from app.config.settings import PROJECT_ROOT
 from dotenv import load_dotenv
 import httpx
-import asyncio 
+import asyncio
 
 load_dotenv()
 
@@ -91,3 +93,26 @@ app.include_router(user_profile.router)     # ✅ JDI User Profile/Preferences A
 @app.get("/")
 def read_root():
     return {"message": "Welcome to FindMyDreamJobs API"}
+
+
+@app.get("/health")
+def health_check():
+    """
+    Dedicated health-check endpoint for cron-job.org keepalive pings.
+
+    Use this URL in cron-job.org instead of the bare root:
+        https://findmydreamjobs.onrender.com/health
+
+    Does a lightweight DB ping (SELECT 1) so the connection pool is warm
+    and the first real API call after a cold start won't stall.
+    Always returns HTTP 200 — cron-job.org will never auto-disable due to failures.
+    """
+    db_status = "unavailable"
+    try:
+        with engine.connect() as conn:
+            conn.execute(text("SELECT 1"))
+        db_status = "connected"
+    except Exception as e:
+        app_logger.warning(f"Health check DB ping failed: {e}")
+
+    return {"status": "ok", "db": db_status}

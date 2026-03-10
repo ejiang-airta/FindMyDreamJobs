@@ -41,19 +41,30 @@ async function waitForFrontend() {
 
   while (Date.now() - start < TIMEOUT_MS) {
     try {
-      // We use a shorter timeout here so the loop can retry faster
+      // Step 1: Confirm the home page renders (basic frontend alive check)
       await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 30000 })
-
-      // pick either of these:
       const hasHeroText = await page.getByText('Find Your Dream Job').first().isVisible().catch(() => false)
-      // or: const hasHomeMenu = await page.getByRole('link', { name: 'Home' }).isVisible().catch(() => false)
 
-      if (hasHeroText) {
-        console.log(`✅ Frontend ready: ${BASE_URL}`)
-        await browser.close()
-        return
+      if (!hasHeroText) {
+        console.log(`… Frontend loaded but Hero text not visible yet`)
+        await sleep(INTERVAL_MS)
+        continue
       }
-      console.log(`… Frontend loaded but Hero text not visible yet`)
+
+      // Step 2: Also warm up the /login page — every authenticated test starts here.
+      // This prevents "Not Found" on the first test navigation after warmup.
+      await page.goto(`${BASE_URL}/login`, { waitUntil: 'domcontentloaded', timeout: 30000 })
+      const hasLoginForm = await page.locator('input[type="email"]').isVisible().catch(() => false)
+
+      if (!hasLoginForm) {
+        console.log(`… Home page ready but /login not responding yet`)
+        await sleep(INTERVAL_MS)
+        continue
+      }
+
+      console.log(`✅ Frontend ready (home + login verified): ${BASE_URL}`)
+      await browser.close()
+      return
     } catch {
       console.log(`… Frontend not responding yet (Render is likely still building)`)
     }
