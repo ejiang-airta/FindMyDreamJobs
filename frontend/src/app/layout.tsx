@@ -7,6 +7,7 @@ import NavBar from '@/components/NavBar'  // ✅ import your new NavBar
 import { ReactNode } from 'react' 
 import SessionWrapper from '@/components/SessionWrapper' // ✅ integrate the NextAuth session provider
 import { Toaster } from 'sonner'
+import { TooltipProvider } from '@/components/ui/tooltip'
 
 
 
@@ -48,16 +49,18 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           }}
         />
         <SessionWrapper>
+          <TooltipProvider>
           <NavBar />
           {children}
-          <Toaster 
-          position="top-center"          
+          <Toaster
+          position="top-center"
           toastOptions={{
             duration: 2000, // Set the global duration to 3 seconds
             style: {
               marginTop: '2rem', // Adjust this value to move the toaster lower
             },
           }} />
+          </TooltipProvider>
         </SessionWrapper>
       </body>
     </html>
