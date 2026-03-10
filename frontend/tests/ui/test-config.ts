@@ -13,11 +13,11 @@ export const BASE_URL = process.env.PLAYWRIGHT_BASE_URL || (
     : 'https://findmydreamjobs.com'
 );
 
-// Backend URL
+// Backend URL — no trailing slash; global-setup.ts appends "/" when pinging
 export const BACKEND_URL = process.env.PLAYWRIGHT_BACKEND_URL || (
-  process.env.ENV === 'dev' 
-    ? 'http://localhost:8000' 
-    : 'https://findmydreamjobs.onrender.com/'
+  process.env.ENV === 'dev'
+    ? 'http://localhost:8000'
+    : 'https://findmydreamjobs.onrender.com'
 );
 
 // Warmup settings
