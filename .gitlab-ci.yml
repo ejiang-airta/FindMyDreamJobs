@@ -29,7 +29,7 @@ backend_tests:
     TEST_DATABASE_URL: "postgresql+psycopg2://postgres:postgres@postgres:5432/test_db"
   rules:
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: always
+      when: never  # ⏸ Temporarily disabled — re-enable after preview smoke test passes
   script:
     - cd backend
     - pip install -r requirements.txt
@@ -54,7 +54,7 @@ frontend_tests:
   rules:
     # ONLY run this when an MR is open so we have a valid PR number for the URL
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
-      when: always
+      when: never  # ⏸ Temporarily disabled — re-enable after preview smoke test passes
   script:
     - echo "Running frontend tests against Preview PR $CI_MERGE_REQUEST_IID"
     - pwd

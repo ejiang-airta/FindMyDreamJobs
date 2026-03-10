@@ -17,12 +17,10 @@ export const BACKEND_BASE_URL = (() => {
       return 'http://127.0.0.1:8000'
     }
   }
-  // Server-side: use Render's auto-set IS_PULL_REQUEST + RENDER_PR_NUMBER for preview.
-  // These are injected by Render — no render.yaml previewValue needed.
-  // (NEXT_PUBLIC_API_BASE_URL previewValue is unreliable — resolves to production URL)
-  if (process.env.IS_PULL_REQUEST === 'true' && process.env.RENDER_PR_NUMBER) {
-    return `https://findmydreamjobs-service-pr-${process.env.RENDER_PR_NUMBER}.onrender.com`
-  }
+  // Server-side fallback: use NEXT_PUBLIC_API_BASE_URL (baked in at build time).
+  // NOTE: In preview the eugene-env-group overrides render.yaml previewValue, so this
+  // resolves to the PRODUCTION backend. Auth (authorize in auth.ts) fixes this at
+  // request time by reading the 'x-forwarded-host' header directly — no env var needed.
   return process.env.NEXT_PUBLIC_API_BASE_URL || (IS_PROD ? 'https://findmydreamjobs.onrender.com' : 'http://127.0.0.1:8000')
 })()
 
