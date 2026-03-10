@@ -22,12 +22,30 @@ export const authOptions: NextAuthOptions = {
         email: { label: "Email", type: "text" },
         password: { label: "Password", type: "password" },
       },  
-      async authorize(credentials) {
+      async authorize(credentials, req) {
         try {
-          console.log("🔍 Attempting login to:", `${BACKEND_BASE_URL}/auth/login`)
+          // Derive backend URL from the incoming request's host header.
+          // authorize() always runs server-side. BACKEND_BASE_URL is a module-level
+          // constant resolved at startup — in preview it resolves to the PRODUCTION
+          // backend (env-group NEXT_PUBLIC_API_BASE_URL overrides render.yaml previewValue).
+          // Instead, read 'x-forwarded-host' (set by Cloudflare CDN) or 'host' from the
+          // live HTTP request, which always reflects the actual FE hostname being served.
+          //   Preview:    x-forwarded-host = 'findmydreamjobs-pr-57.onrender.com' → derive preview BE
+          //   Production: x-forwarded-host = 'findmydreamjobs.com'               → no match → fallback
+          //   Dev:        host             = 'localhost:3000'                     → no match → fallback
+          const hostHeader = String(
+            req?.headers?.['x-forwarded-host'] || req?.headers?.host || ''
+          ).split(',')[0].trim()
+          const prMatch = hostHeader.match(/findmydreamjobs-pr-(\d+)\.onrender\.com/)
+          const backendUrl = prMatch
+            ? `https://findmydreamjobs-service-pr-${prMatch[1]}.onrender.com`
+            : BACKEND_BASE_URL
+
+          console.log("🔍 Attempting login to:", `${backendUrl}/auth/login`)
+          console.log("🔍 Host header:", hostHeader)
           console.log("🔍 Email:", credentials?.email)
 
-          const response = await fetch(`${BACKEND_BASE_URL}/auth/login`, {
+          const response = await fetch(`${backendUrl}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({

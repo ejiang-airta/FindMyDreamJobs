@@ -17,8 +17,11 @@ export const BACKEND_BASE_URL = (() => {
       return 'http://127.0.0.1:8000'
     }
   }
-  // Server-side or production
-  return IS_PROD ? 'https://findmydreamjobs.onrender.com' : 'http://127.0.0.1:8000'
+  // Server-side fallback: use NEXT_PUBLIC_API_BASE_URL (baked in at build time).
+  // NOTE: In preview the eugene-env-group overrides render.yaml previewValue, so this
+  // resolves to the PRODUCTION backend. Auth (authorize in auth.ts) fixes this at
+  // request time by reading the 'x-forwarded-host' header directly — no env var needed.
+  return process.env.NEXT_PUBLIC_API_BASE_URL || (IS_PROD ? 'https://findmydreamjobs.onrender.com' : 'http://127.0.0.1:8000')
 })()
 
 export const FRONTEND_BASE_URL = (() => {
