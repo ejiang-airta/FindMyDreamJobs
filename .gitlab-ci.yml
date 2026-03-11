@@ -44,8 +44,10 @@ backend_tests:
     POSTGRES_PASSWORD: postgres
     TEST_DATABASE_URL: "postgresql+psycopg2://postgres:postgres@postgres:5432/test_db"
   rules:
-    # 1. Check for the skip variable FIRST
-    - if: '$SKIP_TESTS == "true"'
+    # 1. Skip if commit message contains [skip-tests] OR variable is set.
+    #    Commit message check is the ONLY signal that propagates to MR pipelines
+    #    (git push -o ci.variable only affects branch pipelines, not MR pipelines).
+    - if: '$CI_COMMIT_MESSAGE =~ /\[skip-tests\]/ || $SKIP_TESTS == "true"'
       when: never
     # 2. Run this when an MR is open so we have a valid PR number for the URL
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -72,8 +74,8 @@ frontend_tests:
   image: mcr.microsoft.com/playwright:v1.52.0-noble
   allow_failure: false  # <--- failure will block the pipeline
   rules:
-    # 1. Check for the skip variable FIRST
-    - if: '$SKIP_TESTS == "true"'
+    # 1. Skip if commit message contains [skip-tests] OR variable is set.
+    - if: '$CI_COMMIT_MESSAGE =~ /\[skip-tests\]/ || $SKIP_TESTS == "true"'
       when: never
     # 2. Run this when an MR is open so we have a valid PR number for the URL
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -110,7 +112,7 @@ deploy-artifacts:
       optional: true
   rules:
     # If we skip tests, we don't need to run the deploy-artifacts job either
-    - if: '$SKIP_TESTS == "true"'
+    - if: '$CI_COMMIT_MESSAGE =~ /\[skip-tests\]/ || $SKIP_TESTS == "true"'
       when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: always
