@@ -15,6 +15,22 @@ before_script:
   - echo "Running CI pipeline for Merge Request..."
 
 # -------------------
+# 🚀 Auto-create Merge Request
+# -------------------
+# This job runs on the 'dev' branch push to ensure the MR exists.
+# Once it creates the MR, the jobs above (backend/frontend) will trigger automatically.
+auto_create_mr:
+  stage: prepare_mr
+  image: curlimages/curl:latest
+  rules:
+    - if: $CI_COMMIT_BRANCH == "dev"
+  script:  # Create a Merge Request from 'dev' to 'main' with title starting with '[render preview]' to always trigger Render preview deployments
+    - >
+      curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN"
+      "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests?source_branch=dev&target_branch=main&remove_source_branch=false&title=%5Brender%20preview%5D%20AutoMerge%20dev%20to%20main"
+  allow_failure: true # Prevents pipeline failure if MR already exists
+  
+# -------------------
 # 🔍 Backend Tests
 # -------------------
 backend_tests:
@@ -28,6 +44,12 @@ backend_tests:
     POSTGRES_PASSWORD: postgres
     TEST_DATABASE_URL: "postgresql+psycopg2://postgres:postgres@postgres:5432/test_db"
   rules:
+    # 1. Skip if commit message contains [skip-tests] OR variable is set.
+    #    Commit message check is the ONLY signal that propagates to MR pipelines
+    #    (git push -o ci.variable only affects branch pipelines, not MR pipelines).
+    - if: '$CI_COMMIT_MESSAGE =~ /\[skip-tests\]/ || $SKIP_TESTS == "true"'
+      when: never
+    # 2. Run this when an MR is open so we have a valid PR number for the URL
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: always
   script:
@@ -52,7 +74,10 @@ frontend_tests:
   image: mcr.microsoft.com/playwright:v1.52.0-noble
   allow_failure: false  # <--- failure will block the pipeline
   rules:
-    # ONLY run this when an MR is open so we have a valid PR number for the URL
+    # 1. Skip if commit message contains [skip-tests] OR variable is set.
+    - if: '$CI_COMMIT_MESSAGE =~ /\[skip-tests\]/ || $SKIP_TESTS == "true"'
+      when: never
+    # 2. Run this when an MR is open so we have a valid PR number for the URL
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: always
   script:
@@ -80,7 +105,15 @@ frontend_tests:
 # GitLab Pages/Artifacts can easily show them to you.
 deploy-artifacts:
   stage: deploy
+  needs: 
+    - job: backend_tests
+      optional: true
+    - job: frontend_tests
+      optional: true
   rules:
+    # If we skip tests, we don't need to run the deploy-artifacts job either
+    - if: '$CI_COMMIT_MESSAGE =~ /\[skip-tests\]/ || $SKIP_TESTS == "true"'
+      when: never
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
       when: always
   script:
@@ -93,19 +126,3 @@ deploy-artifacts:
     paths:
       - public/         # GitLab Pages stores this folder
     expire_in: 30 days  # Keep artifacts for debugging
-
-# -------------------
-# 🚀 Auto-create Merge Request
-# -------------------
-# This job runs on the 'dev' branch push to ensure the MR exists.
-# Once it creates the MR, the jobs above (backend/frontend) will trigger automatically.
-auto_create_mr:
-  stage: prepare_mr
-  image: curlimages/curl:latest
-  rules:
-    - if: $CI_COMMIT_BRANCH == "dev"
-  script:  # Create a Merge Request from 'dev' to 'main' with title starting with '[render preview]' to always trigger Render preview deployments
-    - >
-      curl --request POST --header "PRIVATE-TOKEN: $GITLAB_TOKEN"
-      "https://gitlab.com/api/v4/projects/$CI_PROJECT_ID/merge_requests?source_branch=dev&target_branch=main&remove_source_branch=false&title=%5Brender%20preview%5D%20AutoMerge%20dev%20to%20main"
-  allow_failure: true # Prevents pipeline failure if MR already exists
