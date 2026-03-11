@@ -102,7 +102,10 @@ export default function NavBar() {
           {status === 'authenticated' ? (
             <>
               <span className="text-sm text-gray-700">{username}</span>
-              <Button onClick={() => signOut()} variant="outline">Sign Out</Button>
+              <Button
+                onClick={async () => { await signOut({ redirect: false }); window.location.href = '/' }}
+                variant="outline"
+              >Sign Out</Button>
             </>
           ) : (
             <>

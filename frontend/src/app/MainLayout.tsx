@@ -15,7 +15,8 @@ const MainLayout: React.FC<MainLayoutProps> = ({ children }) => {
   const { data: session } = useSession();
 
   const handleSignOut = async () => {
-    await signOut({ callbackUrl: 'http://localhost:3001' });
+    await signOut({ redirect: false });
+    window.location.href = '/';
   };
 
   return (
