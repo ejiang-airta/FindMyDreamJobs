@@ -30,11 +30,11 @@ jobs:
         run: |
           echo "⏰ $(date -u '+%Y-%m-%d %H:%M:%S UTC') — pinging backend /health"
           HTTP_CODE=$(curl \
-            --max-time 90 \
+            --max-time 120 \
             --silent \
             --output /dev/null \
             --write-out "%{http_code}" \
-            https://findmydreamjobs.onrender.com/health)
+            https://findmydreamjobs.onrender.com/health  || echo "000")
           echo "→ HTTP $HTTP_CODE"
           # Always exit 0: even a 503 means Render received the request and
           # is warming up. GitHub Actions won't auto-disable on non-zero exit,
