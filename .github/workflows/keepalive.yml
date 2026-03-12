@@ -4,21 +4,24 @@ name: Keep Render Services Alive
 # Render free-tier services spin down after 15 min of inactivity.
 # Cold starts take 50–90 seconds. cron-job.org has a hard 30-second timeout,
 # so it always "fails" on cold starts → auto-disables after 25 failures.
-# GitHub Actions has no timeout cap (we use --max-time 90) and never
+# GitHub Actions has no timeout cap (we use --max-time 120) and never
 # auto-disables a workflow due to non-zero exit codes.
+#
+# STRATEGY (hybrid approach):
+# 1. GitHub Actions fires ONCE at 6:00 AM PDT (Mon–Sat) to handle the cold start.
+#    GitHub can handle the 50–90s cold start; cron-job.org cannot (30s timeout cap).
+# 2. cron-job.org takes over at 6:20 AM PDT with 10-min pings for the rest of the day.
+#    By 6:20 AM the service is warm → responses are fast → cron-job.org never times out.
+#
+# TIMEZONE NOTE:
+# Currently PDT (UTC-7), active Mar–Nov. PST (UTC-8) resumes Nov 1.
+# PDT:  6:00 AM PDT = 13:00 UTC  ← current cron below
+# PST:  6:00 AM PST = 14:00 UTC  ← update cron to '0 14 * * 1-6' in November
 
 on:
   schedule:
-    # 6am–6pm PST, Mon–Sat (Sun excluded). All cron times are UTC (PST = UTC-8).
-    # 6am PST = 14:00 UTC | 6pm PST = 02:00 UTC next day → crosses midnight, needs 2 entries.
-    #
-    # Entry 1: Mon–Sat 14:00–23:59 UTC  = Mon–Sat 6am–3:50pm PST   ✓
-    - cron: '*/10 14-23 * * 1-6'
-    # Entry 2: Sun,Tue–Sat 00:00–02:00 UTC = Mon–Sat 4pm–6pm PST   ✓
-    #   Day 0 (Sun UTC) = Sat evening PST ✓  |  Day 1 (Mon UTC) = Sun evening PST → excluded ✓
-    - cron: '*/10 0-2 * * 0,2-6'
-    #
-    # Note: during PDT (Mar–Nov, UTC-7) the window shifts to 5am–5pm PDT — close enough.
+    # 6:00 AM PDT Mon–Sat (PDT = UTC-7 → 13:00 UTC)
+    - cron: '0 13 * * 1-6'
   workflow_dispatch:             # Allow manual trigger from GitHub Actions UI
 
 jobs:
@@ -30,11 +33,11 @@ jobs:
         run: |
           echo "⏰ $(date -u '+%Y-%m-%d %H:%M:%S UTC') — pinging backend /health"
           HTTP_CODE=$(curl \
-            --max-time 120 \
+            --max-time 240 \
             --silent \
             --output /dev/null \
             --write-out "%{http_code}" \
-            https://findmydreamjobs.onrender.com/health  || echo "000")
+            https://findmydreamjobs.onrender.com/health || echo "000")
           echo "→ HTTP $HTTP_CODE"
           # Always exit 0: even a 503 means Render received the request and
           # is warming up. GitHub Actions won't auto-disable on non-zero exit,

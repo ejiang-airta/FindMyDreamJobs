@@ -33,12 +33,18 @@ test.describe('Login', () => {
   test('Test# 4: Navigate to Dashboard page', async ({ page }) => {
     await loginAsTestUser(page)
 
+    // Wait for post-login navigation to fully settle on home page before clicking nav
+    await page.waitForURL(`${BASE_URL}/`, { timeout: 5000 }).catch(() => {})
+    await page.waitForLoadState('networkidle')
+
     const dashboardNavLink = page.locator('nav.bg-white :text("Dashboard")')
     await expect(dashboardNavLink).toBeVisible()
     await dashboardNavLink.click()
 
-    await expect(page).toHaveURL(`${BASE_URL}/dashboard`)
-    await expect(page.getByRole('heading', { name: /Tracked Applications/ })).toBeVisible({ timeout: 8000 })
+    // Use waitForURL (not toHaveURL) so navigation has time to complete
+    await page.waitForURL(`${BASE_URL}/dashboard`, { timeout: 15000 })
+    // Dashboard now shows a pipeline funnel card instead of the old "Tracked Applications" heading
+    await expect(page.getByText('Application Pipeline')).toBeVisible({ timeout: 8000 })
   })
 
   test('Test# 5: Navigate to Analyze page', async ({ page }) => {

@@ -142,9 +142,9 @@ export async function runJDIIngestion(
 
 // --- Gmail Integration API ---
 
-export async function getGmailConnectUrl(userId: string): Promise<string> {
+export async function getGmailConnectUrl(userId: string, frontendUrl: string): Promise<string> {
   const res = await axios.get(
-    `${BACKEND_BASE_URL}/api/integrations/gmail/connect?user_id=${userId}`
+    `${BACKEND_BASE_URL}/api/integrations/gmail/connect?user_id=${userId}&frontend_url=${encodeURIComponent(frontendUrl)}`
   )
   return res.data.authorization_url
 }
