@@ -1,6 +1,8 @@
 # File: backend/app/services/jdi/gmail_oauth.py
 # Google OAuth flow for Gmail integration
 import os
+import json
+import base64
 import logging
 from datetime import datetime, timezone, timedelta
 from google_auth_oauthlib.flow import Flow
@@ -42,10 +44,33 @@ def _build_client_config() -> dict:
     }
 
 
-def get_authorization_url(user_id: int) -> str:
+def encode_state(user_id: int, frontend_url: str) -> str:
+    """Encode user_id + frontend_url into a base64 JSON state string."""
+    payload = json.dumps({"uid": user_id, "fu": frontend_url})
+    return base64.urlsafe_b64encode(payload.encode()).decode()
+
+
+def decode_state(state: str) -> tuple:
+    """
+    Decode the OAuth state string back to (user_id, frontend_url).
+    Falls back gracefully if state is in the old plain-integer format.
+    """
+    try:
+        payload = json.loads(base64.urlsafe_b64decode(state.encode()).decode())
+        return int(payload["uid"]), payload["fu"]
+    except Exception:
+        # Legacy fallback: state was just a plain user_id string
+        fallback_url = os.getenv("FRONTEND_BASE_URL", "http://localhost:3000")
+        return int(state), fallback_url
+
+
+def get_authorization_url(user_id: int, frontend_url: str) -> str:
     """
     Generate the Google OAuth consent URL.
-    The user_id is embedded in the state param for the callback.
+    Both user_id and frontend_url are embedded in the state param so the
+    callback knows where to redirect regardless of which backend handles it
+    (important: Google's registered redirect_uri always points to the
+    production backend, so preview environments share that callback).
     """
     _, _, redirect_uri = _get_oauth_config()
     flow = Flow.from_client_config(
@@ -57,7 +82,7 @@ def get_authorization_url(user_id: int) -> str:
         access_type="offline",       # Get a refresh token
         include_granted_scopes="true",
         prompt="consent",            # Force consent to always get refresh_token
-        state=str(user_id),          # Embed user_id in state
+        state=encode_state(user_id, frontend_url),
     )
     return authorization_url
 

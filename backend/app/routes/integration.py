@@ -10,16 +10,13 @@ from app.services.jdi.gmail_oauth import (
     get_authorization_url,
     handle_oauth_callback,
     revoke_integration,
+    decode_state,
 )
 import logging
-import os
 
 logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/api/integrations", tags=["Integrations"])
-
-# Frontend redirect URL after OAuth callback
-FRONTEND_BASE_URL = os.getenv("FRONTEND_BASE_URL", "http://localhost:3000")
 
 
 def get_db():
@@ -31,13 +28,20 @@ def get_db():
 
 
 @router.get("/gmail/connect", response_model=IntegrationConnectOut)
-def gmail_connect(user_id: int = Query(...), db: Session = Depends(get_db)):
+def gmail_connect(
+    user_id: int = Query(...),
+    frontend_url: str = Query(..., description="Origin URL of the frontend (window.location.origin)"),
+    db: Session = Depends(get_db),
+):
     """
     Initiate Gmail OAuth flow.
+    frontend_url is passed by the browser so the callback knows which frontend
+    to redirect back to — essential for preview environments where the Google
+    registered redirect_uri always points to the production backend.
     Returns the Google consent URL that the frontend should redirect the user to.
     """
     try:
-        auth_url = get_authorization_url(user_id)
+        auth_url = get_authorization_url(user_id, frontend_url)
         return IntegrationConnectOut(authorization_url=auth_url)
     except Exception as e:
         logger.error(f"Failed to generate Gmail auth URL: {e}")
@@ -47,33 +51,34 @@ def gmail_connect(user_id: int = Query(...), db: Session = Depends(get_db)):
 @router.get("/gmail/callback")
 def gmail_callback(
     code: str = Query(...),
-    state: str = Query(...),  # Contains user_id
+    state: str = Query(...),  # base64 JSON: {uid, fu} — see gmail_oauth.encode_state()
     db: Session = Depends(get_db),
 ):
     """
     Handle Google OAuth callback.
     Exchanges the authorization code for tokens, encrypts, and stores them.
-    Redirects user back to the frontend JDI setup page.
+    Redirects the user directly to /settings?jdi_connected=true on their frontend
+    (works for both production and preview environments).
     """
     try:
-        user_id = int(state)
+        user_id, frontend_url = decode_state(state)
     except (ValueError, TypeError):
         raise HTTPException(status_code=400, detail="Invalid state parameter")
 
     try:
-        integration = handle_oauth_callback(code=code, user_id=user_id, db=db)
-        # Redirect back to frontend JDI setup page with success flag
-        redirect_url = f"{FRONTEND_BASE_URL}/jdi/setup?jdi_connected=true"
+        handle_oauth_callback(code=code, user_id=user_id, db=db)
+        # Redirect directly to /settings#jdi (where JDISection lives) with success flag.
+        # The #jdi hash ensures the Job Intel tab is active on arrival.
+        # Bypasses the /jdi/setup redirect shim, avoiding an extra Protected wrapper hop.
+        redirect_url = f"{frontend_url}/settings?jdi_connected=true#jdi"
         return RedirectResponse(url=redirect_url, status_code=302)
     except ValueError as e:
         logger.error(f"OAuth callback error: {e}")
-        # Redirect to frontend with error flag
-        error_redirect = f"{FRONTEND_BASE_URL}/jdi/setup?jdi_error=true"
+        error_redirect = f"{frontend_url}/settings?jdi_error=true#jdi"
         return RedirectResponse(url=error_redirect, status_code=302)
     except Exception as e:
         logger.error(f"OAuth callback unexpected error: {e}")
-        # Redirect to frontend with error flag
-        error_redirect = f"{FRONTEND_BASE_URL}/jdi/setup?jdi_error=true"
+        error_redirect = f"{frontend_url}/settings?jdi_error=true#jdi"
         return RedirectResponse(url=error_redirect, status_code=302)
 
 

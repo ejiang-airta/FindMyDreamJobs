@@ -96,7 +96,10 @@ export function JDISection() {
   const handleGmailConnect = async () => {
     if (!userId) return
     try {
-      const authUrl = await getGmailConnectUrl(userId)
+      // Pass window.location.origin so the backend embeds it in the OAuth state.
+      // This ensures the callback redirects back to the correct frontend
+      // (preview vs production) regardless of which backend handles the callback.
+      const authUrl = await getGmailConnectUrl(userId, window.location.origin)
       window.location.href = authUrl
     } catch {
       toast.error("Failed to initiate Gmail connection")
