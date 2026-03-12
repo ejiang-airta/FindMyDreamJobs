@@ -77,6 +77,8 @@ def get_authorization_url(user_id: int, frontend_url: str) -> str:
         _build_client_config(),
         scopes=GMAIL_SCOPES,
         redirect_uri=redirect_uri,
+        autogenerate_code_verifier=False,  # Disable PKCE: server-side flows don't need it,
+                                           # and stateless callback can't reuse the verifier
     )
     authorization_url, _state = flow.authorization_url(
         access_type="offline",       # Get a refresh token
@@ -97,6 +99,7 @@ def handle_oauth_callback(code: str, user_id: int, db: Session) -> UserIntegrati
         _build_client_config(),
         scopes=GMAIL_SCOPES,
         redirect_uri=redirect_uri,
+        autogenerate_code_verifier=False,  # Must match the connect flow (no PKCE)
     )
     flow.fetch_token(code=code)
     credentials = flow.credentials
