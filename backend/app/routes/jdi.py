@@ -224,10 +224,14 @@ def run_ingestion(
     scan_window_days = profile.jdi_scan_window_days if profile else 7
     window_hours = scan_window_days * 24
 
-    # Override with request body if provided (for backward compatibility)
+    # Override with request body if provided (for backward compatibility).
+    # When the caller explicitly sets window_hours, honour it exactly — skip the
+    # smart incremental window optimisation inside run_jdi_ingestion.
+    force_full_window = False
     if body.window_hours:
         try:
             window_hours = int(body.window_hours)
+            force_full_window = True
         except (TypeError, ValueError):
             pass
 
@@ -252,6 +256,7 @@ def run_ingestion(
             window_hours=window_hours,
             sources_enabled=sources_enabled,
             custom_source_patterns=custom_source_patterns,
+            force_full_window=force_full_window,
         )
         return JDIRunResponse(**result)
     except Exception as e:

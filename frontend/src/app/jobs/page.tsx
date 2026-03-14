@@ -3,7 +3,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { MapPin, CalendarDays, Bookmark, BarChart3, Send, WalletIcon, Sparkles } from "lucide-react"
 import axios from "axios"
 import { BACKEND_BASE_URL } from "@/lib/env"
@@ -29,7 +29,13 @@ function JobsPage() {
   const [query, setQuery] = useState("")
   const [location, setLocation] = useState("")
   const [loading, setLoading] = useState(false)
-  const [activeTab, setActiveTab] = useState("all")
+  const searchParams = useSearchParams()
+  const [activeTab, setActiveTab] = useState(() => {
+    // Allow deep-linking into a specific tab via ?tab=jdi (or any tab name)
+    const tabParam = searchParams.get("tab")
+    const VALID_TABS = ["all", "saved", "analyzed", "applied", "new", "jdi"]
+    return tabParam && VALID_TABS.includes(tabParam) ? tabParam : "all"
+  })
   const [userId, setUserId] = useState<string | null>(null)
   const [savedJobIds, setSavedJobIds] = useState<Set<string>>(new Set())
   const [analyzedJobIds, setAnalyzedJobIds] = useState<Set<string>>(new Set())

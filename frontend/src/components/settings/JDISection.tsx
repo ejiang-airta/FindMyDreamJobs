@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { useRouter } from "next/navigation"
 import { Mail, CheckCircle2, Circle, Plus, X, Upload } from "lucide-react"
 import { toast } from "sonner"
@@ -80,6 +80,46 @@ export function JDISection() {
       .catch(() => setResumes([]))
   }, [userId])
 
+  // When the user returns to this tab after uploading a resume in a new tab,
+  // check localStorage for a pending resume ID and auto-add it to Base Resumes.
+  const checkPendingResume = useCallback(() => {
+    const pendingId = localStorage.getItem("jdi_pending_resume_id")
+    if (!pendingId) return
+    const id = Number(pendingId)
+    if (!id) return
+    localStorage.removeItem("jdi_pending_resume_id")
+    // Refresh the resume list first, then add
+    if (!userId) return
+    axios.get(`${BACKEND_BASE_URL}/resumes/by-user/${userId}`)
+      .then(res => {
+        const data: any[] = res.data || []
+        const updated = data.map(r => ({ id: r.id, name: r.resume_name || `Resume #${r.id}` }))
+        setResumes(updated)
+        setSelectedResumeIds(prev => {
+          if (prev.includes(id) || prev.length >= 3) return prev
+          toast.success("Resume added to Base Resumes")
+          return [...prev, id]
+        })
+      })
+      .catch(() => {})
+  }, [userId])
+
+  useEffect(() => {
+    // "focus" fires when user manually switches back — reliable in most cases.
+    // "storage" fires immediately when the upload tab sets jdi_pending_resume_id,
+    // catching the case where window.close() in a popup does NOT trigger "focus"
+    // on the opener (Chrome behaviour with popups vs tabs).
+    const onStorage = (e: StorageEvent) => {
+      if (e.key === "jdi_pending_resume_id" && e.newValue) checkPendingResume()
+    }
+    window.addEventListener("focus", checkPendingResume)
+    window.addEventListener("storage", onStorage)
+    return () => {
+      window.removeEventListener("focus", checkPendingResume)
+      window.removeEventListener("storage", onStorage)
+    }
+  }, [checkPendingResume])
+
   // Handle OAuth callback landing back on /settings?jdi_connected=true#jdi
   useEffect(() => {
     const params = new URLSearchParams(window.location.search)
@@ -145,6 +185,8 @@ export function JDISection() {
         jdi_custom_source_patterns: customSourcePatterns.length > 0 ? customSourcePatterns : null,
       })
       toast.success("Job Intel settings saved")
+      // Return to the Job Intel tab where the user came from
+      router.push("/jobs?tab=jdi")
     } catch {
       toast.error("Failed to save settings")
     } finally {
@@ -305,7 +347,7 @@ export function JDISection() {
           </div>
         )}
         <button
-          onClick={() => router.push("/upload")}
+          onClick={() => window.open("/upload?for_jdi=1", "_blank")}
           className="text-sm text-blue-600 hover:underline flex items-center gap-1"
         >
           <Upload className="h-3.5 w-3.5" /> Upload new resume
