@@ -16,8 +16,9 @@ SOURCE_EMAIL_PATTERNS = {
         "jobalerts-noreply@linkedin.com",
     ],
     "indeed": [
-        "alert@indeed.com",
-        "noreply@indeedmail.com",
+        # Update email patterns with actuall senders from Indeed job alerts:
+        "donotreply@jobalert.indeed.com",       # matches donotreply@jobalert.indeed.com
+        "donotreply@match.indeed.com",   # matches donotreply@match.indeed.com
     ],
     "trueup": [
         "hello@trueup.io",
@@ -133,7 +134,7 @@ def fetch_job_alert_emails(
     credentials: Credentials,
     sources: Optional[list[str]] = None,
     window_hours: int = 168,
-    max_results: int = 50,
+    max_results: int = 200,
     custom_patterns: Optional[list[str]] = None,
 ) -> list[dict]:
     """
@@ -160,7 +161,8 @@ def fetch_job_alert_emails(
 
     service = build("gmail", "v1", credentials=credentials)
 
-    # List matching messages
+    # List matching messages — re-raise so the caller can surface auth errors
+    # (previously swallowed to [], which made auth failures look like "no emails")
     try:
         results = service.users().messages().list(
             userId="me",
@@ -169,7 +171,7 @@ def fetch_job_alert_emails(
         ).execute()
     except Exception as e:
         logger.error(f"Gmail API list error: {e}")
-        return []
+        raise
 
     messages = results.get("messages", [])
     if not messages:

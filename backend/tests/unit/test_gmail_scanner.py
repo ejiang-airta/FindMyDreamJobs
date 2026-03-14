@@ -11,21 +11,31 @@ class TestBuildSearchQuery:
     def test_all_sources_default(self):
         query = build_search_query(sources=None, window_hours=24)
         assert "jobs-noreply@linkedin.com" in query
-        assert "alert@indeed.com" in query
+        # Domain-level pattern — matches donotreply@jobalert.indeed.com and all others
+        assert "indeed.com" in query
         assert "trueup.io" in query
         assert "newer_than:1d" in query
+
+    def test_indeed_uses_domain_pattern(self):
+        """Gmail query for Indeed must include the domain, not just one address.
+        Old pattern 'alert@indeed.com' missed donotreply@jobalert.indeed.com."""
+        query = build_search_query(sources=["indeed"], window_hours=24)
+        assert "indeed.com" in query
+        # Must NOT be the old over-specific address
+        assert "alert@indeed.com" not in query
 
     def test_single_source(self):
         query = build_search_query(sources=["linkedin"], window_hours=24)
         assert "jobs-noreply@linkedin.com" in query
-        assert "indeed.com" not in query
-        assert "trueup.io" not in query
+        # No indeed or trueup patterns in a linkedin-only query
+        assert "indeedmail.com" not in query
+        assert "hello@trueup.io" not in query
 
     def test_multiple_sources(self):
         query = build_search_query(sources=["linkedin", "indeed"], window_hours=24)
         assert "jobs-noreply@linkedin.com" in query
-        assert "alert@indeed.com" in query
-        assert "trueup.io" not in query
+        assert "indeed.com" in query
+        assert "hello@trueup.io" not in query
 
     def test_window_hours_1_day(self):
         query = build_search_query(window_hours=24)

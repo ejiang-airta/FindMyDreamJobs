@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.models.resume import Resume
 from app.models.user_profile import UserProfile
-from app.services.score_calc import calculate_scores
+from app.services.score_calc import calculate_scores, calculate_similarity_score, calculate_skill_match_score
 from app.utils.job_extraction import extract_skills_with_frequency
 
 logger = logging.getLogger(__name__)
@@ -79,7 +79,7 @@ def select_best_resume(
             # Score the selected resume
             resume = next((r for r in resumes if r.id == resume_id), None)
             if resume and resume.parsed_text:
-                _, match_score, _ = calculate_scores(resume.parsed_text, jd_text, jd_keywords)
+                match_score = _compute_match_score(resume.parsed_text, jd_text, jd_keywords)
                 return resume_id, round(match_score)
         # Fall through to auto_best if no rule matched
 
@@ -90,12 +90,31 @@ def select_best_resume(
     for resume in resumes:
         if not resume.parsed_text:
             continue
-        _, match_score, _ = calculate_scores(resume.parsed_text, jd_text, jd_keywords)
+        match_score = _compute_match_score(resume.parsed_text, jd_text, jd_keywords)
         if match_score > best_score:
             best_score = match_score
             best_id = resume.id
 
     return best_id, round(best_score)
+
+
+def _compute_match_score(resume_text: str, jd_text: str, jd_keywords: list) -> float:
+    """
+    Compute a match score between a resume and a JD text.
+
+    Always computes TF-IDF similarity. When jd_keywords are available, blends
+    TF-IDF with keyword overlap (50/50). When keywords are empty (common for
+    thin email-only content like LinkedIn/Indeed alerts), uses TF-IDF alone.
+
+    This fixes the case where calculate_scores() returns 0 for email-only
+    content because it gates on `jd_keywords` being non-empty.
+    """
+    tfidf_score = calculate_similarity_score(resume_text, jd_text)
+    if jd_keywords:
+        keyword_score = calculate_skill_match_score(resume_text, jd_keywords)
+        return round((tfidf_score + keyword_score) / 2, 2)
+    # No keywords (thin email content) — use TF-IDF alone
+    return round(tfidf_score, 2)
 
 
 def _apply_keyword_rules(

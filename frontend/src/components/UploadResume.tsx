@@ -13,7 +13,7 @@ import { toast } from 'sonner'
 import { AppButton } from '@/components/ui/AppButton'
 
 interface Props {
-  onSuccess?: () => void
+  onSuccess?: (resumeId?: number) => void
   isWizard?: boolean
 }
 
@@ -93,7 +93,7 @@ const UploadResume: React.FC<Props> = ({ onSuccess, isWizard }) => {
         
                 toast.success(`✅ Resume uploaded as "${newFilename}"`, { icon: null })
                 if (!isWizard) resetUploadState()
-                onSuccess?.()
+                onSuccess?.(retryData?.resume_id)
                 setIsUploading(false)
               },
             },
@@ -118,7 +118,7 @@ const UploadResume: React.FC<Props> = ({ onSuccess, isWizard }) => {
       } else {
         toast.success('Resume uploaded successfully!', { icon: "✅ " })
         if (!isWizard) resetUploadState()
-        onSuccess?.()
+        onSuccess?.(data?.resume_id)
       }
     } catch (err) {
       setError("❌ Upload failed. Please try again.")

@@ -11,25 +11,51 @@ logger = logging.getLogger(__name__)
 # URL patterns that indicate a job posting (not unsubscribe, settings, etc.)
 JOB_URL_PATTERNS = {
     "linkedin": [
+        # Direct job detail pages (www or comm subdomain)
         re.compile(r"linkedin\.com/jobs/view/\d+", re.IGNORECASE),
         re.compile(r"linkedin\.com/comm/jobs/view/\d+", re.IGNORECASE),
+        # Click-tracking / redirect URLs used in LinkedIn emails
+        # e.g. https://click.linkedin-email.com/?qs=...
+        re.compile(r"click\.linkedin", re.IGNORECASE),
+        # Collections / curated job lists linked in alert emails
+        re.compile(r"linkedin\.com/comm/jobs/collections?/", re.IGNORECASE),
+        # LinkedIn URL shortener used in some alert emails
+        re.compile(r"lnkd\.in/", re.IGNORECASE),
+        # Fallback: any linkedin.com/jobs/ sub-path (search pages excluded via EXCLUDE_PATTERNS)
+        re.compile(r"linkedin\.com/jobs/[^?]", re.IGNORECASE),
     ],
     "indeed": [
         re.compile(r"indeed\.com/viewjob", re.IGNORECASE),
         re.compile(r"indeed\.com/rc/clk", re.IGNORECASE),
+        # Indeed email redirect / tracking links (direct indeed.com paths)
+        re.compile(r"indeed\.com/l/", re.IGNORECASE),
+        re.compile(r"indeedmail\.com", re.IGNORECASE),
+        # Email-specific redirect/tracking domains used in current Indeed job alert emails.
+        # Emails from donotreply@jobalert.indeed.com link through these hosts.
+        re.compile(r"jobalert\.indeed\.com", re.IGNORECASE),
+        re.compile(r"r\.indeed\.com", re.IGNORECASE),
+        re.compile(r"click\.indeed\.com", re.IGNORECASE),
     ],
     "trueup": [
-        re.compile(r"trueup\.io/job/", re.IGNORECASE),
-        re.compile(r"trueup\.io/jobs/", re.IGNORECASE),
+        # Direct job pages: trueup.io/jobs/slug or trueup.io/job/slug
+        re.compile(r"trueup\.io/job", re.IGNORECASE),
+        # Broad catch-all: any trueup.io URL (covers tracking subdomains like
+        # click.trueup.io, links.trueup.io used in TrueUp email campaigns).
+        # EXCLUDE_PATTERNS still filter unsubscribe/preferences/privacy links.
+        re.compile(r"trueup\.io", re.IGNORECASE),
     ],
 }
 
-# URL patterns to EXCLUDE (unsubscribe, settings, social links)
+# URL patterns to EXCLUDE (unsubscribe, settings, social links, search-result pages)
 EXCLUDE_PATTERNS = [
     re.compile(r"unsubscribe", re.IGNORECASE),
     re.compile(r"email-preferences", re.IGNORECASE),
     re.compile(r"notifications/settings", re.IGNORECASE),
+    re.compile(r"manage-settings", re.IGNORECASE),
     re.compile(r"help\.linkedin\.com", re.IGNORECASE),
+    re.compile(r"linkedin\.com/legal", re.IGNORECASE),
+    re.compile(r"linkedin\.com/jobs\?", re.IGNORECASE),   # search results pages (/jobs?...)
+    re.compile(r"linkedin\.com/jobs/$", re.IGNORECASE),   # LinkedIn jobs homepage
     re.compile(r"privacy", re.IGNORECASE),
     re.compile(r"terms", re.IGNORECASE),
 ]
@@ -133,6 +159,10 @@ def normalize_url(url: str) -> str:
     scheme = parsed.scheme.lower()
     netloc = parsed.netloc.lower()
 
+    # LinkedIn normalization: /comm/jobs/view/ID and /jobs/view/ID are the same job.
+    # Strip /comm prefix so both forms produce the same canonical URL.
+    path = re.sub(r"^/comm/", "/", parsed.path) if "linkedin.com" in netloc else parsed.path
+
     # Strip tracking params from query string
     query_params = parse_qs(parsed.query, keep_blank_values=False)
     cleaned_params = {
@@ -143,7 +173,7 @@ def normalize_url(url: str) -> str:
     clean_query = urlencode(cleaned_params, doseq=True) if cleaned_params else ""
 
     # Remove fragment
-    canonical = urlunparse((scheme, netloc, parsed.path, parsed.params, clean_query, ""))
+    canonical = urlunparse((scheme, netloc, path, parsed.params, clean_query, ""))
 
     # Remove trailing slash for consistency
     canonical = canonical.rstrip("/")
